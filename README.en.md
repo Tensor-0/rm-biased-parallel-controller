@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 # RMCOD2026_Infantry_Balance
 
 #### Description
 {**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}
+=======
+# 2026_Knight
+
+#### Description
+偏置并联底盘的运控系统
+>>>>>>> 9c36b1f86db516d339e3c1caa6e46d7266cd4c26
 
 #### Software Architecture
 Software architecture description
