@@ -32,19 +32,90 @@
 2025.10.31.第一次测试，
 改动：单腿重量：3.40
       机体重量：8.75
+			范围：0.1--0.4
 效果：*/
-float K11[6] = {0,-301.826001f	,350.951093f	,-262.443570f	,-4.166325f};
-float K12[6] = {0,13.554556f	,-24.969778f	,-33.170803f	,0.273917f};
-float K13[6] = {0,-221.195361f	,205.461024f	,-64.133850f	,-15.357114f};
-float K14[6] = {0,-141.312669f	,140.168584f	,-59.602650f	,-10.846556f};
-float K15[6] = {0,-1199.088787f	,1206.687560f	,-434.244457f	,65.252143f};
-float K16[6] = {0,-58.739170f	,62.827610f		,-25.154270f	,4.849511f};
-float K21[6] = {0,-166.093739f	,191.491484f	,-86.727247f	,26.913637f};
-float K22[6] = {0,-0.505594f	,0.912968f		,0.147179f		,2.701292f};
-float K23[6] = {0,-757.410310f	,762.051907f	,-274.104199f	,41.068039f};
-float K24[6] = {0,-518.460403f	,519.668567f	,-186.549241f	,28.912702f};
-float K25[6] = {0,1409.526386f	,-1309.572837f	,408.970786f	,96.799292f};
-float K26[6] = {0,103.076627f	,-98.176298f	,31.960967f	,1.991248f};
+//float K11[6] = {0,-301.826001f	,350.951093f	,-262.443570f	,-4.166325f};
+//float K12[6] = {0,13.554556f	,-24.969778f	,-33.170803f	,0.273917f};
+//float K13[6] = {0,-221.195361f	,205.461024f	,-64.133850f	,-15.357114f};
+//float K14[6] = {0,-141.312669f	,140.168584f	,-59.602650f	,-10.846556f};
+//float K15[6] = {0,-1199.088787f	,1206.687560f	,-434.244457f	,65.252143f};
+//float K16[6] = {0,-58.739170f	,62.827610f		,-25.154270f	,4.849511f};
+
+//float K21[6] = {0,-166.093739f	,191.491484f	  ,-86.727247f	,26.913637f};
+//float K22[6] = {0,-0.505594f	  ,0.912968f		  ,0.147179f		,2.701292f};
+//float K23[6] = {0,-757.410310f	,762.051907f	  ,-274.104199f	,41.068039f};
+//float K24[6] = {0,-518.460403f	,519.668567f	  ,-186.549241f	,28.912702f};
+//float K25[6] = {0,1409.526386f	,-1309.572837f	,408.970786f	,96.799292f};
+//float K26[6] = {0,103.076627f	  ,-98.176298f	  ,31.960967f	  ,1.991248f};
+/*偏置并联腿LQR控制器增益矩阵
+2025.11.14.第一次测试，
+改动：单腿重量：3.40
+      机体重量：8.75
+			范围：0.2--0.6
+效果：*/
+// //T
+// float K11[6] = {0,-80.977014f  ,151.381968f  ,-204.100024f  ,-9.662387f};
+// float K12[6] = {0,4.973966f    ,-17.221381f  ,-35.433906f   ,0.486839f};
+// float K13[6] = {0,-18.086344f  ,26.646890f   ,-13.358651f   ,-19.986465f};
+// float K14[6] = {0,-17.790442f  ,30.954726f   ,-28.438935f   ,-13.703840f};
+// float K15[6] = {0,-195.037441f ,307.151280f  ,-173.691582f  ,40.950673f};
+// float K16[6] = {0,-13.204286f  ,21.575273f   ,-13.058806f   ,3.706202f};
+// //Tp
+// float K21[6] = {0,-49.576362f  ,83.707527f   ,-54.410332f   ,23.784963f};
+// float K22[6] = {0,-0.565815f   ,0.783139f    ,0.244923f     ,2.685809f};
+// float K23[6] = {0,-123.055131f ,193.742461f  ,-109.496314f  ,25.715695f};
+// float K24[6] = {0,-81.729632f  ,129.058486f  ,-73.622380f   ,18.402643f};
+// float K25[6] = {0,115.582485f  ,-170.358285f ,85.469956f    ,126.295570f};
+// float K26[6] = {0,11.088882f   ,-16.668807f  ,8.644044f     ,4.135566f};
+
+/*偏置并联腿LQR控制器增益矩阵
+2025.11.14.第3次测试，
+改动：单腿重量：3.40
+      机体重量：8.75
+			范围：0.2--0.6
+			机体重心到转轴距离：0.05316；
+效果：*/
+//// //T
+//float K11[6] = {0,-67.649040f   ,132.607627f  ,-196.381973f  ,-7.277384f};
+//float K12[6] = {0,6.582677f     ,-19.797202f  ,-33.892733f   ,0.303999f};
+//float K13[6] = {0,-11.609902f   ,17.322714f   ,-8.895245f    ,-20.629391f};
+//float K14[6] = {0,-11.199453f   ,20.965069f   ,-23.036702f   ,-15.027532f};
+//float K15[6] = {0,-157.754452f  ,251.021773f  ,-145.294375f  ,45.267149f};
+//float K16[6] = {0,-8.806837f    ,14.519914f   ,-8.629580f    ,4.179979f};
+//// //Tp
+//float K21[6] = {0,-21.567516f   ,33.575124f   ,-5.257813f    ,18.072527f};
+//float K22[6] = {0,-3.018760f    ,6.289064f    ,3.192061f     ,2.035407f};
+//float K23[6] = {0,-88.831188f   ,139.581408f  ,-78.329233f   ,20.721179f};
+//float K24[6] = {0,-62.348516f   ,97.463067f   ,-53.251160f   ,15.391523f};
+//float K25[6] = {0,116.728350f   ,-176.615635f ,93.274945f    ,126.068854f};
+//float K26[6] = {0,12.746155f    ,-19.899121f  ,11.060576f    ,3.223275f};
+/*
+2025.11.15.13：15
+定腿长
+机体重心：0.05316
+  -66.4511  -15.0741  -22.1397  -21.3652   17.7057    2.5170
+   19.7475    3.9920    6.2716    5.8331  142.3620    5.2472
+
+2025.11.15.14：15
+定腿长
+机体重心：0.00116
+ -69.7788  -15.1926  -22.1983  -21.0109    8.6839    1.1407
+   12.5000    2.8625    5.3794    4.6102  140.4624    5.6163
+*/
+// //T
+//float K11[6] = //{0,-67.649040f   ,132.607627f  ,-196.381973f  ,-7.277384f};
+//float K12[6] = //{0,6.582677f     ,-19.797202f  ,-33.892733f   ,0.303999f};
+//float K13[6] = //{0,-11.609902f   ,17.322714f   ,-8.895245f    ,-20.629391f};
+//float K14[6] = //{0,-11.199453f   ,20.965069f   ,-23.036702f   ,-15.027532f};
+//float K15[6] = //{0,-157.754452f  ,251.021773f  ,-145.294375f  ,45.267149f};
+//float K16[6] = //{0,-8.806837f    ,14.519914f   ,-8.629580f    ,4.179979f};
+//// //Tp
+//float K21[6] = //{0,-21.567516f   ,33.575124f   ,-5.257813f    ,18.072527f};
+//float K22[6] = //{0,-3.018760f    ,6.289064f    ,3.192061f     ,2.035407f};
+//float K23[6] = //{0,-88.831188f   ,139.581408f  ,-78.329233f   ,20.721179f};
+//float K24[6] = //{0,-62.348516f   ,97.463067f   ,-53.251160f   ,15.391523f};
+//float K25[6] = //{0,116.728350f   ,-176.615635f ,93.274945f    ,126.068854f};
+//float K26[6] = //{0,12.746155f    ,-19.899121f  ,11.060576f    ,3.223275f};
 //=========================================================================================
 
 
@@ -57,6 +128,7 @@ float K26[6] = {0,103.076627f	,-98.176298f	,31.960967f	,1.991248f};
 //float K14[6] = {0,-215.504823f,221.521582f  ,-91.470264f  ,-6.372200f};
 //float K15[6] = {0,-619.617893f,751.574467f  ,-353.495425f ,80.695375f};
 //float K16[6] = {0,-34.711750f ,46.475780f   ,-24.776425f  ,7.312116f};
+
 //float K21[6] = {0,379.169790f ,-335.475183f ,83.668774f   ,17.041042f};
 //float K22[6] = {0,48.175242f  ,-49.710524f  ,19.585459f   ,1.323766f};
 //float K23[6] = {0,-170.787565f,253.798890f  ,-142.436138f ,36.898675f};
@@ -64,16 +136,29 @@ float K26[6] = {0,103.076627f	,-98.176298f	,31.960967f	,1.991248f};
 //float K25[6] = {0,1455.751136f,-1474.823176f,525.283723f  ,68.954698f};
 //float K26[6] = {0,121.297246f ,-127.815723f ,48.450999f   ,0.941185f};
 
+/*
+启用一个PID控制的流程
+1.定义PID参数数组float  PID_xxx_param[7] = {KP,KI,KD,Max_I,Max_Out,Dead_Band,Lpf_Cutoff_Freq};
+2.定义PID控制器PID_Info_TypeDef  PID_xxx;
+3.在Control_Init()函数中调用PID初始化函数，例如：PID_xxx.PID_Param_Init(&PID_xxx,PID_xxx_param);
+4.在需要使用PID控制的地方，设置目标值和测量值，例如：PID_xxx.Target = xxx; PID_xxx.Measure = xxx;
+5.调用PID计算函数，例如：PID_Calc(&PID_xxx);
 
-static float  PID_Leg_Length_F_Param[7] 	= {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
-static float  PID_Yaw_P_pama[7] 			= {4.4f  ,0.f ,60.f    ,0   ,0  ,200 ,500  }; // 偏航角位置PID
-static float  PID_Yaw_V_pama[7] 			= {0.25f ,0   ,0.4f    ,0   ,0  ,200 ,70   }; // 偏航角速度PID
+
+
+*/
+static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
+static float  PID_Yaw_P_pama[7] 			      = {4.4f  ,0.f ,60.f    ,0   ,0  ,200 ,500  }; // 偏航角位置PID
+static float  PID_Yaw_V_pama[7] 			      = {0.25f ,0   ,0.4f    ,0   ,0  ,200 ,70   }; // 偏航角速度PID
 static float  PID_Leg_Coordinate_param[7]   = {300.f ,0.f ,20.0f   ,0.f ,0.f,0.f ,50   }; // 腿部协调PID
+//由于驱动轮减速箱的机械设计存在问题，两边减速箱的阻力不同，导致输出相同的力矩，左右轮速度不同
+//通过调整PID参数来尽量补偿这个问题
+//static float  PID_Stool_param[2]                  = {15.f,0.f,0.f,0.f,0.f,2000.f,10000.f};//驱动轮速度控制PID
 
 PID_Info_TypeDef PID_Leg_Coordinate;  // 腿部协调控制器
 PID_Info_TypeDef PID_Leg_length_F[2]; // 左右腿长度控制器
 PID_Info_TypeDef PID_Yaw[2];          // 偏航控制器（位置+速度）
-
+//PID_Info_TypeDef PID_Stool[2]; // 驱动轮控制器
 
 //调试区----------------------------------------------------------------------------------------------
 
@@ -84,30 +169,23 @@ float Test_Theta = 0;                           //测试用的摆杆倾角--0度
 
 float Test_Vmc_Target_L0_Chassis_High   = 0.38f;//高底盘
 float Test_Vmc_Target_L0_Chassis_Normal = 0.17f;//正常高度底盘
-//整活用
-//float Test_Vmc_Target_L0_L              = 0;//左腿目标腿长
-//float Test_Vmc_Target_L0_R              = 0;//右腿目标腿长
 
 Control_Info_Typedef Control_Info ={
 //腿的机械参数，固定值--如果是新车，这一块要改
 .L_Leg_Info = {
-	// .VMC ={
-	// 	.L1 = 0.15f,//大腿长度（m）
-	// 	.L4 = 0.15f,//另一边大腿（m）
-	// 	.L2 = 0.28f,//小腿
-	// 	.L3 = 0.28f,//另一条小腿
-	// 	.L5 = 0.161f,//髋关节间距（m）
-	// },
-	// .Gravity_Compensation = 110.f,//重力补偿（N）
+
 	.Thigh_Comp_Angle = 0.0f,//大腿摆角补偿
 	.Calf_Comp_Angle  = 0.0f,//小腿摆角补偿
 	.Biased = {
-		.L_Thigh_Link = 0.215f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
+		.L_Thigh_Link = 0.11760f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
 		.L_Calf_Link  = 0.098f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
 		.K = 0.4558139f,//连杆长度比K=AD/AH
 
 		
 	},//偏置并联
+	.Gravity_Compensation = 10.f,
+	.Link_Gravity_Compensation_Angle = 0.4701917f,//连杆重心补偿角度
+	.Phi_Comp_Angle =  0.0177f,//当车平衡时，陀螺仪读出来的数据
 
 },//单腿测试
 
@@ -118,14 +196,17 @@ Control_Info_Typedef Control_Info ={
 	.Thigh_Comp_Angle = 0.0f,//大腿摆角补偿
 	.Calf_Comp_Angle  = 0.0f,//小腿摆角补偿
 	.Biased = {
-		.L_Thigh_Link = 0.215f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
+		.L_Thigh_Link = 0.11760f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
 		.L_Calf_Link  = 0.098f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
 		.K = 0.4558139f,//连杆长度比K=AD/AH
 
 		
 	},//偏置并联
-
+	.Gravity_Compensation = 10.f,
+    .Link_Gravity_Compensation_Angle = 0.4701917f,
+.Phi_Comp_Angle =  0.0177f,//当车平衡时，陀螺仪读出来的数据
 },
+
 
 
 
@@ -236,6 +317,11 @@ static void Check_Low_Voltage_Beep(Control_Info_Typedef *Control_Info){
   }
 //PID初始化
 static void Control_Init(Control_Info_Typedef *Control_Info){
+
+    //驱动轮PID初始化
+	//PID_Init(&PID_Stool[0],PID_POSITION,PID_Stool_param);
+	//PID_Init(&PID_Stool[1],PID_POSITION,PID_Stool_param);
+
 	//腿长PID初始化
     PID_Init(&PID_Leg_length_F[0],PID_POSITION,PID_Leg_Length_F_Param);
     PID_Init(&PID_Leg_length_F[1],PID_POSITION,PID_Leg_Length_F_Param);
@@ -247,47 +333,51 @@ static void Control_Init(Control_Info_Typedef *Control_Info){
 }
 
 
-
-//模式更新
 static void Mode_Update(Control_Info_Typedef *Control_Info){
 
-	//当遥控器在线
-	if(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1]){
-		//打开初始化flag
-		Control_Info->Init.IF_Begin_Init = 1;
-	//当遥控器离线
-	}else{
-		//关闭初始化flag，	 
-		Control_Info->Init.IF_Begin_Init = 0;
-    if(Control_Info->Chassis_Situation == CHASSIS_BALANCE) Control_Info->Chassis_Situation = CHASSIS_WEAK; 
-     } 
-		 
-//初始化flag打开后，（并且底盘虚弱）
-if(Control_Info->Init.IF_Begin_Init == 1 && Control_Info->Chassis_Situation == CHASSIS_WEAK){	
-	
-    //关节初始化flag关闭    
-   if(Control_Info->Init.Joint_Init.IF_Joint_Init == 0){  
-	   	//关节电机到达安全位置（小车放在地上时，四个关节电机的位置）
-			 //先检查关节电机是否到达安全位置
-			Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = (DM_8009_Motor[0].Data.Position > -0.64f );//有点意思
-			Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = (DM_8009_Motor[1].Data.Position < 0.64f ) ;
-			Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = (DM_8009_Motor[2].Data.Position < 0.64f ) ;
-			Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = (DM_8009_Motor[3].Data.Position > -0.64f );
-			 
-			Control_Info->Init.Joint_Init.IF_Joint_Init =   (Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] &&
-		 													 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] &&
-		 													 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] &&
-							 								 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3]);  
-			//重置底盘位置（把当前位置当做原点）		
-			Control_Info->L_Leg_Info.Measure.Chassis_Position = 0 ;
-    		Control_Info->R_Leg_Info.Measure.Chassis_Position = 0 ; 
 
-	//如果所有关节电机到达安全位置
-	}else if(Control_Info->Init.Joint_Init.IF_Joint_Init == 1){
-		//进入平衡状态		
-		 Control_Info->Chassis_Situation = CHASSIS_BALANCE;
-		//重置底盘位置（把当前位置当做原点）
-		Control_Info->L_Leg_Info.Measure.Chassis_Position = 0 ;
+   if(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1]){
+		 /*逻辑冗余：由于||(或运算符)的存在，当remote_ctrl.rc.s[1] == 3成立时，第二个条件不会被执行（短路求值）*/
+	 
+	   Control_Info->Init.IF_Begin_Init = 1;
+	 
+	 
+	 }else{
+	 
+	  	Control_Info->Init.IF_Begin_Init = 0;
+      if(Control_Info->Chassis_Situation == CHASSIS_BALANCE) Control_Info->Chassis_Situation = CHASSIS_WEAK; 
+	 
+	 } 
+		 
+
+   if(Control_Info->Init.IF_Begin_Init == 1 && Control_Info->Chassis_Situation == CHASSIS_WEAK){	
+	
+	        
+   if(Control_Info->Init.Joint_Init.IF_Joint_Init == 0){  
+	   	
+			 if(DM_8009_Motor[0].Data.Position < 0.0f )  
+			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;
+			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.10f)    
+		   Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 0; 
+			 if(DM_8009_Motor[2].Data.Position < 0.20f&& DM_8009_Motor[2].Data.Position>0.10f)    
+			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 0;
+			 if(DM_8009_Motor[3].Data.Position > -0.0f )  
+			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 0;
+			
+			 if(Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] + Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] 
+			  + Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] + Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] == 4){  
+			
+			   Control_Info->Init.Joint_Init.IF_Joint_Init = 1;  
+					
+				}else  Control_Info->Init.Joint_Init.IF_Joint_Init =0;
+					
+					Control_Info->L_Leg_Info.Measure.Chassis_Position = 0 ;
+          Control_Info->R_Leg_Info.Measure.Chassis_Position = 0 ; 
+
+		}else if(Control_Info->Init.Joint_Init.IF_Joint_Init == 1){
+			
+			 Control_Info->Chassis_Situation = CHASSIS_BALANCE;
+		   	Control_Info->L_Leg_Info.Measure.Chassis_Position = 0 ;
         Control_Info->R_Leg_Info.Measure.Chassis_Position = 0 ; 
 				  
 		}
@@ -306,6 +396,9 @@ if(Control_Info->Init.IF_Begin_Init == 1 && Control_Info->Chassis_Situation == C
 
     }
 }
+
+
+
 
 
 
@@ -350,10 +443,10 @@ static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info){
 
 //测试用：假设，当腿完全收缩时-也就是到达最低机械限位，时，大腿和小腿连杆可以张到180度（实际是180.03度）
 
-    // //左小腿摆角与0号关节电机的映射(摆角=-电机角度)
-	 Control_Info->L_Leg_Info.Biased.Calf_Angle 		 = - DM_8009_Motor[0].Data.Position;
+    // //左小腿摆角与0号关节电机的映射(摆角=电机角度)
+	 Control_Info->L_Leg_Info.Biased.Calf_Angle 		 =  DM_8009_Motor[0].Data.Position ;//* RadiansToDegrees;
 	// //左大腿摆角与1号关节电机的映射（摆角=电机角度）
-	 Control_Info->L_Leg_Info.Biased.Thigh_Angle 		 =   DM_8009_Motor[1].Data.Position;
+	 Control_Info->L_Leg_Info.Biased.Thigh_Angle 		 =  PI+ DM_8009_Motor[1].Data.Position;//) * RadiansToDegrees;
 	//角速度
 		//左大腿
 		Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot = DM_8009_Motor[1].Data.Velocity;
@@ -376,9 +469,9 @@ static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info){
 	//测试用：假设，当腿完全收缩时-也就是到达最低机械限位，时，大腿和小腿连杆可以张到180度（实际是180.03度）
 
 	// //右大腿摆角和2号关节电机的映射(同左腿)
-	 Control_Info->R_Leg_Info.Biased.Thigh_Angle 		 = - DM_8009_Motor[2].Data.Position;
+	 Control_Info->R_Leg_Info.Biased.Thigh_Angle 		 =  DM_8009_Motor[2].Data.Position ;//* RadiansToDegrees;
 	// //右小腿摆角和3号关节电机的映射
-	 Control_Info->R_Leg_Info.Biased.Calf_Angle  		 =   DM_8009_Motor[3].Data.Position;
+	 Control_Info->R_Leg_Info.Biased.Calf_Angle  		 =  PI+ DM_8009_Motor[3].Data.Position ;//* RadiansToDegrees;
 	//角速度
 		//右大腿
 		Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot = DM_8009_Motor[2].Data.Velocity;
@@ -437,6 +530,8 @@ static void VMC_Calculate(Control_Info_Typedef *Control_Info){
 	//左夹角差半值=（左小腿摆角-左大腿摆角）/2
 	Control_Info->L_Leg_Info.M = (Control_Info->L_Leg_Info.Biased.Calf_Angle - Control_Info->L_Leg_Info.Biased.Thigh_Angle)/2.f;
 	//左夹角和半差=（左小腿摆角+左大腿摆角）/2
+	//2025.11.14：修改为负号
+	//2.0：改为正号
 	Control_Info->L_Leg_Info.N = (Control_Info->L_Leg_Info.Biased.Calf_Angle + Control_Info->L_Leg_Info.Biased.Thigh_Angle)/2.f;
 	//s_radicand  
 	//中间变量 公式： S_Radicand = b^2 - a^2 sin^2(M)
@@ -501,122 +596,6 @@ static void VMC_Calculate(Control_Info_Typedef *Control_Info){
 	Control_Info->R_Leg_Info.Y_J_Dot =   (Control_Info->R_Leg_Info.A * arm_sin_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot)
 									     + Control_Info->R_Leg_Info.t * arm_cos_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot))/ (2.f * Control_Info->R_Leg_Info.Biased.K);
 
- //五连杆并联结构================================================================================================================================
-/* 中间计算变量（优化用）
- A0, B0, C0;       // 二次方程系数
- LBD_2, LBD;       // BD距离平方/实际值
- Sqrt_Cache;       // 平方根缓存*/
-
-
-//先建模，再简化
-
-
- //左腿
-	//建模------------------------------------------------------------------------------------------------------------------------------
-		
-		//1.先计算膝盖坐标（B点和D点坐标）
-
-// 			//L1-->B点坐标	
-// 			Control_Info->L_Leg_Info.VMC.X_B = Control_Info->L_Leg_Info.VMC.L1 * arm_cos_f32(Control_Info->L_Leg_Info.VMC.Phi1);
-// 			Control_Info->L_Leg_Info.VMC.Y_B = Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32(Control_Info->L_Leg_Info.VMC.Phi1);
-// 			//L5 and L4-->D点坐标
-// 			Control_Info->L_Leg_Info.VMC.X_D = Control_Info->L_Leg_Info.VMC.L4 * arm_cos_f32(Control_Info->L_Leg_Info.VMC.Phi4) + (Control_Info->L_Leg_Info.VMC.L5);
-// 			Control_Info->L_Leg_Info.VMC.Y_D = Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32(Control_Info->L_Leg_Info.VMC.Phi4);
-		
-// 		//2.计算BD向量
-
-// 		     Control_Info->L_Leg_Info.VMC.X_D_X_B = Control_Info->L_Leg_Info.VMC.X_D - Control_Info->L_Leg_Info.VMC.X_B;
-// 		     Control_Info->L_Leg_Info.VMC.Y_D_Y_B = Control_Info->L_Leg_Info.VMC.Y_D - Control_Info->L_Leg_Info.VMC.Y_B;
-		
-// 		//3.计算BD距离的平方
-
-// 		    Control_Info->L_Leg_Info.VMC.LBD_2 = Control_Info->L_Leg_Info.VMC.X_D_X_B * Control_Info->L_Leg_Info.VMC.X_D_X_B + Control_Info->L_Leg_Info.VMC.Y_D_Y_B * Control_Info->L_Leg_Info.VMC.Y_D_Y_B;
-		
-// 		//4.求膝关节角度Phi2
-
-// 			//先求二次方程系数A0, B0, C0
-// 	 		Control_Info->L_Leg_Info.VMC.A0 = 2 *Control_Info->L_Leg_Info.VMC.L2 * Control_Info->L_Leg_Info.VMC.X_D_X_B;
-// 			Control_Info->L_Leg_Info.VMC.B0 = 2 * Control_Info->L_Leg_Info.VMC.L2* Control_Info->L_Leg_Info.VMC.Y_D_Y_B;
-// 			Control_Info->L_Leg_Info.VMC.C0 =    (Control_Info->L_Leg_Info.VMC.L2*Control_Info->L_Leg_Info.VMC.L2)
-// 												-(Control_Info->L_Leg_Info.VMC.L3*Control_Info->L_Leg_Info.VMC.L3)
-// 												+(Control_Info->L_Leg_Info.VMC.LBD_2);
-// 			//再求Sqrt_Cache 平方根缓存
-// 			arm_sqrt_f32(Control_Info->L_Leg_Info.VMC.A0*Control_Info->L_Leg_Info.VMC.A0 + Control_Info->L_Leg_Info.VMC.B0*Control_Info->L_Leg_Info.VMC.B0 - Control_Info->L_Leg_Info.VMC.C0*Control_Info->L_Leg_Info.VMC.C0,&Control_Info->L_Leg_Info.VMC.Sqrt_Cache);
-// 			//开始求角度Phi2
-// 			Control_Info->L_Leg_Info.VMC.Phi2 = 2 * atan2f(Control_Info->L_Leg_Info.VMC.B0 + Control_Info->L_Leg_Info.VMC.Sqrt_Cache,Control_Info->L_Leg_Info.VMC.A0+Control_Info->L_Leg_Info.VMC.C0);
-		
-// 		//5.知道小腿张开多少，就可以开始求脚的坐标（C点）
-		
-// 		Control_Info->L_Leg_Info.VMC.X_C= Control_Info->L_Leg_Info.VMC.X_B + Control_Info->L_Leg_Info.VMC.L2 * arm_cos_f32(Control_Info->L_Leg_Info.VMC.Phi2);
-// 		Control_Info->L_Leg_Info.VMC.Y_C= Control_Info->L_Leg_Info.VMC.Y_B + Control_Info->L_Leg_Info.VMC.L2 * arm_sin_f32(Control_Info->L_Leg_Info.VMC.Phi2);
-		
-// 		//6.先补充另一小腿张开的角度Phi3--先求脚的坐标再求Phi3,计算更方便
-		
-// 		Control_Info->L_Leg_Info.VMC.Phi3 = atan2f(Control_Info->L_Leg_Info.VMC.Y_C - Control_Info->L_Leg_Info.VMC.Y_D,Control_Info->L_Leg_Info.VMC.X_C - Control_Info->L_Leg_Info.VMC.X_D);
-	
-// //简化-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
-		
-		
-// 		//7.现在，完全确定连杆的形状，开始简化它
-
-// 			//简化后的腿长L0
-// 			arm_sqrt_f32(powf(Control_Info->L_Leg_Info.VMC.X_C - Control_Info->L_Leg_Info.VMC.L5/2,2) 
-// 							+ Control_Info->L_Leg_Info.VMC.Y_C *Control_Info->L_Leg_Info.VMC.Y_C,
-// 							& Control_Info->L_Leg_Info.VMC.L0 );
-// 			//腿倾斜的角度
-// 			Control_Info->L_Leg_Info.VMC.Phi0 = atan2f(Control_Info->L_Leg_Info.VMC.Y_C,Control_Info->L_Leg_Info.VMC.X_C - (Control_Info->L_Leg_Info.VMC.L5/2));
-		
-// 		//8.开始计算脚的速度（雅可比矩阵）
-// 			//一些中间变量（简化表达用）
-// 			static float Phi1_2,Phi3,Phi2,Sin_Phi2_3,Phi3_4;
-// 			Phi1_2  = 	Control_Info->L_Leg_Info.VMC.Phi1 - Control_Info->L_Leg_Info.VMC.Phi2;
-// 			Phi3 	=  	Control_Info->L_Leg_Info.VMC.Phi3;
-// 			Phi2 	=  	Control_Info->L_Leg_Info.VMC.Phi2;
-// 			Phi3_4  =  	Control_Info->L_Leg_Info.VMC.Phi3 - Control_Info->L_Leg_Info.VMC.Phi4;
-// 			Sin_Phi2_3 = arm_sin_f32( Control_Info->L_Leg_Info.VMC.Phi2 - Control_Info->L_Leg_Info.VMC.Phi3);
-// 			//X方向速度
-// 			Control_Info->L_Leg_Info.VMC.X_C_dot = 		((Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32(Phi1_2) * arm_sin_f32(Phi3)) / (Sin_Phi2_3)) * Control_Info->L_Leg_Info.VMC.Phi1_dot
-// 													  + ((Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32(Phi3_4) * arm_sin_f32(Phi2)) / (Sin_Phi2_3)) * Control_Info->L_Leg_Info.VMC.Phi4_dot;
-// 			//// Y方向速度									
-// 			Control_Info->L_Leg_Info.VMC.Y_C_dot  = 	-((Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32(Phi1_2) * arm_cos_f32(Phi3)) / (Sin_Phi2_3)) * Control_Info->L_Leg_Info.VMC.Phi1_dot
-// 													  + -((Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32(Phi3_4) * arm_cos_f32(Phi2)) / (Sin_Phi2_3)) * Control_Info->L_Leg_Info.VMC.Phi4_dot;
-// //右腿
-   
-//   // 右腿类似计算 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// 		Control_Info->R_Leg_Info.VMC.X_B =   Control_Info->R_Leg_Info.VMC.L1 * arm_cos_f32(Control_Info->R_Leg_Info.VMC.Phi1);
-// 		Control_Info->R_Leg_Info.VMC.Y_B =   Control_Info->R_Leg_Info.VMC.L1 * arm_sin_f32(Control_Info->R_Leg_Info.VMC.Phi1);
-// 		Control_Info->R_Leg_Info.VMC.X_D =  (Control_Info->R_Leg_Info.VMC.L5) + Control_Info->R_Leg_Info.VMC.L4 * arm_cos_f32(Control_Info->R_Leg_Info.VMC.Phi4);
-// 		Control_Info->R_Leg_Info.VMC.Y_D =   Control_Info->R_Leg_Info.VMC.L4 * arm_sin_f32(Control_Info->R_Leg_Info.VMC.Phi4);
-	
-// 		Control_Info->R_Leg_Info.VMC.X_D_X_B = Control_Info->R_Leg_Info.VMC.X_D - Control_Info->R_Leg_Info.VMC.X_B;
-// 		Control_Info->R_Leg_Info.VMC.Y_D_Y_B = Control_Info->R_Leg_Info.VMC.Y_D - Control_Info->R_Leg_Info.VMC.Y_B;
-// 		Control_Info->R_Leg_Info.VMC.LBD_2 = Control_Info->R_Leg_Info.VMC.X_D_X_B*Control_Info->R_Leg_Info.VMC.X_D_X_B + Control_Info->R_Leg_Info.VMC.Y_D_Y_B*Control_Info->R_Leg_Info.VMC.Y_D_Y_B;
-	  
-// 	    Control_Info->R_Leg_Info.VMC.A0 =  2 *Control_Info->R_Leg_Info.VMC.L2  * Control_Info->R_Leg_Info.VMC.X_D_X_B;
-// 		Control_Info->R_Leg_Info.VMC.B0 =  2 *Control_Info->R_Leg_Info.VMC.L2  * Control_Info->R_Leg_Info.VMC.Y_D_Y_B;
-// 		Control_Info->R_Leg_Info.VMC.C0 =   (Control_Info->R_Leg_Info.VMC.L2 * Control_Info->R_Leg_Info.VMC.L2) 
-// 	                                    + (Control_Info->R_Leg_Info.VMC.LBD_2) - (Control_Info->R_Leg_Info.VMC.L3 * Control_Info->R_Leg_Info.VMC.L3);		
-// 	    arm_sqrt_f32(Control_Info->R_Leg_Info.VMC.A0*Control_Info->R_Leg_Info.VMC.A0 + Control_Info->R_Leg_Info.VMC.B0*Control_Info->R_Leg_Info.VMC.B0 - Control_Info->R_Leg_Info.VMC.C0*Control_Info->R_Leg_Info.VMC.C0,&Control_Info->R_Leg_Info.VMC.Sqrt_Cache);
-// 	    Control_Info->R_Leg_Info.VMC.Phi2 =2 * atan2f(Control_Info->R_Leg_Info.VMC.B0 + Control_Info->R_Leg_Info.VMC.Sqrt_Cache,Control_Info->R_Leg_Info.VMC.A0 + Control_Info->R_Leg_Info.VMC.C0);
-// 		Control_Info->R_Leg_Info.VMC.X_C  =Control_Info->R_Leg_Info.VMC.X_B + Control_Info->R_Leg_Info.VMC.L2 * arm_cos_f32(Control_Info->R_Leg_Info.VMC.Phi2);
-// 		Control_Info->R_Leg_Info.VMC.Y_C  =Control_Info->R_Leg_Info.VMC.Y_B + Control_Info->R_Leg_Info.VMC.L2 * arm_sin_f32(Control_Info->R_Leg_Info.VMC.Phi2);
-		
-// 	    Control_Info->R_Leg_Info.VMC.Phi3 = atan2f(Control_Info->R_Leg_Info.VMC.Y_C - Control_Info->R_Leg_Info.VMC.Y_D,Control_Info->R_Leg_Info.VMC.X_C - Control_Info->R_Leg_Info.VMC.X_D);
-// 		arm_sqrt_f32(powf(Control_Info->R_Leg_Info.VMC.X_C -Control_Info->R_Leg_Info.VMC.L5/2,2) + Control_Info->R_Leg_Info.VMC.Y_C*Control_Info->R_Leg_Info.VMC.Y_C,&Control_Info->R_Leg_Info.VMC.L0);
-// 		Control_Info->R_Leg_Info.VMC.Phi0 = atan2f(Control_Info->R_Leg_Info.VMC.Y_C,Control_Info->R_Leg_Info.VMC.X_C - (Control_Info->R_Leg_Info.VMC.L5/2));
-
-// 		Phi1_2 = 	Control_Info->R_Leg_Info.VMC.Phi1 - Control_Info->R_Leg_Info.VMC.Phi2;
-// 		Phi3 =  Control_Info->R_Leg_Info.VMC.Phi3;
-// 		Phi2 =  Control_Info->R_Leg_Info.VMC.Phi2;
-// 		Phi3_4 =  Control_Info->R_Leg_Info.VMC.Phi3 - Control_Info->R_Leg_Info.VMC.Phi4;
-
-// 		Sin_Phi2_3 = arm_sin_f32( Control_Info->R_Leg_Info.VMC.Phi2 - Control_Info->R_Leg_Info.VMC.Phi3);	
-
-//     	Control_Info->R_Leg_Info.VMC.X_C_dot = 	 (( Control_Info->R_Leg_Info.VMC.L1 * arm_sin_f32(Phi1_2) * arm_sin_f32(Phi3)) / (Sin_Phi2_3)) * Control_Info->R_Leg_Info.VMC.Phi1_dot
-// 																			     + (( Control_Info->R_Leg_Info.VMC.L4 * arm_sin_f32(Phi3_4) * arm_sin_f32(Phi2)) / (Sin_Phi2_3)) * Control_Info->R_Leg_Info.VMC.Phi4_dot;
-// 		Control_Info->R_Leg_Info.VMC.Y_C_dot = 	 -((Control_Info->R_Leg_Info.VMC.L1 * arm_sin_f32(Phi1_2) * arm_cos_f32(Phi3)) / (Sin_Phi2_3)) * Control_Info->R_Leg_Info.VMC.Phi1_dot
-// 																				   + -((Control_Info->R_Leg_Info.VMC.L4 * arm_sin_f32(Phi3_4) * arm_cos_f32(Phi2)) / (Sin_Phi2_3)) * Control_Info->R_Leg_Info.VMC.Phi4_dot;
-
 
 
 }
@@ -643,38 +622,206 @@ powf(变量，指数)：eg powf(L_L0,3)表示L_L0的立方
 3. 多项式系数通过系统辨识和优化算法预先确定，确保在全工作范围内保持最优性能
 这种自适应策略显著提高了双足机器人在不同工作状态（如行走、站立、抬腿）下的控制稳定性和鲁棒性。
 */	
-	Control_Info->L_Leg_Info.LQR_K[0][0] =   K11[1]*powf(L_L0,3)   + K11[2]*powf(L_L0,2)    +K11[3]*L_L0    +K11[4];      
-	Control_Info->L_Leg_Info.LQR_K[0][1] =   K12[1]*powf(L_L0,3)   + K12[2]*powf(L_L0,2)    +K12[3]*L_L0    +K12[4];
-	Control_Info->L_Leg_Info.LQR_K[0][2] =   K13[1]*powf(L_L0,3)   + K13[2]*powf(L_L0,2)    +K13[3]*L_L0    +K13[4];
-	Control_Info->L_Leg_Info.LQR_K[0][3] =   K14[1]*powf(L_L0,3)   + K14[2]*powf(L_L0,2)    +K14[3]*L_L0    +K14[4];
-	Control_Info->L_Leg_Info.LQR_K[0][4] =   K15[1]*powf(L_L0,3)   + K15[2]*powf(L_L0,2)    +K15[3]*L_L0    +K15[4];
-	Control_Info->L_Leg_Info.LQR_K[0][5] =   K16[1]*powf(L_L0,3)   + K16[2]*powf(L_L0,2)    +K16[3]*L_L0    +K16[4];
+//	Control_Info->L_Leg_Info.LQR_K[0][0] =   K11[1]*powf(L_L0,3)   + K11[2]*powf(L_L0,2)    +K11[3]*L_L0    +K11[4];      
+//	Control_Info->L_Leg_Info.LQR_K[0][1] =   K12[1]*powf(L_L0,3)   + K12[2]*powf(L_L0,2)    +K12[3]*L_L0    +K12[4];
+//	Control_Info->L_Leg_Info.LQR_K[0][2] =   K13[1]*powf(L_L0,3)   + K13[2]*powf(L_L0,2)    +K13[3]*L_L0    +K13[4];
+//	Control_Info->L_Leg_Info.LQR_K[0][3] =   K14[1]*powf(L_L0,3)   + K14[2]*powf(L_L0,2)    +K14[3]*L_L0    +K14[4];
+//	Control_Info->L_Leg_Info.LQR_K[0][4] =   K15[1]*powf(L_L0,3)   + K15[2]*powf(L_L0,2)    +K15[3]*L_L0    +K15[4];
+//	Control_Info->L_Leg_Info.LQR_K[0][5] =   K16[1]*powf(L_L0,3)   + K16[2]*powf(L_L0,2)    +K16[3]*L_L0    +K16[4];
 
-	Control_Info->L_Leg_Info.LQR_K[1][0] =   K21[1]*powf(L_L0,3)   + K21[2]*powf(L_L0,2)    +K21[3]*L_L0    +K21[4];     
-	Control_Info->L_Leg_Info.LQR_K[1][1] =   K22[1]*powf(L_L0,3)   + K22[2]*powf(L_L0,2)    +K22[3]*L_L0    +K22[4];
-	Control_Info->L_Leg_Info.LQR_K[1][2] =   K23[1]*powf(L_L0,3)   + K23[2]*powf(L_L0,2)    +K23[3]*L_L0    +K23[4];
-	Control_Info->L_Leg_Info.LQR_K[1][3] =   K24[1]*powf(L_L0,3)   + K24[2]*powf(L_L0,2)    +K24[3]*L_L0    +K24[4];
-	Control_Info->L_Leg_Info.LQR_K[1][4] =   K25[1]*powf(L_L0,3)   + K25[2]*powf(L_L0,2)    +K25[3]*L_L0    +K25[4];
-	Control_Info->L_Leg_Info.LQR_K[1][5] =   K26[1]*powf(L_L0,3)   + K26[2]*powf(L_L0,2)    +K26[3]*L_L0    +K26[4];
-//右腿		
-	 float R_L0;
-	 //R_L0= Control_Info->R_Leg_Info.VMC.L0;(并腿)
-	 R_L0= Control_Info->R_Leg_Info.Sip_Leg_Length;//偏腿
-	
-	 Control_Info->R_Leg_Info.LQR_K[0][0] =   K11[1]*powf(R_L0,3)   + K11[2]*powf(R_L0,2)    +K11[3]*R_L0    +K11[4];      
-	 Control_Info->R_Leg_Info.LQR_K[0][1] =   K12[1]*powf(R_L0,3)   + K12[2]*powf(R_L0,2)    +K12[3]*R_L0    +K12[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][2] =   K13[1]*powf(R_L0,3)   + K13[2]*powf(R_L0,2)    +K13[3]*R_L0    +K13[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][3] =   K14[1]*powf(R_L0,3)   + K14[2]*powf(R_L0,2)    +K14[3]*R_L0    +K14[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][4] =   K15[1]*powf(R_L0,3)   + K15[2]*powf(R_L0,2)    +K15[3]*R_L0    +K15[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][5] =   K16[1]*powf(R_L0,3)   + K16[2]*powf(R_L0,2)    +K16[3]*R_L0    +K16[4];
+//	Control_Info->L_Leg_Info.LQR_K[1][0] =   K21[1]*powf(L_L0,3)   + K21[2]*powf(L_L0,2)    +K21[3]*L_L0    +K21[4];     
+//	Control_Info->L_Leg_Info.LQR_K[1][1] =   K22[1]*powf(L_L0,3)   + K22[2]*powf(L_L0,2)    +K22[3]*L_L0    +K22[4];
+//	Control_Info->L_Leg_Info.LQR_K[1][2] =   K23[1]*powf(L_L0,3)   + K23[2]*powf(L_L0,2)    +K23[3]*L_L0    +K23[4];
+//	Control_Info->L_Leg_Info.LQR_K[1][3] =   K24[1]*powf(L_L0,3)   + K24[2]*powf(L_L0,2)    +K24[3]*L_L0    +K24[4];
+//	Control_Info->L_Leg_Info.LQR_K[1][4] =   K25[1]*powf(L_L0,3)   + K25[2]*powf(L_L0,2)    +K25[3]*L_L0    +K25[4];
+//	Control_Info->L_Leg_Info.LQR_K[1][5] =   K26[1]*powf(L_L0,3)   + K26[2]*powf(L_L0,2)    +K26[3]*L_L0    +K26[4];
+////右腿		
+//	 float R_L0;
+//	 //R_L0= Control_Info->R_Leg_Info.VMC.L0;(并腿)
+//	 R_L0= Control_Info->R_Leg_Info.Sip_Leg_Length;//偏腿
+//	
+//	 Control_Info->R_Leg_Info.LQR_K[0][0] =   K11[1]*powf(R_L0,3)   + K11[2]*powf(R_L0,2)    +K11[3]*R_L0    +K11[4];      
+//	 Control_Info->R_Leg_Info.LQR_K[0][1] =   K12[1]*powf(R_L0,3)   + K12[2]*powf(R_L0,2)    +K12[3]*R_L0    +K12[4];
+//	 Control_Info->R_Leg_Info.LQR_K[0][2] =   K13[1]*powf(R_L0,3)   + K13[2]*powf(R_L0,2)    +K13[3]*R_L0    +K13[4];
+//	 Control_Info->R_Leg_Info.LQR_K[0][3] =   K14[1]*powf(R_L0,3)   + K14[2]*powf(R_L0,2)    +K14[3]*R_L0    +K14[4];
+//	 Control_Info->R_Leg_Info.LQR_K[0][4] =   K15[1]*powf(R_L0,3)   + K15[2]*powf(R_L0,2)    +K15[3]*R_L0    +K15[4];
+//	 Control_Info->R_Leg_Info.LQR_K[0][5] =   K16[1]*powf(R_L0,3)   + K16[2]*powf(R_L0,2)    +K16[3]*R_L0    +K16[4];
 
-	 Control_Info->R_Leg_Info.LQR_K[1][0] =   K21[1]*powf(R_L0,3)   + K21[2]*powf(R_L0,2)    +K21[3]*R_L0    +K21[4];     
-	 Control_Info->R_Leg_Info.LQR_K[1][1] =   K22[1]*powf(R_L0,3)   + K22[2]*powf(R_L0,2)    +K22[3]*R_L0    +K22[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][2] =   K23[1]*powf(R_L0,3)   + K23[2]*powf(R_L0,2)    +K23[3]*R_L0    +K23[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][3] =   K24[1]*powf(R_L0,3)   + K24[2]*powf(R_L0,2)    +K24[3]*R_L0    +K24[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][4] =   K25[1]*powf(R_L0,3)   + K25[2]*powf(R_L0,2)    +K25[3]*R_L0    +K25[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][5] =   K26[1]*powf(R_L0,3)   + K26[2]*powf(R_L0,2)    +K26[3]*R_L0    +K26[4];
+//	 Control_Info->R_Leg_Info.LQR_K[1][0] =   K21[1]*powf(R_L0,3)   + K21[2]*powf(R_L0,2)    +K21[3]*R_L0    +K21[4];     
+//	 Control_Info->R_Leg_Info.LQR_K[1][1] =   K22[1]*powf(R_L0,3)   + K22[2]*powf(R_L0,2)    +K22[3]*R_L0    +K22[4];
+//	 Control_Info->R_Leg_Info.LQR_K[1][2] =   K23[1]*powf(R_L0,3)   + K23[2]*powf(R_L0,2)    +K23[3]*R_L0    +K23[4];
+//	 Control_Info->R_Leg_Info.LQR_K[1][3] =   K24[1]*powf(R_L0,3)   + K24[2]*powf(R_L0,2)    +K24[3]*R_L0    +K24[4];
+//	 Control_Info->R_Leg_Info.LQR_K[1][4] =   K25[1]*powf(R_L0,3)   + K25[2]*powf(R_L0,2)    +K25[3]*R_L0    +K25[4];
+//	 Control_Info->R_Leg_Info.LQR_K[1][5] =   K26[1]*powf(R_L0,3)   + K26[2]*powf(R_L0,2)    +K26[3]*R_L0    +K26[4];
 
+
+////0.17
+//Control_Info->L_Leg_Info.LQR_K[0][0] = -47.420078f;
+//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.206347f;
+//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.199068f;
+//Control_Info->L_Leg_Info.LQR_K[0][3] = -17.194905f;
+//Control_Info->L_Leg_Info.LQR_K[0][4] = 20.820044f;
+//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.895793f;
+//Control_Info->L_Leg_Info.LQR_K[1][0] = 29.191116f;
+//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.619429f;
+//Control_Info->L_Leg_Info.LQR_K[1][2] = 4.872640f;
+//Control_Info->L_Leg_Info.LQR_K[1][3] = 7.049663f;
+//Control_Info->L_Leg_Info.LQR_K[1][4] = 59.878614f;
+//Control_Info->L_Leg_Info.LQR_K[1][5] = 3.185011f;
+//Control_Info->R_Leg_Info.LQR_K[0][0] = -47.420078f;
+//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.206347f;
+//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.199068f;
+//Control_Info->R_Leg_Info.LQR_K[0][3] = -17.194905f;
+//Control_Info->R_Leg_Info.LQR_K[0][4] = 20.820044f;
+//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.895793f;
+//Control_Info->R_Leg_Info.LQR_K[1][0] = 29.191116f;
+//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.619429f;
+//Control_Info->R_Leg_Info.LQR_K[1][2] = 4.872640f;
+//Control_Info->R_Leg_Info.LQR_K[1][3] = 7.049663f;
+//Control_Info->R_Leg_Info.LQR_K[1][4] = 59.878614f;
+//Control_Info->R_Leg_Info.LQR_K[1][5] = 3.185011f;
+
+
+//Control_Info->L_Leg_Info.LQR_K[0][0] = -46.921730f;
+//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.549807f;
+//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.332902f;
+//Control_Info->L_Leg_Info.LQR_K[0][3] = -17.519273f;
+//Control_Info->L_Leg_Info.LQR_K[0][4] = 17.083244f;
+//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.336082f;
+
+//Control_Info->L_Leg_Info.LQR_K[1][0] = 23.245817f;
+//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.132264f;
+//Control_Info->L_Leg_Info.LQR_K[1][2] = 3.833536f;
+//Control_Info->L_Leg_Info.LQR_K[1][3] = 5.606471f;
+//Control_Info->L_Leg_Info.LQR_K[1][4] = 60.299396f;
+//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.660951f;
+
+
+
+//Control_Info->R_Leg_Info.LQR_K[0][0] = -46.921730f;
+//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.549807f;
+//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.332902f;
+//Control_Info->R_Leg_Info.LQR_K[0][3] = -17.519273f;
+//Control_Info->R_Leg_Info.LQR_K[0][4] = 17.083244f;
+//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.336082f;
+
+//Control_Info->R_Leg_Info.LQR_K[1][0] = 23.245817f;
+//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.132264f;
+//Control_Info->R_Leg_Info.LQR_K[1][2] = 3.833536f;
+//Control_Info->R_Leg_Info.LQR_K[1][3] = 5.606471f;
+//Control_Info->R_Leg_Info.LQR_K[1][4] = 60.299396f;
+//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.660951f;
+
+
+//Control_Info->L_Leg_Info.LQR_K[0][0] = -57.942303f;
+//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.469361f;
+//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.047831f;
+//Control_Info->L_Leg_Info.LQR_K[0][3] = -16.586214f;
+//Control_Info->L_Leg_Info.LQR_K[0][4] = 9.100286f;
+//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.104907f;
+//Control_Info->L_Leg_Info.LQR_K[1][0] = 47.105633f;
+//Control_Info->L_Leg_Info.LQR_K[1][1] = -0.557684f;
+//Control_Info->L_Leg_Info.LQR_K[1][2] = -5.816898f;
+//Control_Info->L_Leg_Info.LQR_K[1][3] = -10.896583f;
+//Control_Info->L_Leg_Info.LQR_K[1][4] = 10.448581f;
+//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.764917f;
+//Control_Info->R_Leg_Info.LQR_K[0][0] = -57.942303f;
+//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.469361f;
+//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.047831f;
+//Control_Info->R_Leg_Info.LQR_K[0][3] = -16.586214f;
+//Control_Info->R_Leg_Info.LQR_K[0][4] = 9.100286f;
+//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.104907f;
+//Control_Info->R_Leg_Info.LQR_K[1][0] = 47.105633f;
+//Control_Info->R_Leg_Info.LQR_K[1][1] = -0.557684f;
+//Control_Info->R_Leg_Info.LQR_K[1][2] = -5.816898f;
+//Control_Info->R_Leg_Info.LQR_K[1][3] = -10.896583f;
+//Control_Info->R_Leg_Info.LQR_K[1][4] = 10.448581f;
+//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.764917f;
+
+
+
+//Control_Info->L_Leg_Info.LQR_K[0][0] = -62.510427f;
+//Control_Info->L_Leg_Info.LQR_K[0][1] = -7.117034f;
+//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.436523f;
+//Control_Info->L_Leg_Info.LQR_K[0][3] = -19.426693f;
+//Control_Info->L_Leg_Info.LQR_K[0][4] = 18.547438f;
+//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.480538f;
+//Control_Info->L_Leg_Info.LQR_K[1][0] = 38.650025f;
+//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.072097f;
+//Control_Info->L_Leg_Info.LQR_K[1][2] = 2.760041f;
+//Control_Info->L_Leg_Info.LQR_K[1][3] = 4.314356f;
+//Control_Info->L_Leg_Info.LQR_K[1][4] = 59.386957f;
+//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.727879f;
+//Control_Info->R_Leg_Info.LQR_K[0][0] = -62.510427f;
+//Control_Info->R_Leg_Info.LQR_K[0][1] = -7.117034f;
+//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.436523f;
+//Control_Info->R_Leg_Info.LQR_K[0][3] = -19.426693f;
+//Control_Info->R_Leg_Info.LQR_K[0][4] = 18.547438f;
+//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.480538f;
+//Control_Info->R_Leg_Info.LQR_K[1][0] = 38.650025f;
+//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.072097f;
+//Control_Info->R_Leg_Info.LQR_K[1][2] = 2.760041f;
+//Control_Info->R_Leg_Info.LQR_K[1][3] = 4.314356f;
+//Control_Info->R_Leg_Info.LQR_K[1][4] = 59.386957f;
+//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.727879f;
+
+//Control_Info->L_Leg_Info.LQR_K[0][0] = -36.564989f;
+//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.169247f;
+//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.365374f;
+//Control_Info->L_Leg_Info.LQR_K[0][3] = -16.217856f;
+//Control_Info->L_Leg_Info.LQR_K[0][4] = 22.202895f;
+//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.333270f;
+
+//Control_Info->L_Leg_Info.LQR_K[1][0] = 11.312512f;
+//Control_Info->L_Leg_Info.LQR_K[1][1] = 1.726021f;
+//Control_Info->L_Leg_Info.LQR_K[1][2] = 3.533383f;
+//Control_Info->L_Leg_Info.LQR_K[1][3] = 4.897327f;
+//Control_Info->L_Leg_Info.LQR_K[1][4] = 139.029249f;
+//Control_Info->L_Leg_Info.LQR_K[1][5] = 3.797233f;
+
+
+
+//Control_Info->R_Leg_Info.LQR_K[0][0] = -36.564989f;
+//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.169247f;
+//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.365374f;
+//Control_Info->R_Leg_Info.LQR_K[0][3] = -16.217856f;
+//Control_Info->R_Leg_Info.LQR_K[0][4] = 22.202895f;
+//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.333270f;
+
+
+//Control_Info->R_Leg_Info.LQR_K[1][0] = 11.312512f;
+//Control_Info->R_Leg_Info.LQR_K[1][1] = 1.726021f;
+//Control_Info->R_Leg_Info.LQR_K[1][2] = 3.533383f;
+//Control_Info->R_Leg_Info.LQR_K[1][3] = 4.897327f;
+//Control_Info->R_Leg_Info.LQR_K[1][4] = 139.029249f;
+//Control_Info->R_Leg_Info.LQR_K[1][5] = 3.797233f;
+
+
+
+Control_Info->L_Leg_Info.LQR_K[0][0] = -37.554157f;
+Control_Info->L_Leg_Info.LQR_K[0][1] = -5.857022f;
+Control_Info->L_Leg_Info.LQR_K[0][2] = -11.213670f;
+Control_Info->L_Leg_Info.LQR_K[0][3] = -15.901205f;
+Control_Info->L_Leg_Info.LQR_K[0][4] = 28.775846f;
+Control_Info->L_Leg_Info.LQR_K[0][5] = 3.001416f;
+Control_Info->L_Leg_Info.LQR_K[1][0] = 16.043909f;
+Control_Info->L_Leg_Info.LQR_K[1][1] = 2.230619f;
+Control_Info->L_Leg_Info.LQR_K[1][2] = 4.770827f;
+Control_Info->L_Leg_Info.LQR_K[1][3] = 6.569752f;
+Control_Info->L_Leg_Info.LQR_K[1][4] = 137.837111f;
+Control_Info->L_Leg_Info.LQR_K[1][5] = 4.779177f;
+Control_Info->R_Leg_Info.LQR_K[0][0] = -37.554157f;
+Control_Info->R_Leg_Info.LQR_K[0][1] = -5.857022f;
+Control_Info->R_Leg_Info.LQR_K[0][2] = -11.213670f;
+Control_Info->R_Leg_Info.LQR_K[0][3] = -15.901205f;
+Control_Info->R_Leg_Info.LQR_K[0][4] = 28.775846f;
+Control_Info->R_Leg_Info.LQR_K[0][5] = 3.001416f;
+Control_Info->R_Leg_Info.LQR_K[1][0] = 16.043909f;
+Control_Info->R_Leg_Info.LQR_K[1][1] = 2.230619f;
+Control_Info->R_Leg_Info.LQR_K[1][2] = 4.770827f;
+Control_Info->R_Leg_Info.LQR_K[1][3] = 6.569752f;
+Control_Info->R_Leg_Info.LQR_K[1][4] = 137.837111f;
+Control_Info->R_Leg_Info.LQR_K[1][5] = 4.779177f;
 }
 
 
@@ -704,11 +851,13 @@ static void Measure_Update(Control_Info_Typedef *Control_Info){
 	//左腿
 		//身体平衡
 	//机体水平倾角
-		Control_Info->L_Leg_Info.Measure.Phi       = -INS_Info.Angle[2];//注意极性
+		Control_Info->L_Leg_Info.Measure.Phi       = -INS_Info.Angle[2]-   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+	//Control_Info->L_Leg_Info.Measure.Phi       = INS_Info.Angle[2]+   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+	
 		Control_Info->L_Leg_Info.Measure.Phi_dot   = -INS_Info.Gyro[0];
 		//腿的姿势
 		//Control_Info->L_Leg_Info.Measure.Theta     = 	((PI/2) - Control_Info->L_Leg_Info.VMC.Phi0) - Control_Info->L_Leg_Info.Measure.Phi;
-		Control_Info->L_Leg_Info.Measure.Theta     = 	((PI/2) - Control_Info->L_Leg_Info.Sip_Leg_Angle) - Control_Info->L_Leg_Info.Measure.Phi;
+		Control_Info->L_Leg_Info.Measure.Theta     =     (	((PI/2) - Control_Info->L_Leg_Info.Sip_Leg_Angle) - Control_Info->L_Leg_Info.Measure.Phi);// +(PI/6.0f);//+ Control_Info->L_Leg_Info.Link_Gravity_Compensation_Angle;
 		
 		//Control_Info->L_Leg_Info.Measure.Theta_dot = 			 (Control_Info->L_Leg_Info.VMC.X_C_dot * arm_cos_f32( - Control_Info->L_Leg_Info.Measure.Theta)
 		//											  		   +  Control_Info->L_Leg_Info.VMC.Y_C_dot * arm_sin_f32( - Control_Info->L_Leg_Info.Measure.Theta))
@@ -719,9 +868,11 @@ static void Measure_Update(Control_Info_Typedef *Control_Info){
 	
 		//右腿
 	// 右腿姿态（使用相同IMU数据）	
-		Control_Info->R_Leg_Info.Measure.Phi 		= -INS_Info.Angle[2];
+		Control_Info->R_Leg_Info.Measure.Phi 		  = -INS_Info.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+		//Control_Info->R_Leg_Info.Measure.Phi 		  = INS_Info.Angle[2] + Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
 		Control_Info->R_Leg_Info.Measure.Phi_dot 	= -INS_Info.Gyro[0];
-		Control_Info->R_Leg_Info.Measure.Theta 		= (Control_Info->R_Leg_Info.Sip_Leg_Angle -(PI/2)) - Control_Info->R_Leg_Info.Measure.Phi;
+		
+		Control_Info->R_Leg_Info.Measure.Theta 		= (Control_Info->R_Leg_Info.Sip_Leg_Angle -(PI/2)) - Control_Info->R_Leg_Info.Measure.Phi ;//+(PI/6.0f);//+Control_Info->R_Leg_Info.Link_Gravity_Compensation_Angle;
 		Control_Info->R_Leg_Info.Measure.Theta_dot  = ( -Control_Info->R_Leg_Info.X_J_Dot     * arm_cos_f32(-Control_Info->R_Leg_Info.Measure.Theta)
                                                		+  Control_Info->R_Leg_Info.Y_J_Dot       * arm_sin_f32(-Control_Info->R_Leg_Info.Measure.Theta))
 	                                             	/  Control_Info->R_Leg_Info.Sip_Leg_Length;	
@@ -924,7 +1075,7 @@ L_Leg_Info.LQR_X[5] = (目标dφ/dt - 测量dφ/dt)*/
 	Control_Info->L_Leg_Info.LQR_X[5] = (Control_Info->L_Leg_Info.Target.Phi_dot          - Control_Info->L_Leg_Info.Measure.Phi_dot);
 //右腿
 //右腿同理
-	Control_Info->R_Leg_Info.LQR_X[0] = (Control_Info->R_Leg_Info.Target.Theta 			  - Control_Info->R_Leg_Info.Measure.Theta);
+	Control_Info->R_Leg_Info.LQR_X[0] = (Control_Info->R_Leg_Info.Target.Theta 			      - Control_Info->R_Leg_Info.Measure.Theta);
 	Control_Info->R_Leg_Info.LQR_X[1] = (Control_Info->R_Leg_Info.Target.Theta_dot        - Control_Info->R_Leg_Info.Measure.Theta_dot);
 	Control_Info->R_Leg_Info.LQR_X[2] = (Control_Info->R_Leg_Info.Target.Chassis_Position - Control_Info->R_Leg_Info.Measure.Chassis_Position) ;
 	Control_Info->R_Leg_Info.LQR_X[3] = (Control_Info->Target_Velocity                    - Control_Info->Chassis_Velocity );
@@ -980,39 +1131,18 @@ static void VMC_Measure_F_Tp_Calculate(Control_Info_Typedef *Control_Info){
 //偏腿
 	//左腿 
 		//F    //公式：F=K(T2-T1)/A            //(T_左小腿 - T_左大腿) ps:公式相同，但左右腿在单独分析时，大腿的朝向不同，故需单独考虑，具体见整体模型简图
-		Control_Info->L_Leg_Info.Measure.F  = (Control_Info->L_Leg_Info.Biased.K * (Control_Info->L_Leg_Info.Biased.T_Calf - Control_Info->L_Leg_Info.Biased.T_Thigh))/Control_Info->L_Leg_Info.A;
+		Control_Info->L_Leg_Info.Measure.F  = -(Control_Info->L_Leg_Info.Biased.K * (Control_Info->L_Leg_Info.Biased.T_Calf - Control_Info->L_Leg_Info.Biased.T_Thigh))/Control_Info->L_Leg_Info.A;
 		//Tp  //公式：Tp=T1+T2
-		Control_Info->L_Leg_Info.Measure.Tp = Control_Info->L_Leg_Info.Biased.T_Thigh + Control_Info->L_Leg_Info.Biased.T_Calf;
+	//修改：改为负号
+		Control_Info->L_Leg_Info.Measure.Tp = -(Control_Info->L_Leg_Info.Biased.T_Thigh + Control_Info->L_Leg_Info.Biased.T_Calf);
 
 	//右腿
 		//F   //公式：F=K(T2-T1)/A  = （T2-T1）/(A/K)           //(T_右大腿 - T_右小腿)
-		Control_Info->R_Leg_Info.Measure.F  = (Control_Info->R_Leg_Info.Biased.K * (Control_Info->R_Leg_Info.Biased.T_Thigh - Control_Info->R_Leg_Info.Biased.T_Calf))/Control_Info->R_Leg_Info.A;
+		Control_Info->R_Leg_Info.Measure.F  = -(Control_Info->R_Leg_Info.Biased.K * (Control_Info->R_Leg_Info.Biased.T_Thigh - Control_Info->R_Leg_Info.Biased.T_Calf))/Control_Info->R_Leg_Info.A;
 		//Tp  //公式：Tp=T1+T2
-		Control_Info->R_Leg_Info.Measure.Tp = Control_Info->R_Leg_Info.Biased.T_Thigh + Control_Info->R_Leg_Info.Biased.T_Calf;
-
-//并联腿	
-// //左腿
-// 	Control_Info->L_Leg_Info.Measure.F  = (((DM_8009_Motor[1].Data.Torque    * arm_cos_f32((Control_Info->L_Leg_Info.VMC.Phi0 - Control_Info->L_Leg_Info.VMC.Phi3)))
-// 										/   (Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi3 - (Control_Info->L_Leg_Info.VMC.Phi4)))))
-// 									    -  ((DM_8009_Motor[0].Data.Torque    * arm_cos_f32((Control_Info->L_Leg_Info.VMC.Phi0 - Control_Info->L_Leg_Info.VMC.Phi2)))
-// 									    /   (Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi1 - (Control_Info->L_Leg_Info.VMC.Phi2))))));
-		
-// 	Control_Info->L_Leg_Info.Measure.Tp = Control_Info->L_Leg_Info.VMC.L0  
-// 										* (((DM_8009_Motor[0].Data.Torque    * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi0 - Control_Info->L_Leg_Info.VMC.Phi2)))
-//                                         /   (Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi1 - (Control_Info->L_Leg_Info.VMC.Phi2))))) 
-// 	                                    -  ((DM_8009_Motor[1].Data.Torque    * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi0 -  Control_Info->L_Leg_Info.VMC.Phi3)))
-//                                         /   (Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32((Control_Info->L_Leg_Info.VMC.Phi3 - (Control_Info->L_Leg_Info.VMC.Phi4))))));
-// //右腿									
-// 	Control_Info->R_Leg_Info.Measure.F = (((DM_8009_Motor[2].Data.Torque * arm_cos_f32(( Control_Info->R_Leg_Info.VMC.Phi0 -  Control_Info->R_Leg_Info.VMC.Phi3)))/
-//                                          ( Control_Info->L_Leg_Info.VMC.L4 *  arm_sin_f32 (( Control_Info->R_Leg_Info.VMC.Phi3 - (Control_Info->R_Leg_Info.VMC.Phi4)))))      -
-// 	                                     ((DM_8009_Motor[3].Data.Torque * arm_cos_f32(( Control_Info->R_Leg_Info.VMC.Phi0 -  Control_Info->R_Leg_Info.VMC.Phi2)))/
-//                                          ( Control_Info->L_Leg_Info.VMC.L1 * arm_sin_f32 ((Control_Info->R_Leg_Info.VMC.Phi1 - (Control_Info->R_Leg_Info.VMC.Phi2))))));
-
-//     Control_Info->R_Leg_Info.Measure.Tp= Control_Info->R_Leg_Info.VMC.L0*(((DM_8009_Motor[3].Data.Torque * arm_sin_f32(( Control_Info->R_Leg_Info.VMC.Phi0 -  Control_Info->R_Leg_Info.VMC.Phi2)))/
-//                                          ( Control_Info->L_Leg_Info.VMC.L1 *  arm_sin_f32 (( Control_Info->R_Leg_Info.VMC.Phi1 - (Control_Info->R_Leg_Info.VMC.Phi2)))))      -
-// 	                                    ((DM_8009_Motor[2].Data.Torque * arm_sin_f32(( Control_Info->R_Leg_Info.VMC.Phi0 -  Control_Info->R_Leg_Info.VMC.Phi3)))/
-//                                          ( Control_Info->L_Leg_Info.VMC.L4 * arm_sin_f32 ((Control_Info->R_Leg_Info.VMC.Phi3 - (Control_Info->R_Leg_Info.VMC.Phi4))))));
-    											
+	//2025.11.18--修改，Tp测量值改为负
+		Control_Info->R_Leg_Info.Measure.Tp = -(Control_Info->R_Leg_Info.Biased.T_Thigh + Control_Info->R_Leg_Info.Biased.T_Calf);
+  											
 
 //离地检测灯
 
@@ -1024,14 +1154,17 @@ static void VMC_Measure_F_Tp_Calculate(Control_Info_Typedef *Control_Info){
 
 	//求支持力
     Control_Info->L_Leg_Info.Support.FN =      Control_Info->L_Leg_Info.Measure.F  * arm_cos_f32(Control_Info->L_Leg_Info.Measure.Theta)
-										+ ( - (Control_Info->L_Leg_Info.Measure.Tp * arm_sin_f32(Control_Info->L_Leg_Info.Measure.Theta))
-									    /      Control_Info->L_Leg_Info.Sip_Leg_Length);
+										                           +  (  (Control_Info->L_Leg_Info.Measure.Tp * arm_sin_f32(Control_Info->L_Leg_Info.Measure.Theta))
+									                              /     Control_Info->L_Leg_Info.Sip_Leg_Length);
+		
+		
+		
 //右腿
     Control_Info->R_Leg_Info.Measure.Tp = -Control_Info->R_Leg_Info.Measure.Tp;//注意极性
 
-
-	Control_Info->R_Leg_Info.Support.FN =  Control_Info->R_Leg_Info.Measure.F * arm_cos_f32(Control_Info->R_Leg_Info.Measure.Theta)
-										+((Control_Info->R_Leg_Info.Measure.Tp*arm_sin_f32(Control_Info->R_Leg_Info.Measure.Theta))/Control_Info->R_Leg_Info.Sip_Leg_Length);
+																					//注意：2025.11.15.12：54(Control_Info->R_Leg_Info.Measure.Tp*arm_sin_f32(Control_Info->R_Leg_Info.Measure.Theta)加了一个负号
+	Control_Info->R_Leg_Info.Support.FN    =  Control_Info->R_Leg_Info.Measure.F * arm_cos_f32(Control_Info->R_Leg_Info.Measure.Theta)
+										                        +(-(Control_Info->R_Leg_Info.Measure.Tp*arm_sin_f32(Control_Info->R_Leg_Info.Measure.Theta))/Control_Info->R_Leg_Info.Sip_Leg_Length);
 
 		//检测标志
 			//左腿
@@ -1040,7 +1173,7 @@ static void VMC_Measure_F_Tp_Calculate(Control_Info_Typedef *Control_Info){
 			Control_Info->R_Leg_Info.Support.Flag = (Control_Info->R_Leg_Info.Support.FN < 50.f);
 	//车不平衡时
 	}else {
-	   Control_Info->L_Leg_Info.Support.Flag = 0;//红灯
+	      Control_Info->L_Leg_Info.Support.Flag = 0;//红灯
        Control_Info->R_Leg_Info.Support.Flag = 0;
 	   Control_Info->L_Leg_Info.Support.FN   = 100.f;
 	   Control_Info->R_Leg_Info.Support.FN   =100.f;
@@ -1059,38 +1192,33 @@ static void VMC_Measure_F_Tp_Calculate(Control_Info_Typedef *Control_Info){
 static void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info){
 //1. 支撑状态自适应调整	
 
-	//当腿处于支撑状态时（着地），​禁用水平方向控制​（轮子力矩T相关增益）
-    //​部分禁用垂直方向控制（关节扭矩Tp相关增益）
-	if(Control_Info->L_Leg_Info.Support.Flag == 1){
+	//当腿处于离地状态时（着地），​禁用水平方向控制​（轮子力矩T相关增益）
+//    //​部分禁用垂直方向控制（关节扭矩Tp相关增益）
+//	if(Control_Info->L_Leg_Info.Support.Flag == 1){
 
- 		// 清零左腿LQR增益矩阵的第一行（力矩T相关）
-		Control_Info->L_Leg_Info.LQR_K[0][0] = 0;
-		Control_Info->L_Leg_Info.LQR_K[0][1] = 0; 
-		Control_Info->L_Leg_Info.LQR_K[0][2] = 0;
-		Control_Info->L_Leg_Info.LQR_K[0][3] = 0; 
-		Control_Info->L_Leg_Info.LQR_K[0][4] = 0;
-		Control_Info->L_Leg_Info.LQR_K[0][5] = 0; 
-	
+// 		// 清零左腿LQR增益矩阵的第一行（力矩T相关）
+//		Control_Info->L_Leg_Info.LQR_K[0][0] = 0;
+//		Control_Info->L_Leg_Info.LQR_K[0][1] = 0; 
+//		Control_Info->L_Leg_Info.LQR_K[0][2] = 0;
+//		Control_Info->L_Leg_Info.LQR_K[0][3] = 0; 
+//		Control_Info->L_Leg_Info.LQR_K[0][4] = 0;
+//		Control_Info->L_Leg_Info.LQR_K[0][5] = 0; 
+//	
 
-	}
-	//右腿
-	if(Control_Info->R_Leg_Info.Support.Flag == 1){
-	
-		Control_Info->R_Leg_Info.LQR_K[0][0] = 0;
-		Control_Info->R_Leg_Info.LQR_K[0][1] = 0; 
-		Control_Info->R_Leg_Info.LQR_K[0][2] = 0;
-		Control_Info->R_Leg_Info.LQR_K[0][3] = 0; 
-		Control_Info->R_Leg_Info.LQR_K[0][4] = 0;
-		Control_Info->R_Leg_Info.LQR_K[0][5] = 0; 
+//	}
+//	//右腿
+//	if(Control_Info->R_Leg_Info.Support.Flag == 1){
+//	
+//		Control_Info->R_Leg_Info.LQR_K[0][0] = 0;
+//		Control_Info->R_Leg_Info.LQR_K[0][1] = 0; 
+//		Control_Info->R_Leg_Info.LQR_K[0][2] = 0;
+//		Control_Info->R_Leg_Info.LQR_K[0][3] = 0; 
+//		Control_Info->R_Leg_Info.LQR_K[0][4] = 0;
+//		Control_Info->R_Leg_Info.LQR_K[0][5] = 0; 
 
-		Control_Info->R_Leg_Info.LQR_K[1][2] = 0;  
-		Control_Info->R_Leg_Info.LQR_K[1][3] = 0;  
-		Control_Info->R_Leg_Info.LQR_K[1][4] = 0;  
-		Control_Info->R_Leg_Info.LQR_K[1][5] = 0; 
-	
-	
-	}
 
+
+//	}
 
 //2. LQR控制输出计算---------------------------------------------------------
 //输出 = K · X
@@ -1139,8 +1267,7 @@ static void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info){
 	Control_Info->R_Leg_Info.LQR_Output[1][4] = Control_Info->R_Leg_Info.LQR_X[4]*Control_Info->R_Leg_Info.LQR_K[1][4];
 	Control_Info->R_Leg_Info.LQR_Output[1][5] = Control_Info->R_Leg_Info.LQR_X[5]*Control_Info->R_Leg_Info.LQR_K[1][5];	
 	
-	Control_Info->R_Leg_Info.Moment.Balance_Tp =   Control_Info->R_Leg_Info.LQR_Output[1][0] + Control_Info->R_Leg_Info.LQR_Output[1][1] + Control_Info->R_Leg_Info.LQR_Output[1][2]
-                                               + Control_Info->R_Leg_Info.LQR_Output[1][3] + Control_Info->R_Leg_Info.LQR_Output[1][4] + Control_Info->R_Leg_Info.LQR_Output[1][5];
+	Control_Info->R_Leg_Info.Moment.Balance_Tp =   (Control_Info->R_Leg_Info.LQR_Output[1][0] + Control_Info->R_Leg_Info.LQR_Output[1][1] + Control_Info->R_Leg_Info.LQR_Output[1][2] + Control_Info->R_Leg_Info.LQR_Output[1][3] + Control_Info->R_Leg_Info.LQR_Output[1][4] + Control_Info->R_Leg_Info.LQR_Output[1][5]);
   
 
 
@@ -1155,64 +1282,64 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 
 // 主要是修改Yaw_Err的来源
 // 将遥控器的摇杆值（范围：-660到660）代替DM_Yaw_Motor.Data.Position*/
-// Control_Info->Yaw_Err = 0.f - remote_ctrl.rc.ch[2] * RemoteToDegrees;
+ Control_Info->Yaw_Err = -(0.f - remote_ctrl.rc.ch[2] * RemoteToDegrees);
 
 // 	//计算偏航角误差 Yaw_Err，通过将电机位置从弧度转换为角度后取负值
-// 	//Control_Info->Yaw_Err = 0.f - DM_Yaw_Motor.Data.Position * RadiansToDegrees ;
+ 	//Control_Info->Yaw_Err = 0.f - DM_Yaw_Motor.Data.Position * RadiansToDegrees ;
 // 	//将偏航角误差限制在[-180~180]度
-// 	if (Control_Info->Yaw_Err >= 180.f) 		Control_Info->Yaw_Err -= 360.f;
-// 	else if (Control_Info->Yaw_Err <= -180.f)   Control_Info->Yaw_Err += 360.f;
+ 	if (Control_Info->Yaw_Err >= 180.f) 		Control_Info->Yaw_Err -= 360.f;
+ 	else if (Control_Info->Yaw_Err <= -180.f)   Control_Info->Yaw_Err += 360.f;
 
 // //yaw轴串级PID控制
 // //上级：目标yaw轴角度偏差为0，输入Control_Info->Yaw_Err，输出：PID_Yaw[0].Output
-// 	PID_Calculate(&PID_Yaw[0], 0, Control_Info->Yaw_Err);
+ 	PID_Calculate(&PID_Yaw[0], 0, Control_Info->Yaw_Err);
 // //下级：目标yaw轴角速度为0，输入INS_Info.Yaw_Gyro，输出：PID_Yaw[1].Output
-// 	PID_Calculate(&PID_Yaw[1],PID_Yaw[0].Output,INS_Info.Yaw_Gyro);
+ 	PID_Calculate(&PID_Yaw[1],PID_Yaw[0].Output,INS_Info.Yaw_Gyro);
 
 
-//  // 更新PID_Leg_Coordinate，设置目标值为左脚和右脚的Theta差值，反馈值为左脚和右脚的Theta差值
+  // 更新PID_Leg_Coordinate，设置目标值为左脚和右脚的Theta差值，反馈值为左脚和右脚的Theta差值
  
-//  // 防劈叉PID控制
-//  // 更新PID_Leg_Coordinate，设置目标值为左脚和右脚的Theta差值，反馈值为左脚和右脚的Theta差值
-//     PID_Calculate(&PID_Leg_Coordinate, 0, Control_Info->L_Leg_Info.Measure.Theta - Control_Info->R_Leg_Info.Measure.Theta);
+  // 防劈叉PID控制
+  // 更新PID_Leg_Coordinate，设置目标值为左脚和右脚的Theta差值，反馈值为左脚和右脚的Theta差值
+     PID_Calculate(&PID_Leg_Coordinate, 0, Control_Info->L_Leg_Info.Measure.Theta - Control_Info->R_Leg_Info.Measure.Theta);
 // //影响简化腿摆角力矩Tp
 // //将腿部坐标调节力矩分配给左右腿，方向相反以实现平衡
-// 	Control_Info->L_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
-// 	Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
+ 	Control_Info->L_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
+ 	Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
 // //横滚控制，在左右腿处于不同高度时，保持机体水平方向平衡	
 // //基于滚转角度计算左右腿的滚动补偿力，增加稳定性。
-// 	Control_Info->L_Leg_Info.Moment.Roll_F = -(INS_Info.Roll_Angle + 0.4f) * 50.f;
-// 	Control_Info->R_Leg_Info.Moment.Roll_F =  (INS_Info.Roll_Angle + 0.4f) * 50.f;
+ 	Control_Info->L_Leg_Info.Moment.Roll_F = -(INS_Info.Roll_Angle + 0.4f) * 50.f;
+ 	Control_Info->R_Leg_Info.Moment.Roll_F =  (INS_Info.Roll_Angle + 0.4f) * 50.f;
 	
 // //转向控制	
 // //将偏航转向力矩分别施加到左右腿上，方向相反实现转向。
-// 	Control_Info->L_Leg_Info.Moment.Turn_T =  PID_Yaw[1].Output;
-// 	Control_Info->R_Leg_Info.Moment.Turn_T = -PID_Yaw[1].Output;
+ 	Control_Info->L_Leg_Info.Moment.Turn_T =  PID_Yaw[1].Output;
+ 	Control_Info->R_Leg_Info.Moment.Turn_T = -PID_Yaw[1].Output;
 // //腿长控制	
 // 	//分别对左右腿长度进行 PID 控制，使腿长达到目标值。
-// 	//输入：目标腿长（sip_leg_length）和测量腿长（sip_leg_length）
-// 	//输出：PID_Leg_length_F[0].Output和PID_Leg_length_F[1].Output
-//   Control_Info->L_Leg_Info.Moment.Leg_Length_F =  PID_Calculate(&PID_Leg_length_F[0],Control_Info->L_Leg_Info.Target_Sip_Leg_Length,Control_Info->L_Leg_Info.Sip_Leg_Length);
-//   Control_Info->R_Leg_Info.Moment.Leg_Length_F =  PID_Calculate(&PID_Leg_length_F[1],Control_Info->R_Leg_Info.Target_Sip_Leg_Length,Control_Info->R_Leg_Info.Sip_Leg_Length);
+ 	//输入：目标腿长（sip_leg_length）和测量腿长（sip_leg_length）
+ 	//输出：PID_Leg_length_F[0].Output和PID_Leg_length_F[1].Output
+   Control_Info->L_Leg_Info.Moment.Leg_Length_F =  PID_Calculate(&PID_Leg_length_F[0],Control_Info->L_Leg_Info.Target_Sip_Leg_Length,Control_Info->L_Leg_Info.Sip_Leg_Length);
+   Control_Info->R_Leg_Info.Moment.Leg_Length_F =  PID_Calculate(&PID_Leg_length_F[1],Control_Info->R_Leg_Info.Target_Sip_Leg_Length,Control_Info->R_Leg_Info.Sip_Leg_Length);
 
-// //设置初始重力补偿值为 100。
-// Control_Info->R_Leg_Info.Gravity_Compensation = 100.f;
-// Control_Info->L_Leg_Info.Gravity_Compensation = 100.f;
-
+// //设置初始重力补偿值为 100。f
+ Control_Info->R_Leg_Info.Gravity_Compensation = 10.f;
+ Control_Info->L_Leg_Info.Gravity_Compensation = 10.f;
 // //如果左腿处于支撑状态，则取消其滚动补偿，并提高重力补偿至 140。
 // 	if(Control_Info->L_Leg_Info.Support.Flag == 1){
-	   
+//	   
 // 		Control_Info->L_Leg_Info.Moment.Roll_F = 0;
-// 	  Control_Info->L_Leg_Info.Gravity_Compensation = 140.f;
+// 	  Control_Info->L_Leg_Info.Gravity_Compensation = 40.f;
 // 	}
 // 	//同理处理右腿支撑情况。
 // 	if(Control_Info->R_Leg_Info.Support.Flag == 1){
-	
+//	
 // 		Control_Info->R_Leg_Info.Moment.Roll_F = 0;
-// 		Control_Info->R_Leg_Info.Gravity_Compensation = 140.f;
+// 		Control_Info->R_Leg_Info.Gravity_Compensation = 40.f;
 
-	
+//	
 // 	}
+
 	
 	
 // 	//综合各部分力矩得到左右腿总的驱动力。
@@ -1221,46 +1348,50 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 // 	//         + 重力补偿（L_Leg_Info.Gravity_Compensation;）
 // 	//分析：已知，重力的方向垂直地面向下，且Gravity_Compensation的值为正，故综合力的方向向下，
 // 	//同重力方向
-// 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F  + Control_Info->L_Leg_Info.Moment.Roll_F  +  Control_Info->L_Leg_Info.Gravity_Compensation;  
-// 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F  + Control_Info->R_Leg_Info.Moment.Roll_F  +  Control_Info->R_Leg_Info.Gravity_Compensation;
+// 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F+ Control_Info->L_Leg_Info.Moment.Roll_F  +  Control_Info->L_Leg_Info.Gravity_Compensation;  
+// 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F+ Control_Info->R_Leg_Info.Moment.Roll_F  +  Control_Info->R_Leg_Info.Gravity_Compensation;
+	
+ 	//同重力方向
+ 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F  ;//+  Control_Info->L_Leg_Info.Gravity_Compensation;  
+ 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F ;//+  Control_Info->R_Leg_Info.Gravity_Compensation;
 	
 // 	//驱动轮的转矩
-// 	//公式：T = 平衡补偿力矩
-// 	//         +转向补偿力矩
-// 	Control_Info->L_Leg_Info.T = (Control_Info->L_Leg_Info.Moment.Balance_T  + Control_Info->L_Leg_Info.Moment.Turn_T) ;
-// 	Control_Info->R_Leg_Info.T = (Control_Info->R_Leg_Info.Moment.Balance_T  + Control_Info->R_Leg_Info.Moment.Turn_T) ;
+// 	//公式：T = 平衡力矩
+// 	//         +转向力矩
+ 	Control_Info->L_Leg_Info.T = Control_Info->L_Leg_Info.Moment.Balance_T  + Control_Info->L_Leg_Info.Moment.Turn_T ;
+ 	Control_Info->R_Leg_Info.T = Control_Info->R_Leg_Info.Moment.Balance_T  + Control_Info->R_Leg_Info.Moment.Turn_T ;
 
 // 	//简化腿的总转矩
-// 	//公式：Tp =  平衡补偿转矩
-// 	//         + 腿长补偿转矩
-// 	Control_Info->L_Leg_Info.Tp =   Control_Info->L_Leg_Info.Moment.Balance_Tp + Control_Info->L_Leg_Info.Moment.Leg_Coordinate_Tp;
-// 	Control_Info->R_Leg_Info.Tp =   Control_Info->R_Leg_Info.Moment.Balance_Tp + Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp;
+// 	//公式：Tp =  平衡转矩
+// 	//         + 双腿摆角补偿转矩
+ 	Control_Info->L_Leg_Info.Tp =   Control_Info->L_Leg_Info.Moment.Balance_Tp + Control_Info->L_Leg_Info.Moment.Leg_Coordinate_Tp;
+ 	Control_Info->R_Leg_Info.Tp =   Control_Info->R_Leg_Info.Moment.Balance_Tp + Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp;
 	
 // 	if(Control_Info->L_Leg_Info.Support.Flag == 1){
-	   
+//	   
 // 			Control_Info->L_Leg_Info.T = 0;
-	
+//	
 // 	}
-	
+//	
 // 	if(Control_Info->R_Leg_Info.Support.Flag == 1){
-	
+//	
 // 			Control_Info->R_Leg_Info.T = 0;
-	
-	
+//	
+//	
 // 	}
+//	
 	
 	
-	
-// 	if(Control_Info->Chassis_Situation == CHASSIS_WEAK){
+ 	if(Control_Info->Chassis_Situation == CHASSIS_WEAK){
  
-//    Control_Info->L_Leg_Info.Tp = 0;
-//    Control_Info->R_Leg_Info.Tp = 0;
-// 	 Control_Info->L_Leg_Info.F = 0;
-//    Control_Info->R_Leg_Info.F = 0;	
-// 	 Control_Info->L_Leg_Info.T = 0;
-//    Control_Info->R_Leg_Info.T = 0;	
+    Control_Info->L_Leg_Info.Tp = 0;
+    Control_Info->R_Leg_Info.Tp = 0;
+ 	 Control_Info->L_Leg_Info.F = 0;
+    Control_Info->R_Leg_Info.F = 0;	
+ 	 Control_Info->L_Leg_Info.T = 0;
+    Control_Info->R_Leg_Info.T = 0;	
  
-//  }
+  }
 /*
 测试用：
 1：简化模型参数到实际模型参数转换器
@@ -1270,10 +1401,13 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 
 */	
 
-	  Control_Info->L_Leg_Info.Tp = remote_ctrl.rc.ch[2] *0.01f;
-    Control_Info->R_Leg_Info.Tp = remote_ctrl.rc.ch[0] *0.01f;
- 	  Control_Info->L_Leg_Info.F  = remote_ctrl.rc.ch[3] *0.5f;
-    Control_Info->R_Leg_Info.F  = remote_ctrl.rc.ch[1]  *0.5f;	
+
+
+//	 	   Control_Info->L_Leg_Info.Tp = remote_ctrl.rc.ch[2] *0.01f;
+//      Control_Info->R_Leg_Info.Tp = remote_ctrl.rc.ch[0] *0.01f;
+// 	    Control_Info->L_Leg_Info.F  = remote_ctrl.rc.ch[3] *0.25f;
+//      Control_Info->R_Leg_Info.F  = remote_ctrl.rc.ch[1]  *0.25f;
+
 }
 //这个才是串并联腿实际的独特的函数转换框架，
 //整个运控的逻辑是控制机器人运动时把它看成一个二阶独轮车
@@ -1288,20 +1422,36 @@ static void Joint_Tourgue_Calculate(Control_Info_Typedef *Control_Info){
 //输出：真实结构中各电机的力矩
 //原理：
 //中间量：
+float Tourgue_max;
+	Tourgue_max = 15.f;
+
+////偏腿
+////左腿
+////0号电机，左小腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
+//Control_Info->L_Leg_Info.SendValue.T_Calf = (-Control_Info->L_Leg_Info.A * Control_Info->L_Leg_Info.F)/Control_Info->L_Leg_Info.Biased.K + (Control_Info->L_Leg_Info.Tp/2.0f);
+////1号电机，左大腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
+//Control_Info->L_Leg_Info.SendValue.T_Thigh = (Control_Info->L_Leg_Info.A * Control_Info->L_Leg_Info.F)/Control_Info->L_Leg_Info.Biased.K + (Control_Info->L_Leg_Info.Tp/2.0f);
+////右腿
+////2号电机，右大腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
+//	//2025年11.12修改：互换
+//Control_Info->R_Leg_Info.SendValue.T_Thigh = (-Control_Info->R_Leg_Info.A * Control_Info->R_Leg_Info.F)/Control_Info->R_Leg_Info.Biased.K + (Control_Info->R_Leg_Info.Tp/2.0f);
+////3号电机，右小腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
+//Control_Info->R_Leg_Info.SendValue.T_Calf = (Control_Info->R_Leg_Info.A * Control_Info->R_Leg_Info.F)/Control_Info->R_Leg_Info.Biased.K + (Control_Info->R_Leg_Info.Tp/2.0f);
 
 
-//偏腿
-//左腿
-//0号电机，左小腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
-Control_Info->L_Leg_Info.SendValue.T_Calf = (Control_Info->L_Leg_Info.A * Control_Info->L_Leg_Info.F)/Control_Info->L_Leg_Info.Biased.K + (Control_Info->L_Leg_Info.Tp/2.0f);
-//1号电机，左大腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
-Control_Info->L_Leg_Info.SendValue.T_Thigh = (-Control_Info->L_Leg_Info.A * Control_Info->L_Leg_Info.F)/Control_Info->L_Leg_Info.Biased.K + (Control_Info->L_Leg_Info.Tp/2.0f);
-//右腿
-//2号电机，右大腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
-	//2025年11.12修改：互换
-Control_Info->R_Leg_Info.SendValue.T_Thigh = (Control_Info->R_Leg_Info.A * Control_Info->R_Leg_Info.F)/Control_Info->R_Leg_Info.Biased.K + (Control_Info->R_Leg_Info.Tp/2.0f);
-//3号电机，右小腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
-Control_Info->R_Leg_Info.SendValue.T_Calf = (-Control_Info->R_Leg_Info.A * Control_Info->R_Leg_Info.F)/Control_Info->R_Leg_Info.Biased.K + (Control_Info->R_Leg_Info.Tp/2.0f);
+
+////偏腿
+////左腿
+////0号电机，左小腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
+Control_Info->L_Leg_Info.SendValue.T_Calf =  (Control_Info->L_Leg_Info.Tp/2.0f);
+////1号电机，左大腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
+Control_Info->L_Leg_Info.SendValue.T_Thigh =  (Control_Info->L_Leg_Info.Tp/2.0f);
+////右腿
+////2号电机，右大腿 对应T2 公式：T2 =（A/K）*F +(Tp/2.0f)
+//	//2025年11.12修改：互换
+Control_Info->R_Leg_Info.SendValue.T_Thigh = (Control_Info->R_Leg_Info.Tp/2.0f);
+////3号电机，右小腿 对应T1 公式：T1 =（-A/K）*F + (Tp/2.0f)
+Control_Info->R_Leg_Info.SendValue.T_Calf = (Control_Info->R_Leg_Info.Tp/2.0f);
 
 
 //五连杆并联结构转换器--------------------------------------------------------------------------------------------------
@@ -1341,8 +1491,8 @@ Control_Info->R_Leg_Info.SendValue.T_Calf = (-Control_Info->R_Leg_Info.A * Contr
 	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T * 1000.f);
 	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1000.f);
 	 
-	 VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.Current,-14000,14000);
-	 VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.Current,-14000,14000); 
+	 VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.Current,-4000,4000);
+	 VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.Current,-4000,4000); 
   
 	//  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T1,-54.f,54.f);
 	//  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T2,-54.f,54.f);  
@@ -1350,9 +1500,9 @@ Control_Info->R_Leg_Info.SendValue.T_Calf = (-Control_Info->R_Leg_Info.A * Contr
 	//  VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.T2,-54.f,54.f);  			
 																		
 	  
-	  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T_Calf,-7.f,7.f);
-	  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T_Thigh,-7.f,7.f);  
-      VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.T_Thigh,-7.f,7.f);
-	  VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.T_Calf,-7.f,7.f);  			
+	  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T_Calf ,-Tourgue_max,Tourgue_max);
+	  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T_Thigh,-Tourgue_max,Tourgue_max);  
+    VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.T_Thigh,-Tourgue_max,Tourgue_max);
+	  VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.T_Calf ,-Tourgue_max,Tourgue_max);  			
 																				
 }

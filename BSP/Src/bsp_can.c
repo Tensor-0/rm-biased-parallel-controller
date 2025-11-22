@@ -157,24 +157,24 @@ void USER_FDCAN_AddMessageToTxFifoQ(FDCAN_TxFrame_TypeDef *FDCAN_TxFrame){
 static void FDCAN1_RxFifo0RxHandler(uint32_t *Identifier,uint8_t Data[8])
 {
    
-  if(*Identifier==0x302)
-	 {
-		remote_ctrl.rc_lost= ((Data[0] &0x80)>>7);
-	  remote_ctrl.rc.s[0]	= ((Data[0] &0x60) >> 5); 
-	  remote_ctrl.rc.s[1] = (Data[0] &0x18)>>3;
-		//Control_Info.Tigger.Vision_IF_Fire = ((Data[0] &0x04)>>2);
-		remote_ctrl.mouse.press_l = ((Data[0] &0x02)>>1);
-		remote_ctrl.mouse.press_r = ((Data[0] &0x01));
-	  remote_ctrl.rc.ch[3] = ((int16_t) Data[1] << 8  | Data[2]) ;
-		remote_ctrl.key.v = ((int16_t) Data[3] << 8  | Data[4]) ;
-	 	remote_ctrl.rc.ch[4] = ((int16_t) Data[6] << 8  | Data[7]) ;
+//  if(*Identifier==0x302)
+//	 {
+//		remote_ctrl.rc_lost= ((Data[0] &0x80)>>7);
+//	  remote_ctrl.rc.s[0]	= ((Data[0] &0x60) >> 5); 
+//	  remote_ctrl.rc.s[1] = (Data[0] &0x18)>>3;
+//		//Control_Info.Tigger.Vision_IF_Fire = ((Data[0] &0x04)>>2);
+//		remote_ctrl.mouse.press_l = ((Data[0] &0x02)>>1);
+//		remote_ctrl.mouse.press_r = ((Data[0] &0x01));
+//	  remote_ctrl.rc.ch[3] = ((int16_t) Data[1] << 8  | Data[2]) ;
+//		remote_ctrl.key.v = ((int16_t) Data[3] << 8  | Data[4]) ;
+//	 	remote_ctrl.rc.ch[4] = ((int16_t) Data[6] << 8  | Data[7]) ;
 
-	 }else if(*Identifier==0x11){
-	 
-	 
-	  DM_Motor_Info_Update(Identifier,Data,&DM_Yaw_Motor);
-	 
-	 }
+//	 }else if(*Identifier==0x11){
+//	 
+//	 
+//	  DM_Motor_Info_Update(Identifier,Data,&DM_Yaw_Motor);
+//	 
+//	 }
 
 
 }

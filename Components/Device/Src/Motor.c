@@ -328,7 +328,7 @@ void DM_Motor_Command(FDCAN_TxFrame_TypeDef *FDCAN_TxFrame,DM_Motor_Info_Typedef
 	 FDCAN_TxFrame->Header.Identifier = DM_Motor->FDCANFrame.TxIdentifier;
   	
 	 FDCAN_TxFrame->Data[0] = 0xFF;
-     FDCAN_TxFrame->Data[1] = 0xFF;
+   FDCAN_TxFrame->Data[1] = 0xFF;
  	 FDCAN_TxFrame->Data[2] = 0xFF;
 	 FDCAN_TxFrame->Data[3] = 0xFF;
 	 FDCAN_TxFrame->Data[4] = 0xFF;

@@ -49,9 +49,12 @@ typedef struct //腿的信息
 		float LQR_K[2][6];//    	LQR控制器增益矩阵
 		float LQR_X[6];//       	LQR状态向量(哈工程建模)-未来计划更新为上交建模
 		float LQR_Output[2][6];//	LQR输出
-    	float Gravity_Compensation;//重力补偿？
+    float Gravity_Compensation;//重力补偿？
 		float Thigh_Comp_Angle;		//大腿摆角补偿
 		float Calf_Comp_Angle;		//小腿摆角补偿
+	  float Phi_Comp_Angle;//陀螺仪角度补偿
+		float Link_Gravity_Compensation_Angle;//腿部连杆重心补偿角度（弧度制）
+	
         //中间变量
 		float M;//（两角之差）腿摆角半差值 逆时针为正，为负值，角度小的一方减去角度大的一方，然后再除以2
 		float N;//（两角之和）腿摆角半和值 逆时针为正，角度大的那一方加上角度小的那一方，然后再除以2
