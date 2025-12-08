@@ -12,34 +12,32 @@
  void CAN_Task(void const * argument)
 {
   TickType_t CAN_Task_SysTick = 0;
-  //左腿
-	//2025.11.15--12:04
-	//大腿：-0.479
 //	 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[0],Motor_Save_Zero_Position);
-//  	 osDelay(30);
+//   osDelay(30);
 //	 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[1],Motor_Save_Zero_Position);
-//  	 osDelay(30);
-//  	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[2],Motor_Save_Zero_Position);
-//  	osDelay(30);
-//	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[3],Motor_Save_Zero_Position);
+//   osDelay(30);
+//   DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[2],Motor_Save_Zero_Position);
+//   osDelay(30);
+//	 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[3],Motor_Save_Zero_Position);
 //	
-	
-		 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[0],Motor_Enable);
-  	 osDelay(30);
-	 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[1],Motor_Enable);
-  	 osDelay(30);
-  	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[2],Motor_Enable);
-  	osDelay(30);
-	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[3],Motor_Enable);
-	
-    osDelay(30);
-//	DM_Motor_Command(&FDCAN1_TxFrame,&DM_Yaw_Motor,Motor_Save_Zero_Position);
-//  	osDelay(30);
+
+
 	for(;;)
   {
 	
   CAN_Task_SysTick = osKernelSysTick();
-		
+		if(DM_8009_Motor[0].Data.State != 1 && DM_8009_Motor[1].Data.State != 1 && DM_8009_Motor[2].Data.State != 1 &&  DM_8009_Motor[3].Data.State != 1)
+	{
+	//所有关节电机使能		
+	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[0],Motor_Enable);
+    osDelay(30);
+	 DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[1],Motor_Enable);
+  	osDelay(30);
+    DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[2],Motor_Enable);
+    osDelay(30);
+	DM_Motor_Command(&FDCAN2_TxFrame,&DM_8009_Motor[3],Motor_Enable);
+	osDelay(30);
+	}else {		
 	 //当遥控器没拨到关机档时	
 	if(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1] == 1){
 // 		//测试转换器
@@ -83,23 +81,7 @@
  		  FDCAN3_TxFrame.Data[5] = (uint8_t)(0);//预留
  		  USER_FDCAN_AddMessageToTxFifoQ(&FDCAN3_TxFrame);
 //		 
-//	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,10.f,1.f,0);
-//	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,10.f,1.f,0);
-//        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[2],0,0,10.f,1.f,0);	
-//        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[3],0,0,10.f,1.f,0);
-// 			
-//					
-//			
-//			
-// 		 	//让轮子失能
-// 			 FDCAN3_TxFrame.Header.Identifier = 0x200;					
-// 		 	 FDCAN3_TxFrame.Data[0] = 0;
-// 		     FDCAN3_TxFrame.Data[1] = 0;
-// 		 	 FDCAN3_TxFrame.Data[2] = 0;
-// 		 	 FDCAN3_TxFrame.Data[3] = 0;
-// 		 	 FDCAN3_TxFrame.Data[4] = 0;
-// 		 	 FDCAN3_TxFrame.Data[5] = 0;
-// 		 	 USER_FDCAN_AddMessageToTxFifoQ(&FDCAN3_TxFrame);
+
 		}
 	//当要关机时	 
 	}else{	
@@ -119,7 +101,7 @@
 
 	
 	}	
-
+	}
 		
 	 if(CAN_Task_SysTick % 2 == 0){
 	 

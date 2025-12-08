@@ -329,22 +329,29 @@ void USART_Vofa_Justfloat_Transmit(float SendValue1,float SendValue2,float SendV
 		Rx_Buf[1] =  *(SendValue1_Pointer + 1);
 		Rx_Buf[2] =  *(SendValue1_Pointer + 2);
 		Rx_Buf[3] =  *(SendValue1_Pointer + 3);
+	
+	
 		Rx_Buf[4] =  *SendValue2_Pointer;
 		Rx_Buf[5] =  *(SendValue2_Pointer + 1);
 		Rx_Buf[6] =  *(SendValue2_Pointer + 2);
 		Rx_Buf[7] =  *(SendValue2_Pointer + 3);
+	
+	
 		Rx_Buf[8] =  *SendValue3_Pointer;
 		Rx_Buf[9] =  *(SendValue3_Pointer + 1);
 		Rx_Buf[10] = *(SendValue3_Pointer + 2);
 		Rx_Buf[11] = *(SendValue3_Pointer + 3);
+		
+		
 		Rx_Buf[8] =  *SendValue3_Pointer;
 		Rx_Buf[9] =  *(SendValue3_Pointer + 1);
 		Rx_Buf[10] = *(SendValue3_Pointer + 2);
 		Rx_Buf[11] = *(SendValue3_Pointer + 3);
-		Rx_Buf[12] =  *SendValue3_Pointer;
-		Rx_Buf[13] =  *(SendValue3_Pointer + 1);
-		Rx_Buf[14] = *(SendValue3_Pointer + 2);
-		Rx_Buf[15] = *(SendValue3_Pointer + 3);
+		
+		Rx_Buf[12] = *SendValue4_Pointer;
+		Rx_Buf[13] = *(SendValue4_Pointer + 1);
+		Rx_Buf[14] = *(SendValue4_Pointer + 2);
+		Rx_Buf[15] = *(SendValue4_Pointer + 3);
 		Rx_Buf[16] =  0x00;
 		Rx_Buf[17] =  0x00;
 		Rx_Buf[18] =  0x80;

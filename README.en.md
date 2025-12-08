@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # RMCOD2026_Infantry_Balance
 
 #### Description
@@ -16,6 +17,12 @@
 #### Description
 可平衡的初级版本，表现为颤抖，在前后移动时易失衡
 >>>>>>> 90fea63a15fc7e14fc4a755e0fb9329b48952874
+=======
+# Knight_test_5_1
+
+#### Description
+底盘稳定版，优化了QR权重
+>>>>>>> 2695bde8955eefab20056662a14db6e5a264f4c5
 
 #### Software Architecture
 Software architecture description

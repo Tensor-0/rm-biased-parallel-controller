@@ -12,112 +12,6 @@
 #include "arm_math.h"
 
 
-
-
-/*说明文档
-驱动轮电机：左腿轮：大疆3508电机--Id:0号电机//右腿轮：大疆3508电机--Id:1号电机
-关节电机
-//一些参考
-1：单个关节电机转矩到7n/m时，轻微助力整个腿部可一直转（另一个电机失能状态）
-
-
-
-*/
-
-
-//变量区--------------------------------------------------------------------------------------
-//========================================================================================
-
-/*偏置并联腿LQR控制器增益矩阵
-2025.10.31.第一次测试，
-改动：单腿重量：3.40
-      机体重量：8.75
-			范围：0.1--0.4
-效果：*/
-//float K11[6] = {0,-301.826001f	,350.951093f	,-262.443570f	,-4.166325f};
-//float K12[6] = {0,13.554556f	,-24.969778f	,-33.170803f	,0.273917f};
-//float K13[6] = {0,-221.195361f	,205.461024f	,-64.133850f	,-15.357114f};
-//float K14[6] = {0,-141.312669f	,140.168584f	,-59.602650f	,-10.846556f};
-//float K15[6] = {0,-1199.088787f	,1206.687560f	,-434.244457f	,65.252143f};
-//float K16[6] = {0,-58.739170f	,62.827610f		,-25.154270f	,4.849511f};
-
-//float K21[6] = {0,-166.093739f	,191.491484f	  ,-86.727247f	,26.913637f};
-//float K22[6] = {0,-0.505594f	  ,0.912968f		  ,0.147179f		,2.701292f};
-//float K23[6] = {0,-757.410310f	,762.051907f	  ,-274.104199f	,41.068039f};
-//float K24[6] = {0,-518.460403f	,519.668567f	  ,-186.549241f	,28.912702f};
-//float K25[6] = {0,1409.526386f	,-1309.572837f	,408.970786f	,96.799292f};
-//float K26[6] = {0,103.076627f	  ,-98.176298f	  ,31.960967f	  ,1.991248f};
-/*偏置并联腿LQR控制器增益矩阵
-2025.11.14.第一次测试，
-改动：单腿重量：3.40
-      机体重量：8.75
-			范围：0.2--0.6
-效果：*/
-// //T
-// float K11[6] = {0,-80.977014f  ,151.381968f  ,-204.100024f  ,-9.662387f};
-// float K12[6] = {0,4.973966f    ,-17.221381f  ,-35.433906f   ,0.486839f};
-// float K13[6] = {0,-18.086344f  ,26.646890f   ,-13.358651f   ,-19.986465f};
-// float K14[6] = {0,-17.790442f  ,30.954726f   ,-28.438935f   ,-13.703840f};
-// float K15[6] = {0,-195.037441f ,307.151280f  ,-173.691582f  ,40.950673f};
-// float K16[6] = {0,-13.204286f  ,21.575273f   ,-13.058806f   ,3.706202f};
-// //Tp
-// float K21[6] = {0,-49.576362f  ,83.707527f   ,-54.410332f   ,23.784963f};
-// float K22[6] = {0,-0.565815f   ,0.783139f    ,0.244923f     ,2.685809f};
-// float K23[6] = {0,-123.055131f ,193.742461f  ,-109.496314f  ,25.715695f};
-// float K24[6] = {0,-81.729632f  ,129.058486f  ,-73.622380f   ,18.402643f};
-// float K25[6] = {0,115.582485f  ,-170.358285f ,85.469956f    ,126.295570f};
-// float K26[6] = {0,11.088882f   ,-16.668807f  ,8.644044f     ,4.135566f};
-
-/*偏置并联腿LQR控制器增益矩阵
-2025.11.14.第3次测试，
-改动：单腿重量：3.40
-      机体重量：8.75
-			范围：0.2--0.6
-			机体重心到转轴距离：0.05316；
-效果：*/
-//// //T
-//float K11[6] = {0,-67.649040f   ,132.607627f  ,-196.381973f  ,-7.277384f};
-//float K12[6] = {0,6.582677f     ,-19.797202f  ,-33.892733f   ,0.303999f};
-//float K13[6] = {0,-11.609902f   ,17.322714f   ,-8.895245f    ,-20.629391f};
-//float K14[6] = {0,-11.199453f   ,20.965069f   ,-23.036702f   ,-15.027532f};
-//float K15[6] = {0,-157.754452f  ,251.021773f  ,-145.294375f  ,45.267149f};
-//float K16[6] = {0,-8.806837f    ,14.519914f   ,-8.629580f    ,4.179979f};
-//// //Tp
-//float K21[6] = {0,-21.567516f   ,33.575124f   ,-5.257813f    ,18.072527f};
-//float K22[6] = {0,-3.018760f    ,6.289064f    ,3.192061f     ,2.035407f};
-//float K23[6] = {0,-88.831188f   ,139.581408f  ,-78.329233f   ,20.721179f};
-//float K24[6] = {0,-62.348516f   ,97.463067f   ,-53.251160f   ,15.391523f};
-//float K25[6] = {0,116.728350f   ,-176.615635f ,93.274945f    ,126.068854f};
-//float K26[6] = {0,12.746155f    ,-19.899121f  ,11.060576f    ,3.223275f};
-/*
-2025.11.15.13：15
-定腿长
-机体重心：0.05316
-  -66.4511  -15.0741  -22.1397  -21.3652   17.7057    2.5170
-   19.7475    3.9920    6.2716    5.8331  142.3620    5.2472
-
-2025.11.15.14：15
-定腿长
-机体重心：0.00116
- -69.7788  -15.1926  -22.1983  -21.0109    8.6839    1.1407
-   12.5000    2.8625    5.3794    4.6102  140.4624    5.6163
-*/
-// //T
-//float K11[6] = //{0,-67.649040f   ,132.607627f  ,-196.381973f  ,-7.277384f};
-//float K12[6] = //{0,6.582677f     ,-19.797202f  ,-33.892733f   ,0.303999f};
-//float K13[6] = //{0,-11.609902f   ,17.322714f   ,-8.895245f    ,-20.629391f};
-//float K14[6] = //{0,-11.199453f   ,20.965069f   ,-23.036702f   ,-15.027532f};
-//float K15[6] = //{0,-157.754452f  ,251.021773f  ,-145.294375f  ,45.267149f};
-//float K16[6] = //{0,-8.806837f    ,14.519914f   ,-8.629580f    ,4.179979f};
-//// //Tp
-//float K21[6] = //{0,-21.567516f   ,33.575124f   ,-5.257813f    ,18.072527f};
-//float K22[6] = //{0,-3.018760f    ,6.289064f    ,3.192061f     ,2.035407f};
-//float K23[6] = //{0,-88.831188f   ,139.581408f  ,-78.329233f   ,20.721179f};
-//float K24[6] = //{0,-62.348516f   ,97.463067f   ,-53.251160f   ,15.391523f};
-//float K25[6] = //{0,116.728350f   ,-176.615635f ,93.274945f    ,126.068854f};
-//float K26[6] = //{0,12.746155f    ,-19.899121f  ,11.060576f    ,3.223275f};
-
-
 //float K11[6] = {0,-67.224661f,134.050893f,-176.675264f,-11.203565f};
 //float K12[6] = {0,4.666486f,-12.002738f,-32.983282f,0.087257f};
 //float K13[6] = {0,-4.955885f,7.400313f,-3.806159f,-10.789851f};
@@ -132,37 +26,230 @@
 //float K26[6] = {0,10.240428f,-16.008535f,8.937617f,3.723793f};
 
 
-float K11[6] = {0,-67.224661f,134.050893f,-176.675264f,-11.203565f};
-float K12[6] = {0,4.666486f,-12.002738f,-32.983282f,0.087257f};
-float K13[6] = {0,-4.955885f,7.400313f,-3.806159f,-10.789851f};
-float K14[6] = {0,-5.494303f,10.260238f,-11.461555f,-14.246477f};
-float K15[6] = {0,-171.118016f,270.900410f,-155.298000f,47.386522f};
-float K16[6] = {0,-9.626790f,15.857921f,-9.589570f,4.186371f};
-float K21[6] = {0,-31.521987f,47.548063f,-14.779719f,17.176591f};
-float K22[6] = {0,-3.326380f,6.122143f,2.110718f,1.696890f};
-float K23[6] = {0,-35.678434f,55.842882f,-31.088140f,8.445611f};
-float K24[6] = {0,-46.453674f,72.316917f,-39.387661f,11.171125f};
-float K25[6] = {0,98.580421f,-148.868128f,78.405122f,128.964556f};
-float K26[6] = {0,10.240428f,-16.008535f,8.937617f,3.723793f};
+
+
+// float K11[6] = {0,-160.192544f,220.644461f,-202.842431f,-8.648239f};
+// float K12[6] = {0,13.906644f,-20.556364f,-30.413768f,-0.162286f};
+// float K13[6] = {0,-34.506193f,34.296896f,-11.750686f,-10.031053f};
+// float K14[6] = {0,-26.072423f,29.036147f,-17.021058f,-13.714199f};
+// float K15[6] = {0,-791.841590f,840.770292f,-325.097137f,63.746935f};
+// float K16[6] = {0,-33.806130f,38.224682f,-16.304005f,4.838057f};
+// float K21[6] = {0,-154.616893f,160.600039f,-48.478949f,20.425160f};
+// float K22[6] = {0,-13.974165f,15.923287f,-0.817485f,1.979801f};
+// float K23[6] = {0,-168.442887f,177.729400f,-67.405642f,11.944916f};
+// float K24[6] = {0,-230.199988f,240.766773f,-89.506822f,15.993289f};
+// float K25[6] = {0,654.411995f,-655.046460f,227.994254f,114.669705f};
+// float K26[6] = {0,51.379870f,-53.701862f,20.146102f,2.646013f};
+
+
+/*     Q=diag([700 1 100 100 2000 1 ]); 
+//     R=diag([0.75  0.25]);  */
+//float K11[6] = {0,-203.960729f,244.137404f,-193.257587f,-21.020228f};
+//float K12[6] = {0,8.652812f,-14.927657f,-32.621243f,-0.287868f};
+//float K13[6] = {0,-24.683842f,25.840376f,-9.506651f,-10.203650f};
+//float K14[6] = {0,24.022407f,-22.733357f,2.459290f,-17.075029f};
+//float K15[6] = {0,-538.651979f,598.832247f,-247.879687f,52.120226f};
+//float K16[6] = {0,-32.326421f,37.002538f,-16.064382f,4.816248f};
+//float K21[6] = {0,-443.998414f,493.299321f,-194.377784f,48.161445f};
+//float K22[6] = {0,1.982760f,0.548605f,2.815860f,2.058602f};
+//float K23[6] = {0,-101.442330f,117.778795f,-50.959002f,10.648799f};
+//float K24[6] = {0,-178.962300f,199.929639f,-81.730507f,16.198186f};
+//float K25[6] = {0,637.691625f,-652.497507f,233.905673f,61.221087f};
+//float K26[6] = {0,46.367574f,-49.763710f,19.330644f,1.659617f};
+
+/* M1=8.75/2;                               %机体质量
+
+Q=diag([30 1 500 100 5000 1]);
+R=diag([0.75  0.25]);                %T Tp
+*/
+
+//float K11[6] = {0,-116.082290f,178.326270f,-240.290481f,-4.829183f};
+//float K12[6] = {0,31.736022f,-51.487029f,-34.744900f,-0.006218f};
+//float K13[6] = {0,-60.684887f,59.161979f,-19.635961f,-23.439363f};
+//float K14[6] = {0,-30.095666f,38.485794f,-31.085143f,-17.305582f};
+//float K15[6] = {0,-765.498298f,791.252105f,-292.914596f,54.564062f};
+//float K16[6] = {0,-27.167072f,29.996800f,-12.160067f,4.024437f};
+//float K21[6] = {0,-163.013736f,165.050846f,-44.547787f,15.976060f};
+//float K22[6] = {0,-23.106972f,25.776029f,-3.363328f,2.005278f};
+//float K23[6] = {0,-391.774734f,402.444965f,-146.189299f,23.432869f};
+//float K24[6] = {0,-291.729242f,297.099369f,-105.270518f,17.414399f};
+//float K25[6] = {0,497.674120f,-489.720369f,165.612912f,122.021377f};
+//float K26[6] = {0,40.736170f,-41.671697f,15.058533f,2.122199f};
+
+
+//float K11[6] = {0,-144.406582f,177.227122f,-174.529283f,-22.000112f};
+//float K12[6] = {0,15.261134f,-24.669397f,-33.430650f,-0.244439f};
+//float K13[6] = {0,-24.491161f,24.479075f,-8.396439f,-10.494203f};
+//float K14[6] = {0,31.153924f,-31.169164f,5.547010f,-17.731968f};
+//float K15[6] = {0,-608.670004f,650.973437f,-252.825488f,47.125632f};
+//float K16[6] = {0,-28.899881f,32.281458f,-13.451008f,3.885780f};
+//float K21[6] = {0,-587.307514f,626.119356f,-233.173634f,45.576525f};
+//float K22[6] = {0,-12.316947f,15.296199f,-2.967432f,2.177816f};
+//float K23[6] = {0,-140.000011f,151.065684f,-58.774277f,10.108352f};
+//float K24[6] = {0,-236.677333f,249.941573f,-93.776614f,15.524116f};
+//float K25[6] = {0,569.821441f,-567.914809f,194.852783f,66.601096f};
+//float K26[6] = {0,39.070654f,-40.525301f,14.891064f,1.495483f};
+
+/*Q=diag([700 1 600 200 1000 1]);
+R=diag([0.75  0.25]);                %T Tp*/
+
+//float K11[6] = {0,-177.172754f,244.003795f,-294.342881f,-16.034532f};
+//float K12[6] = {0,33.335275f,-54.840923f,-48.409206f,0.176163f};
+//float K13[6] = {0,-77.203050f,80.577718f,-29.237653f,-24.430832f};
+//float K14[6] = {0,28.196959f,-19.473117f,-11.701760f,-26.097775f};
+//float K15[6] = {0,-403.269573f,454.643456f,-193.513652f,43.398502f};
+//float K16[6] = {0,-26.680042f,30.528263f,-13.108170f,4.798816f};
+//float K21[6] = {0,-385.309931f,442.462279f,-194.524011f,51.929938f};
+//float K22[6] = {0,26.162453f,-27.100576f,10.877081f,2.214143f};
+//float K23[6] = {0,-272.085306f,325.116529f,-146.765207f,28.630357f};
+//float K24[6] = {0,-275.793953f,316.981917f,-136.655241f,26.451918f};
+//float K25[6] = {0,580.081812f,-596.719341f,214.900195f,36.010012f};
+//float K26[6] = {0,47.761256f,-51.744661f,20.318614f,0.040028f};
+
+
+/*Q=diag([30 1 500 100 5000 1]);
+
+
+R=diag([1  0.25]); */
+
+//float K11[6] = {0,-115.126155f,170.649515f,-215.442495f,-4.078597f};
+//float K12[6] = {0,26.253624f,-43.142734f,-31.197256f,0.052569f};
+//float K13[6] = {0,-57.632354f,55.994880f,-18.498064f,-20.153449f};
+//float K14[6] = {0,-31.404098f,38.446801f,-28.580708f,-14.894821f};
+//float K15[6] = {0,-709.043918f,732.385808f,-271.087440f,49.302362f};
+//float K16[6] = {0,-25.704048f,28.312288f,-11.460745f,3.642841f};
+//float K21[6] = {0,-177.741240f,181.226780f,-53.464316f,17.184152f};
+//float K22[6] = {0,-23.860072f,26.177529f,-4.260697f,2.164510f};
+//float K23[6] = {0,-422.004007f,433.007528f,-157.210272f,24.613085f};
+//float K24[6] = {0,-314.224232f,320.009512f,-113.857296f,18.363215f};
+//float K25[6] = {0,540.518166f,-530.485443f,178.763915f,120.706549f};
+//float K26[6] = {0,44.207272f,-45.090225f,16.232827f,1.999465f};
+
+
+/*Q=diag([30 1 500 100 5000 1]);
+
+
+R=diag([0.50  0.55]); */
+
+//float K11[6] = {0,-95.962518f,169.627359f,-273.902036f,-7.056615f};
+//float K12[6] = {0,43.425716f,-67.732556f,-39.743430f,-0.232138f};
+//float K13[6] = {0,-31.673164f,31.529042f,-10.847578f,-30.056454f};
+//float K14[6] = {0,-4.098905f,15.508924f,-27.657956f,-22.157953f};
+//float K15[6] = {0,-533.222247f,554.113928f,-207.609107f,49.649082f};
+//float K16[6] = {0,-24.252486f,27.019246f,-11.051887f,4.393769f};
+//float K21[6] = {0,-55.019877f,50.125849f,4.776575f,6.349756f};
+//float K22[6] = {0,-13.366871f,16.699859f,0.970690f,0.745061f};
+//float K23[6] = {0,-138.754164f,143.129988f,-52.182640f,10.625769f};
+//float K24[6] = {0,-103.303086f,104.466842f,-35.172795f,7.670968f};
+//float K25[6] = {0,159.658910f,-159.752849f,55.856381f,88.653315f};
+//float K26[6] = {0,15.559312f,-16.275051f,6.107299f,2.371508f};
+
+/*Q=diag([30 1 500 100 5000 1]);
+
+
+R=diag([1  0.15]); */
+
+//float K11[6] = {0,-140.809314f,195.584993f,-223.775760f,-3.174109f};
+//float K12[6] = {0,22.615599f,-39.592911f,-32.439374f,0.193379f};
+//float K13[6] = {0,-88.104246f,84.760796f,-27.508115f,-19.240943f};
+//float K14[6] = {0,-54.480576f,60.286797f,-35.471894f,-14.190390f};
+//float K15[6] = {0,-924.689414f,952.240364f,-350.102855f,58.344028f};
+//float K16[6] = {0,-28.271728f,31.144104f,-12.608416f,3.783410f};
+//float K21[6] = {0,-392.786993f,409.488705f,-147.621351f,35.233438f};
+//float K22[6] = {0,-44.323355f,46.288431f,-12.961046f,4.550921f};
+//float K23[6] = {0,-892.565686f,913.545194f,-330.383881f,48.239783f};
+//float K24[6] = {0,-666.007821f,678.459227f,-243.314960f,36.368718f};
+//float K25[6] = {0,1243.299474f,-1209.464020f,400.800893f,177.591375f};
+//float K26[6] = {0,89.625919f,-90.630454f,32.130836f,1.402047f};
+
+
+//float K11[6] = {0,-162.187148f,216.270592f,-230.550230f,-2.447038f};
+//float K12[6] = {0,19.543109f,-36.579316f,-33.464214f,0.307723f};
+//float K13[6] = {0,-112.504037f,107.699003f,-34.637975f,-18.518694f};
+//float K14[6] = {0,-73.123620f,77.857552f,-40.963541f,-13.630252f};
+//float K15[6] = {0,-1069.845191f,1100.340868f,-403.219555f,64.530995f};
+//float K16[6] = {0,-29.497836f,32.552682f,-13.204497f,3.860381f};
+//float K21[6] = {0,-661.668046f,696.234013f,-266.892586f,57.634630f};
+//float K22[6] = {0,-69.351559f,71.093456f,-24.116655f,7.517234f};
+//float K23[6] = {0,-1478.574422f,1511.651845f,-545.500625f,77.286567f};
+//float K24[6] = {0,-1104.401855f,1125.176287f,-404.528332f,58.558440f};
+//float K25[6] = {0,2184.498129f,-2115.195361f,694.850341f,237.155084f};
+//float K26[6] = {0,145.315526f,-146.346591f,51.496879f,0.448983f};
+
+
+/*Q=diag([700 1 500 100 1000 1]);
+
+
+R=diag([1  0.15]); */
+
+//float K11[6] = {0,-406.756010f,467.928501f,-344.969122f,-3.847140f};
+//float K12[6] = {0,14.165994f,-31.208072f,-48.786503f,1.013945f};
+//float K13[6] = {0,-209.660558f,210.307292f,-71.941290f,-15.894646f};
+//float K14[6] = {0,-111.919959f,117.217527f,-54.628260f,-17.630240f};
+//float K15[6] = {0,-461.738776f,528.519989f,-227.525254f,47.193752f};
+//float K16[6] = {0,-17.394887f,21.964404f,-10.596334f,4.227899f};
+//float K21[6] = {0,-1187.443507f,1425.762913f,-695.907496f,167.533073f};
+//float K22[6] = {0,105.992933f,-108.178645f,23.622345f,9.136050f};
+//float K23[6] = {0,-1313.790343f,1493.817460f,-629.906214f,106.757549f};
+//float K24[6] = {0,-1350.684312f,1495.388495f,-612.772124f,102.585410f};
+//float K25[6] = {0,2674.808137f,-2705.672997f,946.325533f,23.451652f};
+//float K26[6] = {0,222.890587f,-234.839528f,88.184310f,-6.764370f};
+
+
+/*Q=diag([700 1 500 100 2000 1]);
+
+
+R=diag([0.75  0.25]); */
+
+//float K11[6] = {0,-142.060165f,174.380525f,-172.864002f,-22.070548f};
+//float K12[6] = {0,15.201878f,-24.654712f,-33.468257f,-0.245084f};
+//float K13[6] = {0,-24.220330f,24.198181f,-8.305159f,-10.503626f};
+//float K14[6] = {0,31.420024f,-31.472799f,5.660416f,-17.789930f};
+//float K15[6] = {0,-605.231189f,647.117263f,-251.482252f,46.946592f};
+//float K16[6] = {0,-28.823892f,32.191900f,-13.422359f,3.885122f};
+//float K21[6] = {0,-584.856922f,623.309863f,-232.254994f,45.432485f};
+//float K22[6] = {0,-12.429399f,15.407085f,-2.998481f,2.181621f};
+//float K23[6] = {0,-139.529150f,150.454851f,-58.540657f,10.079518f};
+//float K24[6] = {0,-236.223116f,249.329205f,-93.569797f,15.511948f};
+//float K25[6] = {0,562.375251f,-560.392741f,192.455000f,66.824909f};
+//float K26[6] = {0,38.806676f,-40.243752f,14.800316f,1.503788f};
+
+
+//float K11[6] = {0,-204.518038f,244.190236f,-192.502303f,-20.983470f};
+//float K12[6] = {0,8.681410f,-15.001398f,-32.622484f,-0.291806f};
+//float K13[6] = {0,-24.723168f,25.894440f,-9.524138f,-10.202480f};
+//float K14[6] = {0,24.960678f,-23.688762f,2.771719f,-17.150615f};
+//float K15[6] = {0,-540.608305f,600.988001f,-248.521875f,52.129058f};
+//float K16[6] = {0,-32.525285f,37.217660f,-16.136970f,4.825964f};
+//float K21[6] = {0,-446.454088f,496.104455f,-195.405355f,48.190472f};
+//float K22[6] = {0,2.065086f,0.491995f,2.830248f,2.058485f};
+//float K23[6] = {0,-101.234984f,117.657275f,-50.925424f,10.641662f};
+//float K24[6] = {0,-179.909086f,201.036002f,-82.131279f,16.252138f};
+//float K25[6] = {0,642.351689f,-657.179151f,235.302598f,61.062266f};
+//float K26[6] = {0,46.638865f,-50.056073f,19.426895f,1.648479f};
+
+
+/*Q=diag([2000 10 500 100 4000 1]);
+
+
+R=diag([0.75  0.25]); */
+float K11[6] = {0,-370.394524f,396.471948f,-215.492650f,-37.402430f};
+float K12[6] = {0,-0.976649f,-5.999054f,-31.242243f,-2.247988f};
+float K13[6] = {0,-9.510301f,10.962664f,-4.499063f,-7.439460f};
+float K14[6] = {0,46.799150f,-47.950495f,14.987762f,-18.613368f};
+float K15[6] = {0,-647.986793f,756.504986f,-330.206225f,70.939827f};
+float K16[6] = {0,-35.457577f,40.981242f,-18.049323f,5.191204f};
+float K21[6] = {0,-666.064872f,799.817927f,-351.408960f,82.929940f};
+float K22[6] = {0,-28.285312f,39.153869f,-15.490739f,5.697750f};
+float K23[6] = {0,-29.231517f,43.917458f,-23.851837f,6.262248f};
+float K24[6] = {0,-108.814958f,138.755399f,-64.980282f,14.724146f};
+float K25[6] = {0,878.338377f,-916.630214f,335.715540f,83.469056f};
+float K26[6] = {0,39.826487f,-44.262430f,17.953752f,2.475768f};
+//========================================================================================
+float K_3508_t=   2700.6667f;//
+//K_3508_t = 2,730.6666666;
 //=========================================================================================
 
-
-
-//并联腿
-///* LQR控制器系数矩阵（通过MATLAB拟合获得） */
-//float K11[6] = {0,-266.885577f,325.173670f  ,-247.616760f ,-1.462362f};
-//float K12[6] = {0,14.857699f  ,-22.748998f  ,-26.338491f  ,0.302026f};
-//float K13[6] = {0,-367.583527f,363.252641f  ,-125.208753f ,-8.205764f};
-//float K14[6] = {0,-215.504823f,221.521582f  ,-91.470264f  ,-6.372200f};
-//float K15[6] = {0,-619.617893f,751.574467f  ,-353.495425f ,80.695375f};
-//float K16[6] = {0,-34.711750f ,46.475780f   ,-24.776425f  ,7.312116f};
-
-//float K21[6] = {0,379.169790f ,-335.475183f ,83.668774f   ,17.041042f};
-//float K22[6] = {0,48.175242f  ,-49.710524f  ,19.585459f   ,1.323766f};
-//float K23[6] = {0,-170.787565f,253.798890f  ,-142.436138f ,36.898675f};
-//float K24[6] = {0,-101.370548f,151.866239f  ,-87.113124f  ,24.965588f};
-//float K25[6] = {0,1455.751136f,-1474.823176f,525.283723f  ,68.954698f};
-//float K26[6] = {0,121.297246f ,-127.815723f ,48.450999f   ,0.941185f};
 
 /*
 启用一个PID控制的流程
@@ -175,7 +262,8 @@ float K26[6] = {0,10.240428f,-16.008535f,8.937617f,3.723793f};
 
 
 */
-static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
+//static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
+static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,20000.f,0.f ,0.f  ,10.f,200.f}; //腿长PID(change
 static float  PID_Yaw_P_pama[7] 			      = {4.4f  ,0.f ,60.f    ,0   ,0  ,200 ,500  }; // 偏航角位置PID
 static float  PID_Yaw_V_pama[7] 			      = {0.25f ,0   ,0.4f    ,0   ,0  ,200 ,70   }; // 偏航角速度PID
 static float  PID_Leg_Coordinate_param[7]   = {300.f ,0.f ,20.0f   ,0.f ,0.f,0.f ,50   }; // 腿部协调PID
@@ -186,7 +274,7 @@ static float  PID_Leg_Coordinate_param[7]   = {300.f ,0.f ,20.0f   ,0.f ,0.f,0.f
 PID_Info_TypeDef PID_Leg_Coordinate;  // 腿部协调控制器
 PID_Info_TypeDef PID_Leg_length_F[2]; // 左右腿长度控制器
 PID_Info_TypeDef PID_Yaw[2];          // 偏航控制器（位置+速度）
-//PID_Info_TypeDef PID_Stool[2]; // 驱动轮控制器
+PID_Info_TypeDef PID_Stool[2]; // 驱动轮控制器
 
 //调试区----------------------------------------------------------------------------------------------
 
@@ -195,8 +283,8 @@ float Test_Theta = 0;                           //测试用的摆杆倾角--0度
 
 //float Joint_Angle_offset_Num = 0.635f;          //机械安装偏移补偿(并联腿)
 
-float Test_Vmc_Target_L0_Chassis_High   = 0.24f;//高底盘
-float Test_Vmc_Target_L0_Chassis_Normal = 0.17f;//正常高度底盘
+float Test_Vmc_Target_L0_Chassis_High   = 0.30f;//高底盘
+float Test_Vmc_Target_L0_Chassis_Normal = 0.20f;//正常高度底盘
 
 Control_Info_Typedef Control_Info ={
 //腿的机械参数，固定值--如果是新车，这一块要改
@@ -211,10 +299,11 @@ Control_Info_Typedef Control_Info ={
 
 		
 	},//偏置并联
-	.Gravity_Compensation = 40.f,
-	.Link_Gravity_Compensation_Angle = 0.4701917f,//连杆重心补偿角度
-	.Phi_Comp_Angle =  0.0177f,//当车平衡时，陀螺仪读出来的数据
-
+	.Gravity_Compensation = 42.f,//重力的一半
+	//.Link_Gravity_Compensation_Angle = 0.4701917f,//连杆重心补偿角度
+	.Link_Gravity_Compensation_Angle = 0.0f,//连杆重心补偿角度
+	.Phi_Comp_Angle =  0.007f,//当车平衡时，陀螺仪读出来的数据
+//.Phi_Comp_Angle =  0.0f,//当车平衡时，陀螺仪读出来的数据
 },//单腿测试
 
 
@@ -230,9 +319,10 @@ Control_Info_Typedef Control_Info ={
 
 		
 	},//2
-	.Gravity_Compensation = 40.f,
+	.Gravity_Compensation = 42.f,
     .Link_Gravity_Compensation_Angle = 0.4701917f,
-.Phi_Comp_Angle =  0.0177f,//当车平衡时，陀螺仪读出来的数据
+.Phi_Comp_Angle =  0.007f,//当车平衡时，陀螺仪读出来的数据
+	//.Phi_Comp_Angle =  0.0f,//当车平衡时，陀螺仪读出来的数据
 },
 
 
@@ -276,7 +366,7 @@ void Control_Task(void const * argument)
   {
 		Control_Task_SysTick = osKernelSysTick();
 		//电池
-		Check_Low_Voltage_Beep(&Control_Info);
+		//Check_Low_Voltage_Beep(&Control_Info);
 		//开关
 		//上级函数
         Mode_Update(&Control_Info);
@@ -307,8 +397,13 @@ void Control_Task(void const * argument)
 		Comprehensive_F_Calculate(&Control_Info);
 		//输出
 		Joint_Tourgue_Calculate(&Control_Info);
-        // USART_Vofa_Justfloat_Transmit(Control_Info.R_Leg_Info.Measure.Chassis_Velocity,Control_Info.L_Leg_Info.Measure.Chassis_Velocity,0,0);
-
+         //USART_Vofa_Justfloat_Transmit(Control_Info.R_Leg_Info.Measure.Chassis_Velocity,Control_Info.L_Leg_Info.Measure.Chassis_Velocity,0,0);
+//USART_Vofa_Justfloat_Transmit(-INS_Info.Angle[2],INS_Info.Yaw_Angle,INS_Info.Roll_Angle,INS_Info.Roll_Angle);
+  //USART_Vofa_Justfloat_Transmit(Control_Info.L_Leg_Info.Measure.Chassis_Position,Control_Info.L_Leg_Info.Measure.Phi,Control_Info.L_Leg_Info.Measure.Theta,Control_Info.L_Leg_Info.Measure.F);
+	
+//	USART_Vofa_Justfloat_Transmit((Control_Info.L_Leg_Info.Measure.Phi *RadiansToDegrees),Control_Info.L_Leg_Info.Moment.Balance_Tp,Control_Info.L_Leg_Info.SendValue.Current,(Control_Info.L_Leg_Info.Measure.Theta *RadiansToDegrees));
+	USART_Vofa_Justfloat_Transmit((Control_Info.L_Leg_Info.Measure.Phi *RadiansToDegrees),Control_Info.L_Leg_Info.Moment.Balance_Tp,Control_Info.L_Leg_Info.SendValue.Current,Control_Info.L_Leg_Info.F);
+	
 		osDelayUntil(&Control_Task_SysTick,1);
   }
 }
@@ -368,7 +463,10 @@ static void Mode_Update(Control_Info_Typedef *Control_Info){
 		 /*逻辑冗余：由于||(或运算符)的存在，当remote_ctrl.rc.s[1] == 3成立时，第二个条件不会被执行（短路求值）*/
 	 
 	   Control_Info->Init.IF_Begin_Init = 1;
-	 
+	 if(remote_ctrl.rc.s[1] == 2){
+	 Control_Info->Init.IF_Begin_Init = 0;
+	 Control_Info->Chassis_Situation = CHASSIS_WEAK;
+	 }
 	 
 	 }else{
 	 
@@ -385,7 +483,7 @@ static void Mode_Update(Control_Info_Typedef *Control_Info){
 	   	
 			 if(DM_8009_Motor[0].Data.Position < 0.0f )  
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;
-			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.10f)    
+			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.05f)    
 		   Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 0; 
 			 if(DM_8009_Motor[2].Data.Position < 0.20f&& DM_8009_Motor[2].Data.Position>0.10f)    
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 0;
@@ -683,173 +781,6 @@ powf(变量，指数)：eg powf(L_L0,3)表示L_L0的立方
 	 Control_Info->R_Leg_Info.LQR_K[1][5] =   K26[1]*powf(R_L0,3)   + K26[2]*powf(R_L0,2)    +K26[3]*R_L0    +K26[4];
 
 
-////0.17
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -47.420078f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.206347f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.199068f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -17.194905f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 20.820044f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.895793f;
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 29.191116f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.619429f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = 4.872640f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = 7.049663f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 59.878614f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 3.185011f;
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -47.420078f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.206347f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.199068f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -17.194905f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 20.820044f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.895793f;
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 29.191116f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.619429f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = 4.872640f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = 7.049663f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 59.878614f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 3.185011f;
-
-
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -46.921730f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.549807f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.332902f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -17.519273f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 17.083244f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.336082f;
-
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 23.245817f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.132264f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = 3.833536f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = 5.606471f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 60.299396f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.660951f;
-
-
-
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -46.921730f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.549807f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.332902f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -17.519273f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 17.083244f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.336082f;
-
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 23.245817f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.132264f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = 3.833536f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = 5.606471f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 60.299396f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.660951f;
-
-
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -57.942303f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.469361f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.047831f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -16.586214f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 9.100286f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.104907f;
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 47.105633f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = -0.557684f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = -5.816898f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = -10.896583f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 10.448581f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.764917f;
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -57.942303f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.469361f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.047831f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -16.586214f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 9.100286f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.104907f;
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 47.105633f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = -0.557684f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = -5.816898f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = -10.896583f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 10.448581f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.764917f;
-
-
-
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -62.510427f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -7.117034f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.436523f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -19.426693f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 18.547438f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.480538f;
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 38.650025f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.072097f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = 2.760041f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = 4.314356f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 59.386957f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 2.727879f;
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -62.510427f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -7.117034f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.436523f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -19.426693f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 18.547438f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.480538f;
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 38.650025f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.072097f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = 2.760041f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = 4.314356f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 59.386957f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 2.727879f;
-
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -36.564989f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -6.169247f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.365374f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -16.217856f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 22.202895f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 2.333270f;
-
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 11.312512f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = 1.726021f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = 3.533383f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = 4.897327f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 139.029249f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 3.797233f;
-
-
-
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -36.564989f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -6.169247f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.365374f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -16.217856f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 22.202895f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 2.333270f;
-
-
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 11.312512f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = 1.726021f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = 3.533383f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = 4.897327f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 139.029249f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 3.797233f;
-
-
-
-//Control_Info->L_Leg_Info.LQR_K[0][0] = -37.554157f;
-//Control_Info->L_Leg_Info.LQR_K[0][1] = -5.857022f;
-//Control_Info->L_Leg_Info.LQR_K[0][2] = -11.213670f;
-//Control_Info->L_Leg_Info.LQR_K[0][3] = -15.901205f;
-//Control_Info->L_Leg_Info.LQR_K[0][4] = 28.775846f;
-//Control_Info->L_Leg_Info.LQR_K[0][5] = 3.001416f;
-//Control_Info->L_Leg_Info.LQR_K[1][0] = 16.043909f;
-//Control_Info->L_Leg_Info.LQR_K[1][1] = 2.230619f;
-//Control_Info->L_Leg_Info.LQR_K[1][2] = 4.770827f;
-//Control_Info->L_Leg_Info.LQR_K[1][3] = 6.569752f;
-//Control_Info->L_Leg_Info.LQR_K[1][4] = 137.837111f;
-//Control_Info->L_Leg_Info.LQR_K[1][5] = 4.779177f;
-//Control_Info->R_Leg_Info.LQR_K[0][0] = -37.554157f;
-//Control_Info->R_Leg_Info.LQR_K[0][1] = -5.857022f;
-//Control_Info->R_Leg_Info.LQR_K[0][2] = -11.213670f;
-//Control_Info->R_Leg_Info.LQR_K[0][3] = -15.901205f;
-//Control_Info->R_Leg_Info.LQR_K[0][4] = 28.775846f;
-//Control_Info->R_Leg_Info.LQR_K[0][5] = 3.001416f;
-//Control_Info->R_Leg_Info.LQR_K[1][0] = 16.043909f;
-//Control_Info->R_Leg_Info.LQR_K[1][1] = 2.230619f;
-//Control_Info->R_Leg_Info.LQR_K[1][2] = 4.770827f;
-//Control_Info->R_Leg_Info.LQR_K[1][3] = 6.569752f;
-//Control_Info->R_Leg_Info.LQR_K[1][4] = 137.837111f;
-//Control_Info->R_Leg_Info.LQR_K[1][5] = 4.779177f;
 }
 
 
@@ -1336,8 +1267,8 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
  	Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
 // //横滚控制，在左右腿处于不同高度时，保持机体水平方向平衡	
 // //基于滚转角度计算左右腿的滚动补偿力，增加稳定性。
- 	Control_Info->L_Leg_Info.Moment.Roll_F = -(INS_Info.Roll_Angle + 0.4f) * 50.f;
- 	Control_Info->R_Leg_Info.Moment.Roll_F =  (INS_Info.Roll_Angle + 0.4f) * 50.f;
+ 	Control_Info->L_Leg_Info.Moment.Roll_F = -(INS_Info.Roll_Angle + 0.4f) * 10.f;
+ 	Control_Info->R_Leg_Info.Moment.Roll_F =  (INS_Info.Roll_Angle + 0.4f) * 10.f;
 	
 // //转向控制	
 // //将偏航转向力矩分别施加到左右腿上，方向相反实现转向。
@@ -1351,8 +1282,8 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
    Control_Info->R_Leg_Info.Moment.Leg_Length_F =  PID_Calculate(&PID_Leg_length_F[1],Control_Info->R_Leg_Info.Target_Sip_Leg_Length,Control_Info->R_Leg_Info.Sip_Leg_Length);
 
 // //设置初始重力补偿值为 100。f
- Control_Info->R_Leg_Info.Gravity_Compensation = 40.f;
- Control_Info->L_Leg_Info.Gravity_Compensation = 40.f;
+// Control_Info->R_Leg_Info.Gravity_Compensation = 40.f;
+// Control_Info->L_Leg_Info.Gravity_Compensation = 40.f;
 // //如果左腿处于支撑状态，则取消其滚动补偿，并提高重力补偿至 140。
 // 	if(Control_Info->L_Leg_Info.Support.Flag == 1){
 //	   
@@ -1378,9 +1309,13 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 // 	//同重力方向
 // 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F+ Control_Info->L_Leg_Info.Moment.Roll_F  +  Control_Info->L_Leg_Info.Gravity_Compensation;  
 // 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F+ Control_Info->R_Leg_Info.Moment.Roll_F  +  Control_Info->R_Leg_Info.Gravity_Compensation;
-//	
-//  	//同重力方向
-  	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
+	
+  	//同重力方向
+//  	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
+//  	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F +  Control_Info->R_Leg_Info.Gravity_Compensation;
+//		
+		
+		 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
   	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F +  Control_Info->R_Leg_Info.Gravity_Compensation;
 	
 // // 	//驱动轮的转矩
@@ -1452,8 +1387,10 @@ static void Joint_Tourgue_Calculate(Control_Info_Typedef *Control_Info){
 //输出：真实结构中各电机的力矩
 //原理：
 //中间量：
+	float Current_max;
 float Tourgue_max;
-	Tourgue_max = 15.f;
+	Tourgue_max = 35.f;
+	Current_max =10000;
 
 //偏腿
 //左腿
@@ -1504,11 +1441,15 @@ Control_Info->R_Leg_Info.SendValue.T_Calf = (Control_Info->R_Leg_Info.A * Contro
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------											 
 //以下部分不用改，串并联通用部分
 //轮子电机的电流值
+//	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T * 1000.f);
+//	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1000.f);
+
 	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T * 1000.f);
 	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1000.f);
+
 	 
-	 VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.Current,-4000,4000);
-	 VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.Current,-4000,4000); 
+	 VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.Current,-Current_max,Current_max);
+	 VAL_LIMIT(Control_Info->R_Leg_Info.SendValue.Current,-Current_max,Current_max); 
   
 	//  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T1,-54.f,54.f);
 	//  VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.T2,-54.f,54.f);  
