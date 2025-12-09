@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # RMCOD2026_Infantry_Balance
 
 #### Description
@@ -23,6 +24,12 @@
 #### Description
 底盘稳定版，优化了QR权重
 >>>>>>> 2695bde8955eefab20056662a14db6e5a264f4c5
+=======
+# Knight_test6
+
+#### Description
+优化了QR权重，优化了移动控制，增加了横滚补偿功能
+>>>>>>> f6698d680b5a7d6d4d83f0d4706a0b1b03dc4f7c
 
 #### Software Architecture
 Software architecture description

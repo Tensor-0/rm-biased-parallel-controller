@@ -233,18 +233,76 @@ R=diag([0.75  0.25]); */
 
 
 R=diag([0.75  0.25]); */
-float K11[6] = {0,-370.394524f,396.471948f,-215.492650f,-37.402430f};
-float K12[6] = {0,-0.976649f,-5.999054f,-31.242243f,-2.247988f};
-float K13[6] = {0,-9.510301f,10.962664f,-4.499063f,-7.439460f};
-float K14[6] = {0,46.799150f,-47.950495f,14.987762f,-18.613368f};
-float K15[6] = {0,-647.986793f,756.504986f,-330.206225f,70.939827f};
-float K16[6] = {0,-35.457577f,40.981242f,-18.049323f,5.191204f};
-float K21[6] = {0,-666.064872f,799.817927f,-351.408960f,82.929940f};
-float K22[6] = {0,-28.285312f,39.153869f,-15.490739f,5.697750f};
-float K23[6] = {0,-29.231517f,43.917458f,-23.851837f,6.262248f};
-float K24[6] = {0,-108.814958f,138.755399f,-64.980282f,14.724146f};
-float K25[6] = {0,878.338377f,-916.630214f,335.715540f,83.469056f};
-float K26[6] = {0,39.826487f,-44.262430f,17.953752f,2.475768f};
+//float K11[6] = {0,-370.394524f,396.471948f,-215.492650f,-37.402430f};
+//float K12[6] = {0,-0.976649f,-5.999054f,-31.242243f,-2.247988f};
+//float K13[6] = {0,-9.510301f,10.962664f,-4.499063f,-7.439460f};
+//float K14[6] = {0,46.799150f,-47.950495f,14.987762f,-18.613368f};
+//float K15[6] = {0,-647.986793f,756.504986f,-330.206225f,70.939827f};
+//float K16[6] = {0,-35.457577f,40.981242f,-18.049323f,5.191204f};
+//float K21[6] = {0,-666.064872f,799.817927f,-351.408960f,82.929940f};
+//float K22[6] = {0,-28.285312f,39.153869f,-15.490739f,5.697750f};
+//float K23[6] = {0,-29.231517f,43.917458f,-23.851837f,6.262248f};
+//float K24[6] = {0,-108.814958f,138.755399f,-64.980282f,14.724146f};
+//float K25[6] = {0,878.338377f,-916.630214f,335.715540f,83.469056f};
+//float K26[6] = {0,39.826487f,-44.262430f,17.953752f,2.475768f};
+
+
+
+/*Q=diag([2000 10 500 100 4000 1]);
+
+
+R=diag([0.75  0.25]); */
+//float K11[6] = {0,-353.279370f,372.516159f,-246.800782f,-39.058558f};
+//float K12[6] = {0,1.043260f,-17.014670f,-39.338519f,-2.406839f};
+//float K13[6] = {0,-30.926177f,35.765809f,-14.770323f,-23.420630f};
+//float K14[6] = {0,114.064420f,-117.975339f,34.323988f,-30.030464f};
+//float K15[6] = {0,-661.224381f,770.587403f,-336.490159f,74.009553f};
+//float K16[6] = {0,-46.153751f,52.369538f,-22.251984f,6.389264f};
+//float K21[6] = {0,-623.372438f,762.327625f,-337.793278f,84.646860f};
+//float K22[6] = {0,-15.464121f,28.064388f,-10.750936f,5.914465f};
+//float K23[6] = {0,-90.945267f,137.849939f,-75.933750f,20.196109f};
+//float K24[6] = {0,-185.448113f,230.143843f,-104.602721f,23.283982f};
+//float K25[6] = {0,896.584918f,-938.788267f,345.995828f,81.295483f};
+//float K26[6] = {0,50.714744f,-56.291388f,22.741503f,1.639740f};
+
+
+
+/*Q=diag([1000 10 500 100 4000 1]);
+
+
+R=diag([0.75  0.25]); */
+
+//float K11[6] = {0,-261.708875f,283.675698f,-225.567476f,-29.812631f};
+//float K12[6] = {0,4.691931f,-22.514454f,-36.106324f,-2.349045f};
+//float K13[6] = {0,-57.470296f,62.039729f,-23.622058f,-22.367417f};
+//float K14[6] = {0,72.201295f,-72.964474f,15.704399f,-25.905805f};
+//float K15[6] = {0,-687.491666f,792.941270f,-340.725489f,73.293691f};
+//float K16[6] = {0,-41.222014f,47.063104f,-20.105866f,5.984443f};
+//float K21[6] = {0,-456.417350f,561.003857f,-244.742420f,64.582179f};
+//float K22[6] = {0,-24.056370f,36.959798f,-13.809291f,6.217726f};
+//float K23[6] = {0,-187.034554f,236.399955f,-111.208356f,24.965081f};
+//float K24[6] = {0,-269.065446f,311.257834f,-131.079559f,26.274801f};
+//float K25[6] = {0,918.666839f,-954.860106f,348.118054f,81.785187f};
+//float K26[6] = {0,58.552550f,-63.725960f,25.079875f,1.394175f};
+
+
+
+/*Q=diag([1000 10 500 100 5000 1]);
+
+
+R=diag([0.75  0.25]); */
+float K11[6] = {0,-196.675615f,225.298470f,-213.768727f,-26.968727f};
+float K12[6] = {0,9.594676f,-23.971567f,-38.705892f,-0.439314f};
+float K13[6] = {0,-63.731588f,64.711800f,-22.832726f,-22.748239f};
+float K14[6] = {0,65.697918f,-65.874604f,12.221643f,-24.943924f};
+float K15[6] = {0,-888.958534f,960.873309f,-379.581494f,75.010828f};
+float K16[6] = {0,-46.444820f,51.943831f,-21.532026f,6.105359f};
+float K21[6] = {0,-610.965296f,658.569893f,-242.304810f,55.088705f};
+float K22[6] = {0,-7.647371f,12.318700f,0.634559f,2.549706f};
+float K23[6] = {0,-298.525609f,326.619076f,-130.164145f,24.795366f};
+float K24[6] = {0,-334.521579f,354.266964f,-133.154922f,23.833684f};
+float K25[6] = {0,891.171796f,-898.074030f,314.604292f,103.108874f};
+float K26[6] = {0,65.878330f,-68.999527f,25.821568f,1.776136f};
 //========================================================================================
 float K_3508_t=   2700.6667f;//
 //K_3508_t = 2,730.6666666;
@@ -263,7 +321,8 @@ float K_3508_t=   2700.6667f;//
 
 */
 //static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
-static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,20000.f,0.f ,0.f  ,10.f,200.f}; //腿长PID(change
+static float  PID_Leg_Length_F_Param[7] 	  = {1890.f,1.f ,180000.f,0.f ,0.f  ,10.f,200.f}; //腿长PID(change
+static float  PID_Leg_Roll_F_Param[7]       = {1.f  ,1.f ,0.f    ,0.f,0.f ,10.f,50.f };
 static float  PID_Yaw_P_pama[7] 			      = {4.4f  ,0.f ,60.f    ,0   ,0  ,200 ,500  }; // 偏航角位置PID
 static float  PID_Yaw_V_pama[7] 			      = {0.25f ,0   ,0.4f    ,0   ,0  ,200 ,70   }; // 偏航角速度PID
 static float  PID_Leg_Coordinate_param[7]   = {300.f ,0.f ,20.0f   ,0.f ,0.f,0.f ,50   }; // 腿部协调PID
@@ -273,6 +332,7 @@ static float  PID_Leg_Coordinate_param[7]   = {300.f ,0.f ,20.0f   ,0.f ,0.f,0.f
 
 PID_Info_TypeDef PID_Leg_Coordinate;  // 腿部协调控制器
 PID_Info_TypeDef PID_Leg_length_F[2]; // 左右腿长度控制器
+//PID_Info_TypeDef PID_Leg_Roll_F[2];   //横滚补偿力
 PID_Info_TypeDef PID_Yaw[2];          // 偏航控制器（位置+速度）
 PID_Info_TypeDef PID_Stool[2]; // 驱动轮控制器
 
@@ -283,7 +343,7 @@ float Test_Theta = 0;                           //测试用的摆杆倾角--0度
 
 //float Joint_Angle_offset_Num = 0.635f;          //机械安装偏移补偿(并联腿)
 
-float Test_Vmc_Target_L0_Chassis_High   = 0.30f;//高底盘
+float Test_Vmc_Target_L0_Chassis_High   = 0.31f;//高底盘
 float Test_Vmc_Target_L0_Chassis_Normal = 0.20f;//正常高度底盘
 
 Control_Info_Typedef Control_Info ={
@@ -402,7 +462,8 @@ void Control_Task(void const * argument)
   //USART_Vofa_Justfloat_Transmit(Control_Info.L_Leg_Info.Measure.Chassis_Position,Control_Info.L_Leg_Info.Measure.Phi,Control_Info.L_Leg_Info.Measure.Theta,Control_Info.L_Leg_Info.Measure.F);
 	
 //	USART_Vofa_Justfloat_Transmit((Control_Info.L_Leg_Info.Measure.Phi *RadiansToDegrees),Control_Info.L_Leg_Info.Moment.Balance_Tp,Control_Info.L_Leg_Info.SendValue.Current,(Control_Info.L_Leg_Info.Measure.Theta *RadiansToDegrees));
-	USART_Vofa_Justfloat_Transmit((Control_Info.L_Leg_Info.Measure.Phi *RadiansToDegrees),Control_Info.L_Leg_Info.Moment.Balance_Tp,Control_Info.L_Leg_Info.SendValue.Current,Control_Info.L_Leg_Info.F);
+	//USART_Vofa_Justfloat_Transmit((Control_Info.L_Leg_Info.Measure.Phi *RadiansToDegrees),Control_Info.L_Leg_Info.Moment.Balance_Tp,Control_Info.L_Leg_Info.SendValue.Current,Control_Info.L_Leg_Info.F);
+		USART_Vofa_Justfloat_Transmit(INS_Info.Roll_Angle,Control_Info.L_Leg_Info.Moment.Roll_F,Control_Info.R_Leg_Info.Moment.Roll_F,Control_Info.L_Leg_Info.Moment.Leg_Length_F);
 	
 		osDelayUntil(&Control_Task_SysTick,1);
   }
@@ -448,6 +509,8 @@ static void Control_Init(Control_Info_Typedef *Control_Info){
 	//腿长PID初始化
     PID_Init(&PID_Leg_length_F[0],PID_POSITION,PID_Leg_Length_F_Param);
     PID_Init(&PID_Leg_length_F[1],PID_POSITION,PID_Leg_Length_F_Param);
+//	  PID_Init(&PID_Leg_Roll_F[0],PID_POSITION,PID_Leg_Roll_F_Param);
+//    PID_Init(&PID_Leg_Roll_F[1],PID_POSITION,PID_Leg_Roll_F_Param);
 	// 初始化偏航PID控制器（位置环+速度环）
 	PID_Init(&PID_Yaw[0],PID_POSITION,PID_Yaw_P_pama);
 	PID_Init(&PID_Yaw[1],PID_POSITION,PID_Yaw_V_pama);
@@ -483,9 +546,9 @@ static void Mode_Update(Control_Info_Typedef *Control_Info){
 	   	
 			 if(DM_8009_Motor[0].Data.Position < 0.0f )  
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;
-			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.05f)    
+			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.005f)    
 		   Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 0; 
-			 if(DM_8009_Motor[2].Data.Position < 0.20f&& DM_8009_Motor[2].Data.Position>0.10f)    
+			 if(DM_8009_Motor[2].Data.Position < 0.20f&& DM_8009_Motor[2].Data.Position>0.01f)    
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 0;
 			 if(DM_8009_Motor[3].Data.Position > -0.0f )  
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 0;
@@ -979,7 +1042,7 @@ if(remote_ctrl.rc.ch[3] != 0 ){//开始控制
 //0.0013：加速斜坡斜率（加速响应较快）
 //0.002：减速斜坡斜率（减速响应较缓
 //平滑
-	Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,-remote_ctrl.rc.ch[3] * 0.031,0.0013f);
+	Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,-remote_ctrl.rc.ch[3] * 0.031,0.001f);
 //沉默位置模式
 	//重置位置积分器
 	//左右腿位置刷新
@@ -987,7 +1050,7 @@ if(remote_ctrl.rc.ch[3] != 0 ){//开始控制
 	Control_Info->R_Leg_Info.Measure.Chassis_Position = 0 ; 
 }else if(remote_ctrl.rc.ch[3] == 0){//不移动了，开摆
 	//平滑归零
-	Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,0,0.002f);//0.002f--慢刹车
+	Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,0,0.004f);//0.002f--慢刹车
 }
 //2.约束(行车不规范，亲人两行泪)
 //此处限速1.6m/s
@@ -997,14 +1060,18 @@ VAL_LIMIT(Control_Info->Target_Velocity,-1.6f,1.6f);
 //雄起
 if(remote_ctrl.rc.s[1] == 1){
 //目标腿长0,38米
-Control_Info->L_Leg_Info.Target_Sip_Leg_Length = Test_Vmc_Target_L0_Chassis_High;
+Control_Info->L_Leg_Info.Target_Sip_Leg_Length = f_Ramp_Calc (Control_Info->L_Leg_Info.Target_Sip_Leg_Length, Test_Vmc_Target_L0_Chassis_High,0.0003f);
 //右
-Control_Info->R_Leg_Info.Target_Sip_Leg_Length =  Test_Vmc_Target_L0_Chassis_High;
+Control_Info->R_Leg_Info.Target_Sip_Leg_Length = f_Ramp_Calc (Control_Info->R_Leg_Info.Target_Sip_Leg_Length, Test_Vmc_Target_L0_Chassis_High,0.0003f);
 //正常
 }else {
 //目标0.17米
-Control_Info->L_Leg_Info.Target_Sip_Leg_Length = Test_Vmc_Target_L0_Chassis_Normal;
- Control_Info->R_Leg_Info.Target_Sip_Leg_Length =Test_Vmc_Target_L0_Chassis_Normal;
+//Control_Info->L_Leg_Info.Target_Sip_Leg_Length = Test_Vmc_Target_L0_Chassis_Normal +remote_ctrl.rc.ch[1] *0.00002f;
+//	Control_Info->L_Leg_Info.Target_Sip_Leg_Length = Test_Vmc_Target_L0_Chassis_Normal;
+// Control_Info->R_Leg_Info.Target_Sip_Leg_Length =Test_Vmc_Target_L0_Chassis_Normal;
+//	
+	Control_Info->L_Leg_Info.Target_Sip_Leg_Length = f_Ramp_Calc (Control_Info->L_Leg_Info.Target_Sip_Leg_Length,Test_Vmc_Target_L0_Chassis_Normal +(remote_ctrl.rc.ch[1] *0.000095f),0.0004f);
+	Control_Info->R_Leg_Info.Target_Sip_Leg_Length =f_Ramp_Calc (Control_Info->R_Leg_Info.Target_Sip_Leg_Length,Test_Vmc_Target_L0_Chassis_Normal +(remote_ctrl.rc.ch[1] *0.000095f),0.0004f);
 		}
 
 
@@ -1241,8 +1308,8 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 
 // 主要是修改Yaw_Err的来源
 // 将遥控器的摇杆值（范围：-660到660）代替DM_Yaw_Motor.Data.Position*/
- Control_Info->Yaw_Err = -(0.f - remote_ctrl.rc.ch[2] * RemoteToDegrees);
-
+ Control_Info->Yaw_Err =  f_Ramp_Calc(Control_Info->Yaw_Err , (remote_ctrl.rc.ch[2] * RemoteToDegrees),0.2f);
+ 
 // 	//计算偏航角误差 Yaw_Err，通过将电机位置从弧度转换为角度后取负值
  	//Control_Info->Yaw_Err = 0.f - DM_Yaw_Motor.Data.Position * RadiansToDegrees ;
 // 	//将偏航角误差限制在[-180~180]度
@@ -1265,11 +1332,15 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 // //将腿部坐标调节力矩分配给左右腿，方向相反以实现平衡
  	Control_Info->L_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
  	Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
+//	
+//	   Control_Info->L_Leg_Info.Moment.Roll_F =  PID_Calculate(&PID_Leg_Roll_F[0],-0.6f,(INS_Info.Roll_Angle));
+//   Control_Info->R_Leg_Info.Moment.Roll_F =    -PID_Calculate(&PID_Leg_Roll_F[1], -0.6f,(INS_Info.Roll_Angle));
+
 // //横滚控制，在左右腿处于不同高度时，保持机体水平方向平衡	
 // //基于滚转角度计算左右腿的滚动补偿力，增加稳定性。
- 	Control_Info->L_Leg_Info.Moment.Roll_F = -(INS_Info.Roll_Angle + 0.4f) * 10.f;
- 	Control_Info->R_Leg_Info.Moment.Roll_F =  (INS_Info.Roll_Angle + 0.4f) * 10.f;
-	
+ 	Control_Info->L_Leg_Info.Moment.Roll_F = f_Ramp_Calc( Control_Info->L_Leg_Info.Moment.Roll_F,   (-(INS_Info.Roll_Angle + 0.f) * 30.f)   ,0.5f );
+ 	Control_Info->R_Leg_Info.Moment.Roll_F =f_Ramp_Calc ( 	Control_Info->R_Leg_Info.Moment.Roll_F,  ((INS_Info.Roll_Angle + 0.f) * 30.f),0.5f);
+//	
 // //转向控制	
 // //将偏航转向力矩分别施加到左右腿上，方向相反实现转向。
  	Control_Info->L_Leg_Info.Moment.Turn_T =  PID_Yaw[1].Output;
@@ -1307,17 +1378,17 @@ static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info){
 // 	//         + 重力补偿（L_Leg_Info.Gravity_Compensation;）
 // 	//分析：已知，重力的方向垂直地面向下，且Gravity_Compensation的值为正，故综合力的方向向下，
 // 	//同重力方向
-// 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F+ Control_Info->L_Leg_Info.Moment.Roll_F  +  Control_Info->L_Leg_Info.Gravity_Compensation;  
-// 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F+ Control_Info->R_Leg_Info.Moment.Roll_F  +  Control_Info->R_Leg_Info.Gravity_Compensation;
+ 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F+ Control_Info->L_Leg_Info.Moment.Roll_F  +  Control_Info->L_Leg_Info.Gravity_Compensation;  
+ 	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F+ Control_Info->R_Leg_Info.Moment.Roll_F  +  Control_Info->R_Leg_Info.Gravity_Compensation;
 	
   	//同重力方向
 //  	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
 //  	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F +  Control_Info->R_Leg_Info.Gravity_Compensation;
 //		
-		
-		 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
-  	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F +  Control_Info->R_Leg_Info.Gravity_Compensation;
-	
+//		
+//		 	Control_Info->L_Leg_Info.F = Control_Info->L_Leg_Info.Moment.Leg_Length_F +  Control_Info->L_Leg_Info.Gravity_Compensation;  
+//  	Control_Info->R_Leg_Info.F = Control_Info->R_Leg_Info.Moment.Leg_Length_F +  Control_Info->R_Leg_Info.Gravity_Compensation;
+//	
 // // 	//驱动轮的转矩
 // // 	//公式：T = 平衡力矩
  // 	//         +转向力矩
@@ -1389,8 +1460,8 @@ static void Joint_Tourgue_Calculate(Control_Info_Typedef *Control_Info){
 //中间量：
 	float Current_max;
 float Tourgue_max;
-	Tourgue_max = 35.f;
-	Current_max =10000;
+	Tourgue_max = 30.f;
+	Current_max =12000;
 
 //偏腿
 //左腿

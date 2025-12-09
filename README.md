@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # 2026_Knight
 
 #### 介绍
@@ -49,3 +50,11 @@
 4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
 5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
 6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+=======
+# Knight_test6
+
+#### 介绍
+优化了QR权重，优化了移动控制，增加了横滚补偿功能
+
+
+>>>>>>> f6698d680b5a7d6d4d83f0d4706a0b1b03dc4f7c
