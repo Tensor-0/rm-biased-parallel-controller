@@ -44,10 +44,10 @@
 // 		//当关节电机没转到安全位置时
  	 	if(Control_Info.Init.Joint_Init.IF_Joint_Init == 0){
 // 			//让关节电机位置归零
-	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,15.f,1.f,0);
-	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,15.f,1.f,0);
-        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[2],0,0,15.f,1.f,0);	
-        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[3],0,0,15.f,1.f,0);
+	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,10.f,1.f,0);
+	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,10.f,1.f,0);
+        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[2],0,0,10.f,1.f,0);	
+        		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[3],0,0,10.f,1.f,0);
  			
 					
 			

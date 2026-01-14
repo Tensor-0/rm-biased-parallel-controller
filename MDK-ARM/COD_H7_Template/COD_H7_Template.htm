@@ -3,7 +3,7 @@
 <title>Static Call Graph - [COD_H7_Template\COD_H7_Template.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image COD_H7_Template\COD_H7_Template.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Sat Dec 13 18:45:05 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Wed Jan 14 17:13:49 2026
 <BR><P>
 <H3>Maximum Stack Usage =        692 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -2383,12 +2383,12 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = HAL_SPI_IRQHandler &rArr; HAL_DMA_Abort_IT
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort_IT
+<LI><a href="#[1f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_ErrorCallback
 <LI><a href="#[1f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_TxCpltCallback
 <LI><a href="#[1ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_CloseTransfer
 <LI><a href="#[1ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_SuspendCallback
 <LI><a href="#[1f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_TxRxCpltCallback
 <LI><a href="#[1f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_RxCpltCallback
-<LI><a href="#[1f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_ErrorCallback
 </UL>
 <BR>[Called By]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI2_IRQHandler
 </UL>
@@ -4942,7 +4942,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Control_Task
 </UL>
 
-<P><STRONG><a name="[134]"></a>Leg_Length_Control</STRONG> (Thumb, 432 bytes, Stack size 24 bytes, control_task.o(.text.Leg_Length_Control))
+<P><STRONG><a name="[134]"></a>Leg_Length_Control</STRONG> (Thumb, 472 bytes, Stack size 24 bytes, control_task.o(.text.Leg_Length_Control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = Leg_Length_Control &rArr; PID_Calculate &rArr; PID_ErrorHandle &rArr; __ARM_isinff
 </UL>
 <BR>[Calls]<UL><LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_Ramp_Calc
@@ -4951,7 +4951,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Control_Task
 </UL>
 
-<P><STRONG><a name="[135]"></a>VMC_Measure_F_Tp_Calculate</STRONG> (Thumb, 372 bytes, Stack size 40 bytes, control_task.o(.text.VMC_Measure_F_Tp_Calculate))
+<P><STRONG><a name="[135]"></a>VMC_Measure_F_Tp_Calculate</STRONG> (Thumb, 368 bytes, Stack size 40 bytes, control_task.o(.text.VMC_Measure_F_Tp_Calculate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = VMC_Measure_F_Tp_Calculate
 </UL>
 <BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_cos_f32
@@ -4966,8 +4966,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Control_Task
 </UL>
 
-<P><STRONG><a name="[137]"></a>LQR_T_Tp_Calculate</STRONG> (Thumb, 736 bytes, Stack size 4 bytes, control_task.o(.text.LQR_T_Tp_Calculate))
-<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = LQR_T_Tp_Calculate
+<P><STRONG><a name="[137]"></a>LQR_T_Tp_Calculate</STRONG> (Thumb, 780 bytes, Stack size 12 bytes, control_task.o(.text.LQR_T_Tp_Calculate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = LQR_T_Tp_Calculate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Control_Task
 </UL>

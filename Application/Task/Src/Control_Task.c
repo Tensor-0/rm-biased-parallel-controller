@@ -47,39 +47,60 @@ R=diag([0.75  0.25]); */
 
 
 R=diag([0.75  0.25]); */
-float K11[6] = {0,-412.921425f,387.990596f,-248.221187f,-28.349087f};
-float K12[6] = {0,-0.922566f,-18.491245f,-37.011157f,-2.290644f};
-float K13[6] = {0,-92.727783f,88.643227f,-30.230386f,-21.823378f};
-float K14[6] = {0,105.630452f,-93.945519f,19.668294f,-26.112547f};
-float K15[6] = {0,-1043.655528f,1080.127134f,-422.434524f,83.128812f};
-float K16[6] = {0,-59.200577f,60.051940f,-23.270970f,6.282138f};
-float K21[6] = {0,-583.855375f,662.372696f,-270.230733f,66.208364f};
-float K22[6] = {0,-24.862832f,39.600787f,-14.957582f,6.326057f};
-float K23[6] = {0,-249.498529f,291.240241f,-127.192951f,26.520236f};
-float K24[6] = {0,-403.712603f,416.374845f,-158.410887f,28.690800f};
-float K25[6] = {0,1563.102977f,-1429.120660f,463.833012f,86.995166f};
-float K26[6] = {0,91.827424f,-88.152111f,31.005557f,1.174900f};
+// float K11[6] = {0,-412.921425f,387.990596f,-248.221187f,-28.349087f};
+// float K12[6] = {0,-0.922566f,-18.491245f,-37.011157f,-2.290644f};
+// float K13[6] = {0,-92.727783f,88.643227f,-30.230386f,-21.823378f};
+// float K14[6] = {0,105.630452f,-93.945519f,19.668294f,-26.112547f};
+// float K15[6] = {0,-1043.655528f,1080.127134f,-422.434524f,83.128812f};
+// float K16[6] = {0,-59.200577f,60.051940f,-23.270970f,6.282138f};
+// float K21[6] = {0,-583.855375f,662.372696f,-270.230733f,66.208364f};
+// float K22[6] = {0,-24.862832f,39.600787f,-14.957582f,6.326057f};
+// float K23[6] = {0,-249.498529f,291.240241f,-127.192951f,26.520236f};
+// float K24[6] = {0,-403.712603f,416.374845f,-158.410887f,28.690800f};
+// float K25[6] = {0,1563.102977f,-1429.120660f,463.833012f,86.995166f};
+// float K26[6] = {0,91.827424f,-88.152111f,31.005557f,1.174900f};
+
+
+/*Q=diag([1000 10 500 100 5000 1]);
+
+
+R=diag([1.0  0.25]); */
+//float K11[6] = {0,-445.358703f,419.553571f,-244.519341f,-21.964859f};
+//float K12[6] = {0,-7.167430f,-9.461427f,-35.026456f,-1.666917f};
+//float K13[6] = {0,-114.712495f,107.885547f,-35.945491f,-17.817850f};
+//float K14[6] = {0,54.177721f,-47.788673f,6.479679f,-21.506980f};
+//float K15[6] = {0,-964.805955f,1011.993002f,-400.604751f,77.733483f};
+//float K16[6] = {0,-50.511059f,52.412749f,-20.884504f,5.678827f};
+//float K21[6] = {0,-613.911745f,717.023564f,-303.015750f,72.676599f};
+//float K22[6] = {0,-18.359517f,36.638540f,-16.302213f,6.964515f};
+//float K23[6] = {0,-315.237165f,362.277827f,-155.366618f,30.606798f};
+//float K24[6] = {0,-486.808600f,500.622329f,-189.812622f,33.031855f};
+//float K25[6] = {0,1907.648359f,-1739.606513f,561.138514f,76.185442f};
+//float K26[6] = {0,110.656894f,-105.842072f,36.923602f,0.455696f};
+
+
+
+float K11[6] = {0,-344.130023f,397.724995f,-265.059481f,-4.941964f};
+float K12[6] = {0,11.842778f,-18.891159f,-27.922778f,0.234829f};
+float K13[6] = {0,-288.953787f,281.637253f,-94.596365f,-10.720163f};
+float K14[6] = {0,-177.996259f,181.622915f,-75.159282f,-7.728459f};
+float K15[6] = {0,-835.889683f,930.198548f,-389.150660f,74.543061f};
+float K16[6] = {0,-58.542501f,66.926377f,-29.456008f,6.433743f};
+float K21[6] = {0,178.165050f,-120.123702f,-0.177096f,29.334646f};
+float K22[6] = {0,38.945329f,-38.984286f,14.882355f,2.371578f};
+float K23[6] = {0,-527.320926f,586.755646f,-245.391894f,46.899771f};
+float K24[6] = {0,-343.006363f,380.367381f,-159.679912f,32.616099f};
+float K25[6] = {0,1840.588017f,-1794.197881f,602.816532f,67.365929f};
+float K26[6] = {0,151.012003f,-149.438347f,51.534782f,1.364543f};
 //========================================================================================
 float K_3508_t=   2700.6667f;//
 //K_3508_t = 2,730.6666666;
 float K_Roll = 0.0003f;
 //=========================================================================================
 
-
-/*
-启用一个PID控制的流程
-1.定义PID参数数组float  PID_xxx_param[7] = {KP,KI,KD,Max_I,Max_Out,Dead_Band,Lpf_Cutoff_Freq};
-2.定义PID控制器PID_Info_TypeDef  PID_xxx;
-3.在Control_Init()函数中调用PID初始化函数，例如：PID_xxx.PID_Param_Init(&PID_xxx,PID_xxx_param);
-4.在需要使用PID控制的地方，设置目标值和测量值，例如：PID_xxx.Target = xxx; PID_xxx.Measure = xxx;
-5.调用PID计算函数，例如：PID_Calc(&PID_xxx);
-
-
-
-*/
 //static float  PID_Leg_Length_F_Param[7] 	  = {1500.f,1.f ,200000.f,0.f ,0  ,10.f,200.f}; //腿长PID(change)
 //腿长
-static float  PID_Leg_Length_F_Param[7] 	  = {1200.f,1.f ,20000.f,0.f ,0.f  ,10.f,100.f}; //腿长PID(change
+static float  PID_Leg_Length_F_Param[7] 	  = {1300.f,1.f ,60000.f,0.f ,0.f  ,10.f,100.f}; //腿长PID(change
 
 //static float  PID_Leg_Length_R_Param[7] 	  = {0.5f,0.f ,0.f,0.f ,0.f  ,0.01f,0.2f};//腿部长度横滚补偿PID
 
@@ -116,17 +137,19 @@ float Test_Theta = 0;                           //测试用的摆杆倾角--0度
 
 //float Joint_Angle_offset_Num = 0.635f;          //机械安装偏移补偿(并联腿)
 
-float Test_Vmc_Target_L0_Chassis_High   = 0.33f;//高底盘
-float Test_Vmc_Target_L0_Chassis_Normal = 0.20f;//正常高度底盘
+//float Test_Vmc_Target_L0_Chassis_High   = 0.25f;//高底盘
+//float Test_Vmc_Target_L0_Chassis_Normal = 0.23f;//正常高度底盘
 
 Control_Info_Typedef Control_Info ={
+//失控检测参数==================================================
+	//.Init.Balance_Init.Balance_Angle_Range = 0.1221730f,//区间为7度，正常平衡时角度波动在3度左右
 //腿长控制参数==================================================
-	.Base_Leg_Length_Low 		= 0.20f,//基础低腿长
-	.Base_Leg_Length_High   	= 0.31f,//基础高腿长
+	.Base_Leg_Length_Low 		= 0.14f,//基础低腿长
+	.Base_Leg_Length_High   	= 0.20f,//基础高腿长
 //横滚控制参数==================================================
 	.Roll ={
 		.Distance_Two_Wheel = 0.4157f,//轮机械间距，单位米
-		.Offset = 0.0130947f,// //陀螺仪角度补偿
+		.Offset = 0.0f,// //陀螺仪角度补偿
         .Target_Angle = 0.0f,////目标横滚角
 
 	},
@@ -135,16 +158,18 @@ Control_Info_Typedef Control_Info ={
 .L_Leg_Info = {
 
 	.Biased = {
-		.L_Thigh_Link = 0.11760f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
-		.L_Calf_Link  = 0.098f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
-		.K = 0.4558139f,//连杆长度比K=AD/AH
+		.L_Thigh_Link = 0.118114f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
+		.L_Calf_Link  = 0.100f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
+		
+		.K = 0.465116f,//连杆长度比K=AD/AH
 
 		
 	},//偏置并联
-	.Gravity_Compensation = 42.f,//重力的一半
+	.Gravity_Compensation = 100.f,//重力的一半
 	//.Link_Gravity_Compensation_Angle = 0.4701917f,//连杆重心补偿角度
 	.Link_Gravity_Compensation_Angle = 0.0f,//连杆重心补偿角度
-	.Phi_Comp_Angle =  0.007f,//当车平衡时，陀螺仪读出来的数据
+	//.Phi_Comp_Angle =  -0.0242711f,//当车平衡时，陀螺仪读出来的数据
+	.Phi_Comp_Angle =  -0.f,//当车平衡时，陀螺仪读出来的数据
 //.Phi_Comp_Angle =  0.0f,//当车平衡时，陀螺仪读出来的数据
 },//单腿测试
 
@@ -154,15 +179,16 @@ Control_Info_Typedef Control_Info ={
 .R_Leg_Info = {
 
 	.Biased = {
-		.L_Thigh_Link = 0.11760f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
-		.L_Calf_Link  = 0.098f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
-		.K = 0.4558139f,//连杆长度比K=AD/AH
+		.L_Thigh_Link = 0.118114f,//大腿连杆，连杆直驱--动力长后杆长度（AH）
+		.L_Calf_Link  = 0.100f,//小腿连杆(仿生机器人领域标准术语）动力短前杆长度（AD）,连杆传动
+		.K = 0.465116f,//连杆长度比K=AD/AH
 
 		
 	},//2
-	.Gravity_Compensation = 42.f,
+	.Gravity_Compensation = 100.f,
     .Link_Gravity_Compensation_Angle = 0.4701917f,
-.Phi_Comp_Angle =  0.007f,//当车平衡时，陀螺仪读出来的数据
+//.Phi_Comp_Angle =  -0.0242711f,//当车平衡时，陀螺仪读出来的数据
+	.Phi_Comp_Angle =  -0.f,//当车平衡时，陀螺仪读出来的数据
 	//.Phi_Comp_Angle =  0.0f,//当车平衡时，陀螺仪读出来的数据
 },
 
@@ -242,16 +268,8 @@ void Control_Task(void const * argument)
 
 		//腿长控制
 		Leg_Length_Control(&Control_Info);
-
-	//==================================================================================================
-		//上级函数
-		//Target_Update(&Control_Info);
-		//简化模型的目标控制完成之后，开始为转化到真实的复杂小车结构做准备
-		//整个过程有点像解码器和编译器
-		//解码器把来自真实世界的模型数据转化为简化模型的数据，然后在上位机编写控制逻辑算法，编写完成之后，
-		//解码器把简化模型的数据转化为真实世界的数据
-		 //解码器函数
-		//力
+//==============================================================
+	
 	      VMC_Measure_F_Tp_Calculate(&Control_Info);	
         LQR_X_Update(&Control_Info);
 		LQR_T_Tp_Calculate(&Control_Info);
@@ -767,7 +785,7 @@ float K_Yaw_P = 0.2f;
 //底盘高度控制
 static void Chassis_Height_Control(Control_Info_Typedef *Control_Info){ 
 	//切换底盘高度响应快慢
-float K_Height = 0.00035f;
+float K_Height = 0.00030f;
 /*腿长控制*/
 //首先，根据遥控器指令设置基础腿长
 
@@ -839,19 +857,19 @@ Control_Info->R_Leg_Info.Total_Leg_Length =   f_Ramp_Calc  (Control_Info->R_Leg_
 
    
  //设置初始重力补偿值为 100。f
- Control_Info->R_Leg_Info.Gravity_Compensation = 42.f;
- Control_Info->L_Leg_Info.Gravity_Compensation = 42.f;
+ Control_Info->R_Leg_Info.Gravity_Compensation = 100.f;
+ Control_Info->L_Leg_Info.Gravity_Compensation = 100.f;
  //如果左腿处于支撑状态，则取消其滚动补偿，并提高重力补偿至 140。
  	if(Control_Info->L_Leg_Info.Support.Flag == 1){
 	   
- 		//Control_Info->L_Leg_Info.Moment.Roll_F = 0;
- 	  //Control_Info->L_Leg_Info.Gravity_Compensation = 0.f;
+ 		Control_Info->L_Leg_Info.Moment.Roll_F = 0;
+ 	  Control_Info->L_Leg_Info.Gravity_Compensation = 100.f;
  	}
  	//同理处理右腿支撑情况。
  	if(Control_Info->R_Leg_Info.Support.Flag == 1){
 	
- 		//Control_Info->R_Leg_Info.Moment.Roll_F = 0;
- 		//Control_Info->R_Leg_Info.Gravity_Compensation = 0.f;
+ 		Control_Info->R_Leg_Info.Moment.Roll_F = 0;
+ 		Control_Info->R_Leg_Info.Gravity_Compensation = 100.f;
 
 	
  	}
@@ -940,15 +958,15 @@ static void VMC_Measure_F_Tp_Calculate(Control_Info_Typedef *Control_Info){
 
 		//检测标志
 			//左腿
-			Control_Info->L_Leg_Info.Support.Flag = (Control_Info->L_Leg_Info.Support.FN < 42.f);
+			Control_Info->L_Leg_Info.Support.Flag = (Control_Info->L_Leg_Info.Support.FN < 22.f);
 			//右腿
-			Control_Info->R_Leg_Info.Support.Flag = (Control_Info->R_Leg_Info.Support.FN < 42.f);
+			Control_Info->R_Leg_Info.Support.Flag = (Control_Info->R_Leg_Info.Support.FN < 22.f);
 	//车不平衡时
 	}else {
 	      Control_Info->L_Leg_Info.Support.Flag = 0;//红灯
        Control_Info->R_Leg_Info.Support.Flag = 0;
-	   Control_Info->L_Leg_Info.Support.FN   = 72.f;
-	   Control_Info->R_Leg_Info.Support.FN   =72.f;
+	   Control_Info->L_Leg_Info.Support.FN   = 100.f;
+	   Control_Info->R_Leg_Info.Support.FN   =100.f;
 
 
 	}
@@ -977,6 +995,11 @@ static void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info){
 		Control_Info->L_Leg_Info.LQR_K[0][5] = 0; 
 	
 
+		Control_Info->L_Leg_Info.LQR_K[1][2] = 0;
+	    Control_Info->L_Leg_Info.LQR_K[1][3] =   0;
+	    Control_Info->L_Leg_Info.LQR_K[1][4] =   0;
+	    Control_Info->L_Leg_Info.LQR_K[1][5] =   0;
+
 	}
 	//右腿
 	if(Control_Info->R_Leg_Info.Support.Flag == 1){
@@ -987,6 +1010,10 @@ static void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info){
 		Control_Info->R_Leg_Info.LQR_K[0][3] = 0; 
 		Control_Info->R_Leg_Info.LQR_K[0][4] = 0;
 		Control_Info->R_Leg_Info.LQR_K[0][5] = 0; 
+        Control_Info->R_Leg_Info.LQR_K[1][2] = 0;
+        Control_Info->R_Leg_Info.LQR_K[1][3] =   0;
+		Control_Info->R_Leg_Info.LQR_K[1][4] =   0;
+		Control_Info->R_Leg_Info.LQR_K[1][5] =   0;
 
 
 
@@ -1129,7 +1156,7 @@ static void Joint_Tourgue_Calculate(Control_Info_Typedef *Control_Info){
 //中间量：
 	float Current_max;
 float Tourgue_max;
-	Tourgue_max = 35.f;
+	Tourgue_max = 15.f;
 	Current_max =10000;
 
 //偏腿
@@ -1184,8 +1211,8 @@ Control_Info->R_Leg_Info.SendValue.T_Calf = (-Control_Info->R_Leg_Info.A * Contr
 //	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T * 1000.f);
 //	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1000.f);
 
-	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T *1000.f);
-	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1000.f);
+	 Control_Info->L_Leg_Info.SendValue.Current = (int16_t)( Control_Info->L_Leg_Info.T *1200.f);
+	 Control_Info->R_Leg_Info.SendValue.Current = (int16_t)( -Control_Info->R_Leg_Info.T * 1200.f);
 
 	 
 	 VAL_LIMIT(Control_Info->L_Leg_Info.SendValue.Current,-Current_max,Current_max);
