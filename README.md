@@ -1,60 +1,63 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# 2026_Knight
+# rm-biased-parallel-controller
 
-#### 介绍
-偏置并联底盘的运控系统
-=======
-# Knight_test3
+针对 RoboMaster 偏置并联机构轮腿机器人的 C 语言运动控制框架。本项目实现了从底层硬件驱动到高层平衡算法的全栈迁移与开发。
 
-#### 介绍
-可平衡的初级版本，表现为颤抖，在前后移动时易失衡
->>>>>>> 90fea63a15fc7e14fc4a755e0fb9329b48952874
-=======
-# Knight_test_5_1
+## 🚀 版本说明 (V2.0-Linux)
 
-#### 介绍
-底盘稳定版，优化了QR权重
->>>>>>> 2695bde8955eefab20056662a14db6e5a264f4c5
+本版本完成了从 Windows/Keil 环境向 **Linux/GCC** 开发环境的全面迁移，旨在利用现代开发工具链提升算法迭代效率。
 
-#### 软件架构
-软件架构说明
+### 主要更新
+- **环境迁移**：全面支持 Ubuntu 22.04+，采用 VS Code + EIDE + arm-none-eabi-gcc 工作流。
+- **构建优化**：放弃专有 `.uvprojx` 配置，转向通用的 `Makefile` 构建体系，支持秒级增量编译。
+- **算法对齐**：针对 STM32H723VGTx 平台优化了浮点运算指令，确保 LQR 与 VMC 实时解算频率。
 
+---
 
-#### 安装教程
+## 🛠️ 环境配置
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 开发工具
+- **OS**: Ubuntu 22.04 LTS
+- **IDE**: VS Code + [Embedded IDE (EIDE)](https://em-ide.com/)
+- **Compiler**: arm-none-eabi-gcc (推荐 10.3.1+)
+- **Configuration**: STM32CubeMX (用于外设初始化与代码生成)
 
-#### 使用说明
+### 编译指南
+1. 在 VS Code 中安装 **EIDE** 插件。
+2. 打开本工程目录，EIDE 将自动识别 `.eide` 配置文件。
+3. 点击 EIDE 面板中的 **"构建" (🔨)** 图标。
+4. 编译产物 `.hex` 和 `.bin` 文件将生成在 `build/` 目录下。
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+---
 
-#### 参与贡献
+## 🧠 核心算法架构
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+项目聚焦于解决轮腿机器人在复杂动态环境下的平衡与越障能力：
 
+### 1. 偏置并联机构解算
+针对非对称/偏置并联腿部机构，实现了高效的：
+- **正运动学 (FK)**：通过足端关节编码器解算机身相对于地面的位姿。
+- **逆运动学 (IK)**：根据期望高度与倾角，精确映射至五个联动关节的期望角度。
 
-#### 特技
+### 2. VMC (虚拟模型控制)
+将复杂的连杆机构抽象为虚拟弹簧阻尼模型。
+- **力矩映射**：通过雅可比矩阵将虚拟空间的作用力（$F$, $T$）映射至关节电机的输出扭矩。
+- **地形适应**：利用阻尼项吸收着地冲击。
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
-=======
-# Knight_test6
+### 3. LQR 平衡控制
+基于线性二次调节器，解算机身俯仰角（Pitch）与位移的平衡。
+- **状态空间方程**：构建包含机身位移、速度、倾角、角速度的 6 维或 12 维状态向量。
+- **动态调参**：支持实时修改 $Q$ 和 $R$ 权重矩阵，以平衡抗扰动能力与能量损耗。
 
-#### 介绍
-优化了QR权重，优化了移动控制，增加了横滚补偿功能
+---
 
+## 📂 项目结构
 
->>>>>>> f6698d680b5a7d6d4d83f0d4706a0b1b03dc4f7c
+```text
+.
+├── Application/Task    # 核心控制逻辑与平衡算法
+├── BSP                 # 针对 RoboMaster A/B/C 型板卡的底层支持包
+├── Core                # STM32 HAL 库启动代码与中断处理
+├── Drivers             # CMSIS 与外设驱动库
+├── .eide               # EIDE 编译配置文件
+├── STM32H723XG_FLASH.ld # GCC 链接脚本
+└── COD_H7_Template.ioc # STM32CubeMX 配置文件
