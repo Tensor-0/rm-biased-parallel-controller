@@ -10,6 +10,7 @@
 #include "PID.h"
 #include "Motor.h"
 #include "arm_math.h"
+#include "control_io.h"//I/O边界：输入快照 + 输出命令包
 
 //float K11[6] = {0,-161.117157f,196.474176f,-210.652836f,-22.628436f};
 //float K12[6] = {0,12.798983f,-27.543440f,-37.270138f,-0.389884f};
@@ -201,20 +202,20 @@ Control_Info_Typedef Control_Info ={
 //函数区-------------------------------------------------------------------------------------------
 static void Pid_Init(Control_Info_Typedef *Control_Info);
 /*清零所有状态量/设置默认PID参数/配置初始工作模式/分配内存资源/系统启动时调用一次*/
-static void Check_Low_Voltage_Beep(Control_Info_Typedef *Control_Info);//1.检查电池（低电压警告）
-static void Mode_Update(Control_Info_Typedef *Control_Info);           //2.模式更新
-static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info);    //3.看腿的形状（读关节角度，并映射到VMC坐标系）
+static void Check_Low_Voltage_Beep(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);//1.检查电池（低电压警告）
+static void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);           //2.模式更新
+static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);    //3.看腿的形状（读关节角度，并映射到VMC坐标系）
 static void VMC_Calculate(Control_Info_Typedef *Control_Info);         //4.知道形状后，连杆正运动学解算，求简化腿腿长L0和摆角Phi0，轮子速度
 static void LQR_K_Update(Control_Info_Typedef *Control_Info);          //5.得到简化腿长后，更新LQR控制器的增益矩阵K
 
-static void Measure_Update(Control_Info_Typedef *Control_Info);        //6.更新传感器数据和目标值
+static void Measure_Update(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);        //6.更新传感器数据和目标值
 
 //底盘移动控制--前进后退（X轴），左右转（YAW轴）
-static void Chassis_Move_Control(Control_Info_Typedef *Control_Info);
+static void Chassis_Move_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);
 //底盘高度控制
-static void Chassis_Height_Control(Control_Info_Typedef *Control_Info);
+static void Chassis_Height_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);
 //底盘横滚控制
-static void Chassis_Roll_Control(Control_Info_Typedef *Control_Info);
+static void Chassis_Roll_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in);
 //腿长控制
 static void Leg_Length_Control(Control_Info_Typedef *Control_Info);
 //static void Target_Update(Control_Info_Typedef *Control_Info);
@@ -226,7 +227,8 @@ static void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info);		//9.自适�
 static void Comprehensive_F_Calculate(Control_Info_Typedef *Control_Info);//10.综合计算
 static void Joint_Tourgue_Calculate(Control_Info_Typedef *Control_Info);//11.实际向电机发送数据的计算
 
-
+/* 输入快照（每周期采集一次） */
+static control_input_snapshot_t g_ctrl_input;
 
 TickType_t Control_Task_SysTick = 0;
 
@@ -241,41 +243,48 @@ void Control_Task(void const * argument)
 	for(;;)
   {
 		Control_Task_SysTick = osKernelSysTick();
+
+		/* ====== 输入边界：一次性采集快照 ====== */
+		Control_InputSnapshot_Update(&g_ctrl_input);
+
 		//电池
-		Check_Low_Voltage_Beep(&Control_Info);
+		Check_Low_Voltage_Beep(&Control_Info, &g_ctrl_input);
 		//开关
 		//上级函数
-        Mode_Update(&Control_Info);
+		      Mode_Update(&Control_Info, &g_ctrl_input);
 		//K
 		//传感器-----------------------
-		Joint_Angle_Offset(&Control_Info);
+		Joint_Angle_Offset(&Control_Info, &g_ctrl_input);
 		//解码器
 		//从真实形状转化为简化模型，方便之后的目标控制
-	    VMC_Calculate(&Control_Info);
+		   VMC_Calculate(&Control_Info);
 		//上级函数--------------------------------
 		 //转化到二阶简化模型之后，按照二阶独轮车的模型进行控制
 		LQR_K_Update(&Control_Info);
 		//传感器函数
 		//测量与目标
-	    Measure_Update(&Control_Info);
+		   Measure_Update(&Control_Info, &g_ctrl_input);
 	//=======================================================
 		//底盘移动控制
-		Chassis_Move_Control(&Control_Info);
+		Chassis_Move_Control(&Control_Info, &g_ctrl_input);
 		//底盘高度控制
-		Chassis_Height_Control(&Control_Info);
+		Chassis_Height_Control(&Control_Info, &g_ctrl_input);
 		//底盘横滚控制
-		Chassis_Roll_Control(&Control_Info);
+		Chassis_Roll_Control(&Control_Info, &g_ctrl_input);
 
 		//腿长控制
 		Leg_Length_Control(&Control_Info);
 //==============================================================
 	
-	      VMC_Measure_F_Tp_Calculate(&Control_Info);	
-        LQR_X_Update(&Control_Info);
+		     VMC_Measure_F_Tp_Calculate(&Control_Info);
+		      LQR_X_Update(&Control_Info);
 		LQR_T_Tp_Calculate(&Control_Info);
 		Comprehensive_F_Calculate(&Control_Info);
 		//输出
 		Joint_Tourgue_Calculate(&Control_Info);
+
+		/* ====== 输出边界：打包命令 ====== */
+		Control_OutputPacket_Generate(&Control_Info, &g_motor_cmd);
 
 
 
@@ -298,9 +307,9 @@ void Control_Task(void const * argument)
   /* USER CODE END Control_Task */
  static uint32_t Tick = 0;
 
-static void Check_Low_Voltage_Beep(Control_Info_Typedef *Control_Info){
+static void Check_Low_Voltage_Beep(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
  
-	 Control_Info->VDC = USER_ADC_Voltage_Update();
+	 Control_Info->VDC = in->vbat;
  	
 //	 if(Control_Info->VDC < 22.f){//如果电压低于22V
 //	    Tick++;
@@ -349,14 +358,14 @@ static void Pid_Init(Control_Info_Typedef *Control_Info){
 }
 
 
-static void Mode_Update(Control_Info_Typedef *Control_Info){
+static void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 
 
-   if(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1]){
-		 /*逻辑冗余：由于||(或运算符)的存在，当remote_ctrl.rc.s[1] == 3成立时，第二个条件不会被执行（短路求值）*/
+   if(in->rc.s[1] == 3 || in->rc.s[1]){
+		 /*逻辑冗余：由于||(或运算符)的存在，当in->rc.s[1] == 3成立时，第二个条件不会被执行（短路求值）*/
 	 
 	   Control_Info->Init.IF_Begin_Init = 1;
-	 if(remote_ctrl.rc.s[1] == 2){
+	 if(in->rc.s[1] == 2){
 	 Control_Info->Init.IF_Begin_Init = 0;
 	 Control_Info->Chassis_Situation = CHASSIS_WEAK;
 	 }
@@ -374,13 +383,13 @@ static void Mode_Update(Control_Info_Typedef *Control_Info){
 	        
    if(Control_Info->Init.Joint_Init.IF_Joint_Init == 0){  
 	   	
-			 if(DM_8009_Motor[0].Data.Position < 0.0f )  
+			 if(in->joint[0].position < 0.0f )
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;
-			 if(DM_8009_Motor[1].Data.Position > -0.21f &&  DM_8009_Motor[1].Data.Position<-0.005f)    
-		   Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 0; 
-			 if(DM_8009_Motor[2].Data.Position < 0.20f&& DM_8009_Motor[2].Data.Position>0.01f)    
+			 if(in->joint[1].position > -0.21f &&  in->joint[1].position<-0.005f)
+			  Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] = 0;
+			 if(in->joint[2].position < 0.20f&& in->joint[2].position>0.01f)
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[2] = 0;
-			 if(DM_8009_Motor[3].Data.Position > -0.0f )  
+			 if(in->joint[3].position > -0.0f )
 			 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 1; else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 0;
 			
 			 if(Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] + Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] 
@@ -416,42 +425,42 @@ static void Mode_Update(Control_Info_Typedef *Control_Info){
     }
 }
 
-static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info){
+static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 
 
     // //左小腿摆角与0号关节电机的映射(摆角=电机角度)
-	 Control_Info->L_Leg_Info.Biased.Calf_Angle 		 =  DM_8009_Motor[0].Data.Position ;//* RadiansToDegrees;
+	 Control_Info->L_Leg_Info.Biased.Calf_Angle 		 =  in->joint[0].position ;//* RadiansToDegrees;
 	// //左大腿摆角与1号关节电机的映射（摆角=电机角度）
-	 Control_Info->L_Leg_Info.Biased.Thigh_Angle 		 =  PI+ DM_8009_Motor[1].Data.Position;//) * RadiansToDegrees;
+	 Control_Info->L_Leg_Info.Biased.Thigh_Angle 		 =  PI+ in->joint[1].position;//) * RadiansToDegrees;
 	//角速度
 		//左大腿
-		Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot = DM_8009_Motor[1].Data.Velocity;
+		Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot = in->joint[1].velocity;
 		//左小腿
-		Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot  = DM_8009_Motor[0].Data.Velocity;
+		Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot  = in->joint[0].velocity;
 	//力矩映射
 		//左大腿--对应T1
-		Control_Info->L_Leg_Info.Biased.T_Thigh = DM_8009_Motor[1].Data.Torque;
+		Control_Info->L_Leg_Info.Biased.T_Thigh = in->joint[1].torque;
 		//左小腿---对应T2
-		Control_Info->L_Leg_Info.Biased.T_Calf  = DM_8009_Motor[0].Data.Torque;
+		Control_Info->L_Leg_Info.Biased.T_Calf  = in->joint[0].torque;
 
 
 	//测试用
 	//测试用：假设，当腿完全收缩时-也就是到达最低机械限位，时，大腿和小腿连杆可以张到180度（实际是180.03度）
 
 	// //右大腿摆角和2号关节电机的映射(同左腿)
-	 Control_Info->R_Leg_Info.Biased.Thigh_Angle 		 =  DM_8009_Motor[2].Data.Position ;//* RadiansToDegrees;
+	 Control_Info->R_Leg_Info.Biased.Thigh_Angle 		 =  in->joint[2].position ;//* RadiansToDegrees;
 	// //右小腿摆角和3号关节电机的映射
-	 Control_Info->R_Leg_Info.Biased.Calf_Angle  		 =  PI+ DM_8009_Motor[3].Data.Position ;//* RadiansToDegrees;
+	 Control_Info->R_Leg_Info.Biased.Calf_Angle  		 =  PI+ in->joint[3].position ;//* RadiansToDegrees;
 	//角速度
 		//右大腿
-		Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot = DM_8009_Motor[2].Data.Velocity;
+		Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot = in->joint[2].velocity;
 		//右小腿
-		Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot  = DM_8009_Motor[3].Data.Velocity;
+		Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot  = in->joint[3].velocity;
 	//力矩映射
 		//右大腿--对应T2
-		Control_Info->R_Leg_Info.Biased.T_Thigh = DM_8009_Motor[2].Data.Torque;
+		Control_Info->R_Leg_Info.Biased.T_Thigh = in->joint[2].torque;
 		//右小腿---对应T1
-		Control_Info->R_Leg_Info.Biased.T_Calf  = DM_8009_Motor[3].Data.Torque;
+		Control_Info->R_Leg_Info.Biased.T_Calf  = in->joint[3].torque;
 
 
 }
@@ -578,17 +587,17 @@ L_L0= Control_Info->L_Leg_Info.Sip_Leg_Length;//偏腿
 
 
 
-static void Measure_Update(Control_Info_Typedef *Control_Info){
+static void Measure_Update(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 //填状态
 //横滚
 
 	//左腿
 		//身体平衡
 	//机体水平倾角
-		Control_Info->L_Leg_Info.Measure.Phi       = -INS_Info.Angle[2]-   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
-	//Control_Info->L_Leg_Info.Measure.Phi       = INS_Info.Angle[2]+   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+		Control_Info->L_Leg_Info.Measure.Phi       = -in->ins.Angle[2]-   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+	//Control_Info->L_Leg_Info.Measure.Phi       = in->ins.Angle[2]+   Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
 	
-		Control_Info->L_Leg_Info.Measure.Phi_dot   = -INS_Info.Gyro[0];
+		Control_Info->L_Leg_Info.Measure.Phi_dot   = -in->ins.Gyro[0];
 		//腿的姿势
 		//Control_Info->L_Leg_Info.Measure.Theta     = 	((PI/2) - Control_Info->L_Leg_Info.VMC.Phi0) - Control_Info->L_Leg_Info.Measure.Phi;
 		Control_Info->L_Leg_Info.Measure.Theta     =     (	((PI/2) - Control_Info->L_Leg_Info.Sip_Leg_Angle) - Control_Info->L_Leg_Info.Measure.Phi);// +(PI/6.0f);//+ Control_Info->L_Leg_Info.Link_Gravity_Compensation_Angle;
@@ -602,9 +611,9 @@ static void Measure_Update(Control_Info_Typedef *Control_Info){
 	
 		//右腿
 	// 右腿姿态（使用相同IMU数据）	
-		Control_Info->R_Leg_Info.Measure.Phi 		  = -INS_Info.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
-		//Control_Info->R_Leg_Info.Measure.Phi 		  = INS_Info.Angle[2] + Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
-		Control_Info->R_Leg_Info.Measure.Phi_dot 	= -INS_Info.Gyro[0];
+		Control_Info->R_Leg_Info.Measure.Phi 		  = -in->ins.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+		//Control_Info->R_Leg_Info.Measure.Phi 		  = in->ins.Angle[2] + Control_Info->L_Leg_Info.Phi_Comp_Angle;//注意极性
+		Control_Info->R_Leg_Info.Measure.Phi_dot 	= -in->ins.Gyro[0];
 		
 		Control_Info->R_Leg_Info.Measure.Theta 		= (Control_Info->R_Leg_Info.Sip_Leg_Angle -(PI/2)) - Control_Info->R_Leg_Info.Measure.Phi ;//+(PI/6.0f);//+Control_Info->R_Leg_Info.Link_Gravity_Compensation_Angle;
 		Control_Info->R_Leg_Info.Measure.Theta_dot  = ( -Control_Info->R_Leg_Info.X_J_Dot     * arm_cos_f32(-Control_Info->R_Leg_Info.Measure.Theta)
@@ -612,7 +621,7 @@ static void Measure_Update(Control_Info_Typedef *Control_Info){
 	                                             	/  Control_Info->R_Leg_Info.Sip_Leg_Length;	
 	
 
-Control_Info->L_Leg_Info.Velocity.Wheel = Chassis_Motor[0].Data.Velocity*(PI /30.f)/15.f;
+Control_Info->L_Leg_Info.Velocity.Wheel = in->wheel[0].velocity*(PI /30.f)/15.f;
 /*计算原理​
 W=v wheel− ϕ˙ + θ˙ 
 ​轮速补偿​：减去底盘旋转引起的速度分量
@@ -641,7 +650,7 @@ Control_Info->L_Leg_Info.Velocity.Fusion   		  = Control_Info->L_Leg_Info.Veloci
 Control_Info->L_Leg_Info.Measure.Chassis_Velocity = Control_Info->L_Leg_Info.Velocity.Fusion;
 //右腿
   //右腿同理
-	Control_Info->R_Leg_Info.Velocity.Wheel 	= -Chassis_Motor[1].Data.Velocity*(3.141593f/30.f)/15.f;
+	Control_Info->R_Leg_Info.Velocity.Wheel 	= -in->wheel[1].velocity*(3.141593f/30.f)/15.f;
 
   	Control_Info->R_Leg_Info.Velocity.W     	= (Control_Info->R_Leg_Info.Velocity.Wheel - Control_Info->R_Leg_Info.Measure.Phi_dot + Control_Info->R_Leg_Info.Measure.Theta_dot);
 
@@ -691,8 +700,8 @@ Accel = [
 g × sin(Φ)：重力分量在底盘平面投影
 (a_z - g × cos(Φ)) × sin(Φ)：Z轴加速度扣除重力分量后的有效分量
 */			
- Control_Info->Accel =  (float) (( -INS_Info.Accel[1] + powf(INS_Info.Gyro[2],2)*0.155f) - GravityAccel * arm_sin_f32 (-INS_Info.Angle[2])) * arm_cos_f32 (-INS_Info.Angle[2]) + 
-	                              (   INS_Info.Accel[2] - GravityAccel* arm_cos_f32 (-INS_Info.Angle[2])) * arm_sin_f32 (-INS_Info.Angle[2]) ; 		
+ Control_Info->Accel =  (float) (( -in->ins.Accel[1] + powf(in->ins.Gyro[2],2)*0.155f) - GravityAccel * arm_sin_f32 (-in->ins.Angle[2])) * arm_cos_f32 (-in->ins.Angle[2]) +
+                               (   in->ins.Accel[2] - GravityAccel* arm_cos_f32 (-in->ins.Angle[2])) * arm_sin_f32 (-in->ins.Angle[2]) ;
 
 //8. ​特殊状态处理（CHASSIS_WEAK）​​
 //当底盘处于虚弱状态（未平衡状态）时：
@@ -725,7 +734,7 @@ g × sin(Φ)：重力分量在底盘平面投影
 
 //=====================================================================================================================
 //底盘移动控制
-static void Chassis_Move_Control(Control_Info_Typedef *Control_Info){ 
+static void Chassis_Move_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 //响应区
 
 float K_Velocity = 0.001f;//前进响应快慢
@@ -733,16 +742,16 @@ float K_Velocity = 0.001f;//前进响应快慢
 float K_Brake = 0.002f;//刹车响应快慢
 //前进后退
 //移动指令============================================================================================================
-if(remote_ctrl.rc.ch[3] != 0 ){//开始控制
+if(in->rc.ch[3] != 0 ){//开始控制
 
-Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,-remote_ctrl.rc.ch[3] * 0.00242,K_Velocity);
+Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,-in->rc.ch[3] * 0.00242,K_Velocity);
 
 	//重置位置积分器
 	//左右腿位置刷新
 	Control_Info->L_Leg_Info.Measure.Chassis_Position = 0;
 	Control_Info->R_Leg_Info.Measure.Chassis_Position = 0 ; 
 
-}else if(remote_ctrl.rc.ch[3] == 0){//不移动了，开摆
+}else if(in->rc.ch[3] == 0){//不移动了，开摆
 	//平滑归零
 	Control_Info->Target_Velocity = f_Ramp_Calc(Control_Info->Target_Velocity,0,K_Brake);//0.002f--慢刹车
 }
@@ -760,7 +769,7 @@ float K_Yaw_P = 0.2f;
 
 // 主要是修改Yaw_Err的来源
 // 将遥控器的摇杆值（范围：-660到660）代替DM_Yaw_Motor.Data.Position*/
- Control_Info->Yaw_Err =  f_Ramp_Calc(Control_Info->Yaw_Err , (remote_ctrl.rc.ch[2] * RemoteToDegrees),K_Yaw_P);
+ Control_Info->Yaw_Err =  f_Ramp_Calc(Control_Info->Yaw_Err , (in->rc.ch[2] * RemoteToDegrees),K_Yaw_P);
  
 // 	//计算偏航角误差 Yaw_Err，通过将电机位置从弧度转换为角度后取负值
  	//Control_Info->Yaw_Err = 0.f - DM_Yaw_Motor.Data.Position * RadiansToDegrees ;
@@ -772,7 +781,7 @@ float K_Yaw_P = 0.2f;
 // //上级：目标yaw轴角度偏差为0，输入Control_Info->Yaw_Err，输出：PID_Yaw[0].Output
  	PID_Calculate(&PID_Yaw[0], 0, Control_Info->Yaw_Err);
 // //下级：目标yaw轴角速度为0，输入INS_Info.Yaw_Gyro，输出：PID_Yaw[1].Output
- 	PID_Calculate(&PID_Yaw[1],PID_Yaw[0].Output,INS_Info.Yaw_Gyro);
+ 	PID_Calculate(&PID_Yaw[1],PID_Yaw[0].Output,in->ins.Yaw_Gyro);
 // //转向控制	
 // //将偏航转向力矩分别施加到左右腿上，方向相反实现转向。
  	Control_Info->L_Leg_Info.Moment.Turn_T =  PID_Yaw[1].Output;
@@ -783,13 +792,13 @@ float K_Yaw_P = 0.2f;
 //======================================================================================================================
 
 //底盘高度控制
-static void Chassis_Height_Control(Control_Info_Typedef *Control_Info){ 
+static void Chassis_Height_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 	//切换底盘高度响应快慢
 float K_Height = 0.00030f;
 /*腿长控制*/
 //首先，根据遥控器指令设置基础腿长
 
-if(remote_ctrl.rc.s[1] == 1){//高腿长指令
+if(in->rc.s[1] == 1){//高腿长指令
 	 Control_Info->L_Leg_Info.Base_Leg_Length = f_Ramp_Calc (Control_Info->L_Leg_Info.Base_Leg_Length,Control_Info->Base_Leg_Length_High,K_Height);
 	 Control_Info->R_Leg_Info.Base_Leg_Length = f_Ramp_Calc (Control_Info->R_Leg_Info.Base_Leg_Length,Control_Info->Base_Leg_Length_High,K_Height);
 
@@ -802,7 +811,7 @@ if(remote_ctrl.rc.s[1] == 1){//高腿长指令
 }
 }
 //底盘横滚控制
-static void Chassis_Roll_Control(Control_Info_Typedef *Control_Info){ 
+static void Chassis_Roll_Control(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in){
 //========================================================================================================
 //设置基础腿长后，引入横滚补偿，保持机体Roll轴平衡
 /*机器人发生侧倾时通过调节腿长和推力来恢复平衡
@@ -818,7 +827,7 @@ static void Chassis_Roll_Control(Control_Info_Typedef *Control_Info){
 //首先，当前左右实际腿长差：左腿 - 右腿
 Control_Info->Roll.Length_Diff = Control_Info->L_Leg_Info.Sip_Leg_Length - Control_Info->R_Leg_Info.Sip_Leg_Length;
 //2，当前机体横滚角,加一个一阶滤波
-Control_Info->Roll.Angle     = f_Ramp_Calc(Control_Info->Roll.Angle, (-INS_Info.Angle[1] -0.0291f),0.003f);
+Control_Info->Roll.Angle     = f_Ramp_Calc(Control_Info->Roll.Angle, (-in->ins.Angle[1] -0.0291f),0.003f);
 //3，机体因腿长差而产生的横滚角度的正切值
 Control_Info->Roll.Tan_Length_Diff_Angle = Control_Info->Roll.Length_Diff/Control_Info->Roll.Distance_Two_Wheel;
 //4，当前机体横滚角的正切值

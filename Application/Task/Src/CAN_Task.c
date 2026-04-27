@@ -8,6 +8,7 @@
 #include "Remote_Control.h"
 #include "Control_Task.h"
 #include "Image_Transmission.h"
+#include "control_io.h"//I/O边界：读取输出命令包
 
  void CAN_Task(void const * argument)
 {
@@ -42,7 +43,7 @@
 	if(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1] == 1){
 // 		//测试转换器
 // 		//当关节电机没转到安全位置时
- 	 	if(Control_Info.Init.Joint_Init.IF_Joint_Init == 0){
+ 	 	if(g_motor_cmd.joint_init_done == 0){
 // 			//让关节电机位置归零
 	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,10.f,1.f,0);
 	   		       DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,10.f,1.f,0);
@@ -68,15 +69,15 @@
 
 
 //测试平衡模式
- 		  DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,0,0,Control_Info.L_Leg_Info.SendValue.T_Calf);
- 	    DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,0,0,Control_Info.L_Leg_Info.SendValue.T_Thigh);
-      DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[2],0,0,0,0,Control_Info.R_Leg_Info.SendValue.T_Thigh);	
-      DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[3],0,0,0,0,Control_Info.R_Leg_Info.SendValue.T_Calf);	
-			FDCAN3_TxFrame.Header.Identifier = 0x200;					
- 		  FDCAN3_TxFrame.Data[0] = (uint8_t)(Control_Info.L_Leg_Info.SendValue.Current>>8);
- 		  FDCAN3_TxFrame.Data[1] = (uint8_t)(Control_Info.L_Leg_Info.SendValue.Current);
- 		  FDCAN3_TxFrame.Data[2] = (uint8_t)(Control_Info.R_Leg_Info.SendValue.Current>>8);
- 		  FDCAN3_TxFrame.Data[3] = (uint8_t)(Control_Info.R_Leg_Info.SendValue.Current);
+ 		  DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[0],0,0,0,0,g_motor_cmd.joint_torque[0]);
+ 		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[1],0,0,0,0,g_motor_cmd.joint_torque[1]);
+ 		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[2],0,0,0,0,g_motor_cmd.joint_torque[2]);
+ 		   DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame,&DM_8009_Motor[3],0,0,0,0,g_motor_cmd.joint_torque[3]);
+ 		FDCAN3_TxFrame.Header.Identifier = 0x200;
+ 		  FDCAN3_TxFrame.Data[0] = (uint8_t)(g_motor_cmd.wheel_current[0]>>8);
+ 		  FDCAN3_TxFrame.Data[1] = (uint8_t)(g_motor_cmd.wheel_current[0]);
+ 		  FDCAN3_TxFrame.Data[2] = (uint8_t)(g_motor_cmd.wheel_current[1]>>8);
+ 		  FDCAN3_TxFrame.Data[3] = (uint8_t)(g_motor_cmd.wheel_current[1]);
  		  FDCAN3_TxFrame.Data[4] = (uint8_t)(0)>>8;//预留
  		  FDCAN3_TxFrame.Data[5] = (uint8_t)(0);//预留
  		  USER_FDCAN_AddMessageToTxFifoQ(&FDCAN3_TxFrame);

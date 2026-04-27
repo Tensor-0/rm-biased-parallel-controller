@@ -395,6 +395,11 @@
               <FilePath>..\Application\Task\Src\Control_Task.c</FilePath>
             </File>
             <File>
+              <FileName>control_io.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\Task\Src\control_io.c</FilePath>
+            </File>
+            <File>
               <FileName>CAN_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\Task\Src\CAN_Task.c</FilePath>
