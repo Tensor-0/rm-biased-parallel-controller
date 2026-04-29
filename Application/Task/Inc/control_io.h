@@ -68,6 +68,8 @@ typedef struct {
     int16_t wheel_current[2];   /* 驱动轮目标电流: [0]=左, [1]=右 */
     uint8_t chassis_situation;  /* 底盘状态 (CHASSIS_WEAK/CHASSIS_BALANCE) */
     uint8_t joint_init_done;    /* 关节初始化完成标志 */
+    uint8_t motor_active;       /* 电机激活标志: 0=关机, 1=运行 (由 Control_Task 根据遥控器开关填充) */
+    uint8_t reserved;           /* 预留对齐 */
     uint32_t seq;               /* 命令序号 */
     uint32_t tick;              /* 打包时间戳 */
 } motor_command_packet_t;
