@@ -545,43 +545,43 @@ static void VMC_Calculate(Control_Info_Typedef *Control_Info){
 }
 
 static void LQR_K_Update(Control_Info_Typedef *Control_Info){
-	//简化表达
-	float L_L0; 
+	/* 左腿增益调度: 霍纳法则替代 powf()，每周期减少 36 次浮点幂运算 */
+	float L_L0 = Control_Info->L_Leg_Info.Sip_Leg_Length;
+	float L_L0_2 = L_L0 * L_L0;
+	float L_L0_3 = L_L0_2 * L_L0;
 
-L_L0= Control_Info->L_Leg_Info.Sip_Leg_Length;//偏腿
+	Control_Info->L_Leg_Info.LQR_K[0][0] = K11[1]*L_L0_3 + K11[2]*L_L0_2 + K11[3]*L_L0 + K11[4];
+	Control_Info->L_Leg_Info.LQR_K[0][1] = K12[1]*L_L0_3 + K12[2]*L_L0_2 + K12[3]*L_L0 + K12[4];
+	Control_Info->L_Leg_Info.LQR_K[0][2] = K13[1]*L_L0_3 + K13[2]*L_L0_2 + K13[3]*L_L0 + K13[4];
+	Control_Info->L_Leg_Info.LQR_K[0][3] = K14[1]*L_L0_3 + K14[2]*L_L0_2 + K14[3]*L_L0 + K14[4];
+	Control_Info->L_Leg_Info.LQR_K[0][4] = K15[1]*L_L0_3 + K15[2]*L_L0_2 + K15[3]*L_L0 + K15[4];
+	Control_Info->L_Leg_Info.LQR_K[0][5] = K16[1]*L_L0_3 + K16[2]*L_L0_2 + K16[3]*L_L0 + K16[4];
 
-	Control_Info->L_Leg_Info.LQR_K[0][0] =   K11[1]*powf(L_L0,3)   + K11[2]*powf(L_L0,2)    +K11[3]*L_L0    +K11[4];      
-	Control_Info->L_Leg_Info.LQR_K[0][1] =   K12[1]*powf(L_L0,3)   + K12[2]*powf(L_L0,2)    +K12[3]*L_L0    +K12[4];
-	Control_Info->L_Leg_Info.LQR_K[0][2] =   K13[1]*powf(L_L0,3)   + K13[2]*powf(L_L0,2)    +K13[3]*L_L0    +K13[4];
-	Control_Info->L_Leg_Info.LQR_K[0][3] =   K14[1]*powf(L_L0,3)   + K14[2]*powf(L_L0,2)    +K14[3]*L_L0    +K14[4];
-	Control_Info->L_Leg_Info.LQR_K[0][4] =   K15[1]*powf(L_L0,3)   + K15[2]*powf(L_L0,2)    +K15[3]*L_L0    +K15[4];
-	Control_Info->L_Leg_Info.LQR_K[0][5] =   K16[1]*powf(L_L0,3)   + K16[2]*powf(L_L0,2)    +K16[3]*L_L0    +K16[4];
+	Control_Info->L_Leg_Info.LQR_K[1][0] = K21[1]*L_L0_3 + K21[2]*L_L0_2 + K21[3]*L_L0 + K21[4];
+	Control_Info->L_Leg_Info.LQR_K[1][1] = K22[1]*L_L0_3 + K22[2]*L_L0_2 + K22[3]*L_L0 + K22[4];
+	Control_Info->L_Leg_Info.LQR_K[1][2] = K23[1]*L_L0_3 + K23[2]*L_L0_2 + K23[3]*L_L0 + K23[4];
+	Control_Info->L_Leg_Info.LQR_K[1][3] = K24[1]*L_L0_3 + K24[2]*L_L0_2 + K24[3]*L_L0 + K24[4];
+	Control_Info->L_Leg_Info.LQR_K[1][4] = K25[1]*L_L0_3 + K25[2]*L_L0_2 + K25[3]*L_L0 + K25[4];
+	Control_Info->L_Leg_Info.LQR_K[1][5] = K26[1]*L_L0_3 + K26[2]*L_L0_2 + K26[3]*L_L0 + K26[4];
 
-	Control_Info->L_Leg_Info.LQR_K[1][0] =   K21[1]*powf(L_L0,3)   + K21[2]*powf(L_L0,2)    +K21[3]*L_L0    +K21[4];     
-	Control_Info->L_Leg_Info.LQR_K[1][1] =   K22[1]*powf(L_L0,3)   + K22[2]*powf(L_L0,2)    +K22[3]*L_L0    +K22[4];
-	Control_Info->L_Leg_Info.LQR_K[1][2] =   K23[1]*powf(L_L0,3)   + K23[2]*powf(L_L0,2)    +K23[3]*L_L0    +K23[4];
-	Control_Info->L_Leg_Info.LQR_K[1][3] =   K24[1]*powf(L_L0,3)   + K24[2]*powf(L_L0,2)    +K24[3]*L_L0    +K24[4];
-	Control_Info->L_Leg_Info.LQR_K[1][4] =   K25[1]*powf(L_L0,3)   + K25[2]*powf(L_L0,2)    +K25[3]*L_L0    +K25[4];
-	Control_Info->L_Leg_Info.LQR_K[1][5] =   K26[1]*powf(L_L0,3)   + K26[2]*powf(L_L0,2)    +K26[3]*L_L0    +K26[4];
-//右腿		
-	 float R_L0;
-	 
-	 R_L0= Control_Info->R_Leg_Info.Sip_Leg_Length;//偏腿
-	
-	 Control_Info->R_Leg_Info.LQR_K[0][0] =   K11[1]*powf(R_L0,3)   + K11[2]*powf(R_L0,2)    +K11[3]*R_L0    +K11[4];      
-	 Control_Info->R_Leg_Info.LQR_K[0][1] =   K12[1]*powf(R_L0,3)   + K12[2]*powf(R_L0,2)    +K12[3]*R_L0    +K12[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][2] =   K13[1]*powf(R_L0,3)   + K13[2]*powf(R_L0,2)    +K13[3]*R_L0    +K13[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][3] =   K14[1]*powf(R_L0,3)   + K14[2]*powf(R_L0,2)    +K14[3]*R_L0    +K14[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][4] =   K15[1]*powf(R_L0,3)   + K15[2]*powf(R_L0,2)    +K15[3]*R_L0    +K15[4];
-	 Control_Info->R_Leg_Info.LQR_K[0][5] =   K16[1]*powf(R_L0,3)   + K16[2]*powf(R_L0,2)    +K16[3]*R_L0    +K16[4];
+	/* 右腿增益调度: 同理 */
+	float R_L0 = Control_Info->R_Leg_Info.Sip_Leg_Length;
+	float R_L0_2 = R_L0 * R_L0;
+	float R_L0_3 = R_L0_2 * R_L0;
 
-	 Control_Info->R_Leg_Info.LQR_K[1][0] =   K21[1]*powf(R_L0,3)   + K21[2]*powf(R_L0,2)    +K21[3]*R_L0    +K21[4];     
-	 Control_Info->R_Leg_Info.LQR_K[1][1] =   K22[1]*powf(R_L0,3)   + K22[2]*powf(R_L0,2)    +K22[3]*R_L0    +K22[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][2] =   K23[1]*powf(R_L0,3)   + K23[2]*powf(R_L0,2)    +K23[3]*R_L0    +K23[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][3] =   K24[1]*powf(R_L0,3)   + K24[2]*powf(R_L0,2)    +K24[3]*R_L0    +K24[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][4] =   K25[1]*powf(R_L0,3)   + K25[2]*powf(R_L0,2)    +K25[3]*R_L0    +K25[4];
-	 Control_Info->R_Leg_Info.LQR_K[1][5] =   K26[1]*powf(R_L0,3)   + K26[2]*powf(R_L0,2)    +K26[3]*R_L0    +K26[4];
+	Control_Info->R_Leg_Info.LQR_K[0][0] = K11[1]*R_L0_3 + K11[2]*R_L0_2 + K11[3]*R_L0 + K11[4];
+	Control_Info->R_Leg_Info.LQR_K[0][1] = K12[1]*R_L0_3 + K12[2]*R_L0_2 + K12[3]*R_L0 + K12[4];
+	Control_Info->R_Leg_Info.LQR_K[0][2] = K13[1]*R_L0_3 + K13[2]*R_L0_2 + K13[3]*R_L0 + K13[4];
+	Control_Info->R_Leg_Info.LQR_K[0][3] = K14[1]*R_L0_3 + K14[2]*R_L0_2 + K14[3]*R_L0 + K14[4];
+	Control_Info->R_Leg_Info.LQR_K[0][4] = K15[1]*R_L0_3 + K15[2]*R_L0_2 + K15[3]*R_L0 + K15[4];
+	Control_Info->R_Leg_Info.LQR_K[0][5] = K16[1]*R_L0_3 + K16[2]*R_L0_2 + K16[3]*R_L0 + K16[4];
 
+	Control_Info->R_Leg_Info.LQR_K[1][0] = K21[1]*R_L0_3 + K21[2]*R_L0_2 + K21[3]*R_L0 + K21[4];
+	Control_Info->R_Leg_Info.LQR_K[1][1] = K22[1]*R_L0_3 + K22[2]*R_L0_2 + K22[3]*R_L0 + K22[4];
+	Control_Info->R_Leg_Info.LQR_K[1][2] = K23[1]*R_L0_3 + K23[2]*R_L0_2 + K23[3]*R_L0 + K23[4];
+	Control_Info->R_Leg_Info.LQR_K[1][3] = K24[1]*R_L0_3 + K24[2]*R_L0_2 + K24[3]*R_L0 + K24[4];
+	Control_Info->R_Leg_Info.LQR_K[1][4] = K25[1]*R_L0_3 + K25[2]*R_L0_2 + K25[3]*R_L0 + K25[4];
+	Control_Info->R_Leg_Info.LQR_K[1][5] = K26[1]*R_L0_3 + K26[2]*R_L0_2 + K26[3]*R_L0 + K26[4];
 
 }
 
