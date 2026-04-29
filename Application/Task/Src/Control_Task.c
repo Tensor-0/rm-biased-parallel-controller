@@ -399,81 +399,51 @@ static void Joint_Angle_Offset(Control_Info_Typedef *Control_Info, const control
 
 
 }
-
 static void VMC_Calculate(Control_Info_Typedef *Control_Info){
+	/* 左腿 VMC 正运动学 — 中间变量使用栈局部变量 */
+	float L_a = Control_Info->L_Leg_Info.Biased.L_Calf_Link;
+	float L_b = Control_Info->L_Leg_Info.Biased.L_Thigh_Link;
+	float L_M = -(Control_Info->L_Leg_Info.Biased.Calf_Angle - Control_Info->L_Leg_Info.Biased.Thigh_Angle) / 2.f;
+	float L_N = (Control_Info->L_Leg_Info.Biased.Calf_Angle + Control_Info->L_Leg_Info.Biased.Thigh_Angle) / 2.f;
+	float L_S_Radicand = L_b * L_b - L_a * L_a * arm_sin_f32(L_M) * arm_sin_f32(L_M);
+	float L_S;
+	arm_sqrt_f32(L_S_Radicand, &L_S);
+	float L_t = L_a * arm_cos_f32(L_M) + L_S;
+	float L_A = (L_a * L_t * arm_sin_f32(L_M)) / L_S;
 
-	//a,b,简化表达用
-	Control_Info->L_Leg_Info.a = Control_Info->L_Leg_Info.Biased.L_Calf_Link;
-	Control_Info->L_Leg_Info.b = Control_Info->L_Leg_Info.Biased.L_Thigh_Link;
-	//左夹角差半值=（左小腿摆角-左大腿摆角）/2
-	//Control_Info->L_Leg_Info.M = (Control_Info->L_Leg_Info.Biased.Calf_Angle - Control_Info->L_Leg_Info.Biased.Thigh_Angle)/2.f;
-	Control_Info->L_Leg_Info.M = -(Control_Info->L_Leg_Info.Biased.Calf_Angle - Control_Info->L_Leg_Info.Biased.Thigh_Angle)/2.f;
-	//左夹角和半差=（左小腿摆角+左大腿摆角）/2
-	//2025.11.14：修改为负号
-	//2.0：改为正号
-	Control_Info->L_Leg_Info.N = (Control_Info->L_Leg_Info.Biased.Calf_Angle + Control_Info->L_Leg_Info.Biased.Thigh_Angle)/2.f;
-	//s_radicand  
-	//中间变量 公式： S_Radicand = b^2 - a^2 sin^2(M)
-	//M = (θ_1 - θ_2 )/2
-	Control_Info->L_Leg_Info.S_Radicand = Control_Info->L_Leg_Info.b * Control_Info->L_Leg_Info.b - Control_Info->L_Leg_Info.a * Control_Info->L_Leg_Info.a * arm_sin_f32(Control_Info->L_Leg_Info.M) * arm_sin_f32(Control_Info->L_Leg_Info.M);
-	//S 中间变量 公式： S = sqrt(S_Radicand)
-	arm_sqrt_f32(Control_Info->L_Leg_Info.S_Radicand,&Control_Info->L_Leg_Info.S);
-	//t //中间变量 公式： t=a*cosM+S
-	Control_Info->L_Leg_Info.t = Control_Info->L_Leg_Info.a * arm_cos_f32(Control_Info->L_Leg_Info.M) + Control_Info->L_Leg_Info.S;
-	//A //中间变量 公式： A= (a*t*sinM)/S
-	Control_Info->L_Leg_Info.A = (Control_Info->L_Leg_Info.a * Control_Info->L_Leg_Info.t * arm_sin_f32(Control_Info->L_Leg_Info.M)) / Control_Info->L_Leg_Info.S;
-    //=============================================================================================================================================================================================================================================
+	Control_Info->L_Leg_Info.A = L_A;
+	Control_Info->L_Leg_Info.Sip_Leg_Angle  = L_N;
+	Control_Info->L_Leg_Info.Sip_Leg_Length = L_t / Control_Info->L_Leg_Info.Biased.K;
 
-	//建模------------------------------------------------------------------------------------------------------------------------------
-	//1.虚拟腿摆角
-	Control_Info->L_Leg_Info.Sip_Leg_Angle  = Control_Info->L_Leg_Info.N;
-	//虚拟腿长（AJ）AJ = t/K
-	Control_Info->L_Leg_Info.Sip_Leg_Length = Control_Info->L_Leg_Info.t / Control_Info->L_Leg_Info.Biased.K;
-    //J点速度
-	//X轴方向速度 公式： X_J_Dot =(A*cosN*(Thigh_Angle_Dot -Calf_Angle_Dot) - t*sinN*(Thigh_Angle_Dot +Calf_Angle_Dot))/ (2*K)
-     Control_Info->L_Leg_Info.X_J_Dot =   (Control_Info->L_Leg_Info.A * arm_cos_f32(Control_Info->L_Leg_Info.N) *(Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot)
-									     - Control_Info->L_Leg_Info.t * arm_sin_f32(Control_Info->L_Leg_Info.N) *(Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot))/ (2.f * Control_Info->L_Leg_Info.Biased.K);
-	//Y轴方向速度 公式： Y_J_Dot =(A*sinN*(Thigh_Angle_Dot -Calf_Angle_Dot) + t*cosN*(Thigh_Angle_Dot +Calf_Angle_Dot))/ (2*K)
-     Control_Info->L_Leg_Info.Y_J_Dot =   (Control_Info->L_Leg_Info.A * arm_sin_f32(Control_Info->L_Leg_Info.N) *(Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot)
-									     + Control_Info->L_Leg_Info.t * arm_cos_f32(Control_Info->L_Leg_Info.N) *(Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot))/ (2.f * Control_Info->L_Leg_Info.Biased.K);
+	Control_Info->L_Leg_Info.X_J_Dot = (L_A * arm_cos_f32(L_N) * (Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot)
+	                                  - L_t * arm_sin_f32(L_N) * (Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot))
+	                                  / (2.f * Control_Info->L_Leg_Info.Biased.K);
+	Control_Info->L_Leg_Info.Y_J_Dot = (L_A * arm_sin_f32(L_N) * (Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot)
+	                                  + L_t * arm_cos_f32(L_N) * (Control_Info->L_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->L_Leg_Info.Biased.Calf_Angle_Dot))
+	                                  / (2.f * Control_Info->L_Leg_Info.Biased.K);
 
-//右腿---
-//存在问题，即对于J点速度的计算，左右腿的结果不一样
-//待实车测试验证
-	//中间变量=====================================================================================================================================
-	//a,b,简化表达用
-	Control_Info->R_Leg_Info.a = Control_Info->R_Leg_Info.Biased.L_Calf_Link;
-	Control_Info->R_Leg_Info.b = Control_Info->R_Leg_Info.Biased.L_Thigh_Link;
-	//右夹角差半值=（右大腿摆角-右小腿摆角）/2
-	Control_Info->R_Leg_Info.M = -(Control_Info->R_Leg_Info.Biased.Thigh_Angle - Control_Info->R_Leg_Info.Biased.Calf_Angle)/2.f;
-	//右夹角和半差=（右小腿摆角+右大腿摆角）/2
-	Control_Info->R_Leg_Info.N = (Control_Info->R_Leg_Info.Biased.Calf_Angle + Control_Info->R_Leg_Info.Biased.Thigh_Angle)/2.f;
-	//s_radicand
-	//s_radicand  
-	//中间变量 公式： S_Radicand = b^2 - a^2 sin^2(M)
-	//M = (θ_1 - θ_2 )/2
-		//中间变量 公式： S_Radicand = b^2 - a^2 sin^2(M)
-	Control_Info->R_Leg_Info.S_Radicand = Control_Info->R_Leg_Info.b * Control_Info->R_Leg_Info.b - Control_Info->R_Leg_Info.a * Control_Info->R_Leg_Info.a * arm_sin_f32(Control_Info->R_Leg_Info.M) * arm_sin_f32(Control_Info->R_Leg_Info.M);
-	//S 中间变量 公式： S = sqrt(S_Radicand)
-	arm_sqrt_f32(Control_Info->R_Leg_Info.S_Radicand,&Control_Info->R_Leg_Info.S);
-	//t //中间变量 公式： t=a*cosM+S
-	Control_Info->R_Leg_Info.t = Control_Info->R_Leg_Info.a * arm_cos_f32(Control_Info->R_Leg_Info.M) + Control_Info->R_Leg_Info.S;
-	//A //中间变量 公式： A= (a*t*sinM)/S
-	Control_Info->R_Leg_Info.A = (Control_Info->R_Leg_Info.a * Control_Info->R_Leg_Info.t * arm_sin_f32(Control_Info->R_Leg_Info.M)) / Control_Info->R_Leg_Info.S;
-	//=============================================================================================================================================================================================================================================	
-    //建模
-	//1.虚拟腿摆角
-	Control_Info->R_Leg_Info.Sip_Leg_Angle  = Control_Info->R_Leg_Info.N;
-	//虚拟腿长（AJ）AJ = t/K
-	Control_Info->R_Leg_Info.Sip_Leg_Length = Control_Info->R_Leg_Info.t / Control_Info->R_Leg_Info.Biased.K;
-	//J点速度
-	//速度有方向，取小车头前方向为正方向，垂直地面的法向量方向为单独分析单腿速度的Y轴正方向
-	//X轴方向速度 公式： X_J_Dot =(A*cosN*(Thigh_Angle_Dot -Calf_Angle_Dot) - t*sinN*(Thigh_Angle_Dot +Calf_Angle_Dot))/ (2*K)
-	Control_Info->R_Leg_Info.X_J_Dot =   (Control_Info->R_Leg_Info.A * arm_cos_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot)
-									     - Control_Info->R_Leg_Info.t * arm_sin_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot))/ (2.f * Control_Info->R_Leg_Info.Biased.K);
-	//Y轴方向速度 公式： Y_J_Dot =(A*sinN*(Thigh_Angle_Dot -Calf_Angle_Dot) + t*cosN*(Thigh_Angle_Dot +Calf_Angle_Dot))/ (2*K)
-	Control_Info->R_Leg_Info.Y_J_Dot =   (Control_Info->R_Leg_Info.A * arm_sin_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot)
-									     + Control_Info->R_Leg_Info.t * arm_cos_f32(Control_Info->R_Leg_Info.N) *(Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot))/ (2.f * Control_Info->R_Leg_Info.Biased.K);
+	/* 右腿 VMC 正运动学 */
+	float R_a = Control_Info->R_Leg_Info.Biased.L_Calf_Link;
+	float R_b = Control_Info->R_Leg_Info.Biased.L_Thigh_Link;
+	float R_M = -(Control_Info->R_Leg_Info.Biased.Thigh_Angle - Control_Info->R_Leg_Info.Biased.Calf_Angle) / 2.f;
+	float R_N = (Control_Info->R_Leg_Info.Biased.Calf_Angle + Control_Info->R_Leg_Info.Biased.Thigh_Angle) / 2.f;
+	float R_S_Radicand = R_b * R_b - R_a * R_a * arm_sin_f32(R_M) * arm_sin_f32(R_M);
+	float R_S;
+	arm_sqrt_f32(R_S_Radicand, &R_S);
+	float R_t = R_a * arm_cos_f32(R_M) + R_S;
+	float R_A = (R_a * R_t * arm_sin_f32(R_M)) / R_S;
+
+	Control_Info->R_Leg_Info.A = R_A;
+	Control_Info->R_Leg_Info.Sip_Leg_Angle  = R_N;
+	Control_Info->R_Leg_Info.Sip_Leg_Length = R_t / Control_Info->R_Leg_Info.Biased.K;
+
+	Control_Info->R_Leg_Info.X_J_Dot = (R_A * arm_cos_f32(R_N) * (Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot)
+	                                  - R_t * arm_sin_f32(R_N) * (Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot))
+	                                  / (2.f * Control_Info->R_Leg_Info.Biased.K);
+	Control_Info->R_Leg_Info.Y_J_Dot = (R_A * arm_sin_f32(R_N) * (Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot - Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot)
+	                                  + R_t * arm_cos_f32(R_N) * (Control_Info->R_Leg_Info.Biased.Thigh_Angle_Dot + Control_Info->R_Leg_Info.Biased.Calf_Angle_Dot))
+	                                  / (2.f * Control_Info->R_Leg_Info.Biased.K);
+
 
 
 

@@ -59,18 +59,11 @@ typedef struct //腿的信息
 	    float Phi_Comp_Angle;                 //陀螺仪角度补偿
 		float Link_Gravity_Compensation_Angle;//腿部连杆重心补偿角度（弧度制）
 	
-        //中间变量
-		float M;//（两角之差）腿摆角半差值 逆时针为正，为负值，角度小的一方减去角度大的一方，然后再除以2
-		float N;//（两角之和）腿摆角半和值 逆时针为正，角度大的那一方加上角度小的那一方，然后再除以2
-		float S;//中间变量 公式： S= sqrt(b^2 - a^2 sin^2(M))//M = (θ_1 - θ_2 )/2
-		float S_Radicand;//中间变量 公式： S_Radicand = b^2 - a^2 sin^2(M)//M = (θ_1 - θ_2 )/2
-		float t;//中间变量 公式： t=a*cosM+S //a=AD（给定长度）//b=DC（给定长度）
-		float A;//中间变量 公式： A= (a*t*sinM)/S
-		float a;//中间变量 公式： a=AD（给定长度）//小腿长
-		float b;//中间变量 公式： b=DC（给定长度）//从动短前杆长
-		//大腿连杆末端（J点）速度
-		float X_J_Dot;//轮子X轴速度(J点)
-		float Y_J_Dot;//轮子Y轴速度
+        //中间变量: M,N,S,S_Radicand,t,a,b 已移至 VMC_Calculate() 栈上
+  float A;//中间变量 公式： A= (a*t*sinM)/S (跨函数使用)
+  //大腿连杆末端（J点）速度
+  float X_J_Dot;//轮子X轴速度(J点)
+  float Y_J_Dot;//轮子Y轴速度
 
 //模型物理参数
         struct {
