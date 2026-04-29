@@ -74,6 +74,10 @@ typedef struct {
     uint32_t tick;              /* 打包时间戳 */
 } motor_command_packet_t;
 
+/* 编译期检查：确保输入快照适合栈分配 (1kHz 周期) */
+_Static_assert(sizeof(control_input_snapshot_t) <= 256,
+               "control_input_snapshot_t too large for 1kHz stack allocation");
+
 /* ======================== 函数声明 ======================== */
 
 /**

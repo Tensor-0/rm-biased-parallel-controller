@@ -8,12 +8,14 @@
 #include "mode_state_machine.h"
 #include "PID.h"
 
-/* ---- PID parameters ---- */
-static float PID_Leg_Length_F_Param[7]  = {1300.f, 1.f, 60000.f, 0.f, 0.f, 10.f, 100.f};
-static float PID_Leg_Roll_F_Param[7]    = {50.f,   0.f, 25.f,    0.f, 0.f, 0.1f, 50.f};
-static float PID_Leg_Coordinate_param[7]= {300.f,  0.f, 20.0f,  0.f, 0.f, 0.f,  50};
-static float PID_Yaw_P_pama[7]          = {4.4f,  0.f, 60.f,   0,   0,   200,  500};
-static float PID_Yaw_V_pama[7]          = {0.25f, 0,   0.4f,   0,   0,   200,  70};
+/* ---- PID parameters (KP, KI, KD, Alpha, Deadband, LimitIntegral, LimitOutput) ---- */
+#define PID_PARAM(Kp,Ki,Kd,A,Db,Li,Lo) { (Kp), (Ki), (Kd), (A), (Db), (Li), (Lo) }
+
+static float PID_Leg_Length_F_Param[7]  = PID_PARAM(1300.f, 1.f,  60000.f, 0.f, 0.f, 10.f, 100.f);
+static float PID_Leg_Roll_F_Param[7]    = PID_PARAM(50.f,   0.f,  25.f,    0.f, 0.f, 0.1f, 50.f);
+static float PID_Leg_Coordinate_param[7]= PID_PARAM(300.f,  0.f,  20.0f,  0.f, 0.f, 0.f,  50);
+static float PID_Yaw_P_pama[7]          = PID_PARAM(4.4f,   0.f,  60.f,   0,   0,   200,  500);
+static float PID_Yaw_V_pama[7]          = PID_PARAM(0.25f,  0,    0.4f,   0,   0,   200,  70);
 
 /* ---- PID instances ---- */
 PID_Info_TypeDef PID_Leg_Coordinate;

@@ -61,3 +61,24 @@ node_modules/
 # STM32CubeMX generated
 *.bak
 *.printf
+
+# Keil MDK-ARM compilation artifacts
+*.crf
+*.d
+*.o
+*.dep
+*.axf
+*.htm
+*.lnp
+*.sct
+*.iex
+*.build_log.htm
+*.uvguix.*
+*.uvoptx
+*.scvd
+JLinkLog.txt
+JLinkSettings.ini
+*.lst
+COD_H7_Template/
+DebugConfig/
+RTE/
