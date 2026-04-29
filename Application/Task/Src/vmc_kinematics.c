@@ -37,6 +37,7 @@ void VMC_Calculate(Control_Info_Typedef *Control_Info)
     float L_S_Radicand = L_b * L_b - L_a * L_a * arm_sin_f32(L_M) * arm_sin_f32(L_M);
     float L_S;
     arm_sqrt_f32(L_S_Radicand, &L_S);
+    if (L_S < 1e-6f) L_S = 1e-6f;  /* 防止除零 */
     float L_t = L_a * arm_cos_f32(L_M) + L_S;
     float L_A = (L_a * L_t * arm_sin_f32(L_M)) / L_S;
 
@@ -59,6 +60,7 @@ void VMC_Calculate(Control_Info_Typedef *Control_Info)
     float R_S_Radicand = R_b * R_b - R_a * R_a * arm_sin_f32(R_M) * arm_sin_f32(R_M);
     float R_S;
     arm_sqrt_f32(R_S_Radicand, &R_S);
+    if (R_S < 1e-6f) R_S = 1e-6f;  /* 防止除零 */
     float R_t = R_a * arm_cos_f32(R_M) + R_S;
     float R_A = (R_a * R_t * arm_sin_f32(R_M)) / R_S;
 

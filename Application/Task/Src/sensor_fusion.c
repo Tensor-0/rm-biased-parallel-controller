@@ -13,17 +13,21 @@
 void SensorFusion_Measure_Update(Control_Info_Typedef *Control_Info,
                                   const control_input_snapshot_t *in)
 {
+    /* --- 共享 IMU 数据 (避免重复读取) --- */
+    float phi_shared     = -in->ins.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;
+    float phi_dot_shared = -in->ins.Gyro[0];
+
     /* --- 左腿姿态 --- */
-    Control_Info->L_Leg_Info.Measure.Phi     = -in->ins.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;
-    Control_Info->L_Leg_Info.Measure.Phi_dot = -in->ins.Gyro[0];
+    Control_Info->L_Leg_Info.Measure.Phi     = phi_shared;
+    Control_Info->L_Leg_Info.Measure.Phi_dot = phi_dot_shared;
     Control_Info->L_Leg_Info.Measure.Theta   = ((PI/2) - Control_Info->L_Leg_Info.Sip_Leg_Angle) - Control_Info->L_Leg_Info.Measure.Phi;
     Control_Info->L_Leg_Info.Measure.Theta_dot = (Control_Info->L_Leg_Info.X_J_Dot * arm_cos_f32(-Control_Info->L_Leg_Info.Measure.Theta)
                                                 + Control_Info->L_Leg_Info.Y_J_Dot * arm_sin_f32(-Control_Info->L_Leg_Info.Measure.Theta))
                                                / Control_Info->L_Leg_Info.Sip_Leg_Length;
 
     /* --- 右腿姿态 --- */
-    Control_Info->R_Leg_Info.Measure.Phi     = -in->ins.Angle[2] - Control_Info->L_Leg_Info.Phi_Comp_Angle;
-    Control_Info->R_Leg_Info.Measure.Phi_dot = -in->ins.Gyro[0];
+    Control_Info->R_Leg_Info.Measure.Phi     = phi_shared;
+    Control_Info->R_Leg_Info.Measure.Phi_dot = phi_dot_shared;
     Control_Info->R_Leg_Info.Measure.Theta   = (Control_Info->R_Leg_Info.Sip_Leg_Angle - (PI/2)) - Control_Info->R_Leg_Info.Measure.Phi;
     Control_Info->R_Leg_Info.Measure.Theta_dot = (-Control_Info->R_Leg_Info.X_J_Dot * arm_cos_f32(-Control_Info->R_Leg_Info.Measure.Theta)
                                                  + Control_Info->R_Leg_Info.Y_J_Dot * arm_sin_f32(-Control_Info->R_Leg_Info.Measure.Theta))
