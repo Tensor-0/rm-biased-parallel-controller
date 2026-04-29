@@ -75,6 +75,10 @@ void Control_OutputPacket_Generate(const Control_Info_Typedef *ctrl,
     out->chassis_situation = (uint8_t)ctrl->Chassis_Situation;
     out->joint_init_done   = ctrl->Init.Joint_Init.IF_Joint_Init;
 
+    /* 电机激活标志: 遥控器开关 s[1]==3(初始化) 或 s[1]==1(高腿长) 时为 1，
+     * s[1]==2 或 0 时为 0。CAN_Task 用此值替代直接读取 remote_ctrl。*/
+    out->motor_active = (uint8_t)(remote_ctrl.rc.s[1] == 3 || remote_ctrl.rc.s[1] == 1);
+
     /* 序号和时间戳 */
     out->seq++;
     out->tick = osKernelSysTick();
