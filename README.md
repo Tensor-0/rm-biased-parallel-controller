@@ -1,11 +1,16 @@
 # rm-biased-parallel-controller
 
-> **偏置并联轮腿机器人运动控制框架**  
+> **偏置并联轮腿机器人运动控制框架**
 > 基于 STM32H723 + FreeRTOS，面向 RoboMaster 竞赛的 C 语言实时控制系统
 
 ---
 
-## 📖 项目简介（给初学者）
+> 🐣 **第一次接触本项目？** → 请先阅读 **[《轮腿机器人从零入门指南 (GUIDE.md)》](GUIDE.md)**
+> 用生动的比喻和图示讲解系统设计思想、运动控制原理、上手流程，零基础友好。
+
+---
+
+## 📖 项目简介
 
 ### 这个项目是做什么的？
 
@@ -319,13 +324,15 @@ chore:   杂务         → "chore: add Keil artifacts to .gitignore"
 
 ## 📚 相关文档
 
-| 文档 | 说明 |
-|------|------|
-| [`architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 完整代码审查报告 (核心架构、数据流、10条优化建议) |
-| [`architecture_refactor_plan.md`](architecture_refactor_plan.md) | 重构方案与任务分解 |
-| [`COD_H7_Template.ioc`](COD_H7_Template.ioc) | STM32CubeMX 引脚配置 (双击打开) |
-| [GitHub Issues](https://github.com/Tensor-0/rm-biased-parallel-controller/issues) | 待办任务与 Bug 追踪 |
-| [GitHub Pull Requests](https://github.com/Tensor-0/rm-biased-parallel-controller/pulls) | 合并历史 |
+| 文档 | 适合什么阶段 | 说明 |
+|------|-------------|------|
+| 🐣 **[`GUIDE.md`](GUIDE.md)** | **刚加入项目必读** | 零基础入门指南：设计思想·控制原理·上手流程 |
+| 📖 [`README.md`](README.md) | 了解项目概况 | 本文档，项目简介与快速参考 |
+| 🔬 [`architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 准备贡献代码 | 完整代码审查报告 (核心架构、数据流、10条优化建议) |
+| 📋 [`architecture_refactor_plan.md`](architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 |
+| ⚙️ [`COD_H7_Template.ioc`](COD_H7_Template.ioc) | 修改硬件配置 | STM32CubeMX 引脚配置 (双击打开) |
+| 🐛 [GitHub Issues](https://github.com/Tensor-0/rm-biased-parallel-controller/issues) | 找活干 | 待办任务与 Bug 追踪 |
+| 🔀 [GitHub Pull Requests](https://github.com/Tensor-0/rm-biased-parallel-controller/pulls) | 了解进展 | 合并历史与 Code Review |
 
 ---
 
