@@ -224,3 +224,46 @@ get_K.m ──▶ 多项式拟合 ──▶ K11[6]~K26[6]  ──▶ lqr_control
 - 将机械参数(R, mw, mp, M 等)提取为独立的 `robot_params.m` 配置文件
 - 添加更多注释解释 `subs` 链条的每一层是在替换什么
 - 考虑生成参数文档,标注每个 Kij 在腿长范围内的拟合误差
+
+---
+
+## 八、MATLAB 到底在做什么 + Ubuntu 用户怎么办
+
+### "我到底需不需要 MATLAB？"
+
+**不需要！** MATLAB 只做一件事：根据机械参数算出 K 系数。这个计算是**离线**的——运行一次,把结果复制到 `lqr_controller.c` 就行了。
+
+> 🔑 K 系数已经在 C 代码中写好了。只要你的机器人机械参数差不多（机体约 18kg,腿长约 0.12m,轮半径 0.055m）,**直接用就行**。LQR 反馈控制对系数 ±10% 的误差具有天然鲁棒性。
+
+### Ubuntu 用户四方案
+
+| 方案 | 难度 | 说明 |
+|------|------|------|
+| 🥇 直接用现成系数 | ⭐ | 零成本,系数已在 `lqr_controller.c` 中 |
+| 🥈 GNU Octave | ⭐⭐ | `sudo apt install octave octave-control octave-symbolic` |
+| 🥉 Python + scipy | ⭐⭐⭐ | `pip install numpy scipy matplotlib` → `python3 tools/lqr_gain_schedule.py` |
+| 🏅 什么都不做 | ⭐ | LQR 本质是反馈调节,系数差一点也能稳住 |
+
+### Python 替代方案 (推荐 🥉)
+
+项目已包含 `tools/lqr_gain_schedule.py`——Python 版 LQR 计算脚本:
+
+```bash
+# 安装依赖 (仅需一次)
+pip install numpy scipy matplotlib
+
+# 运行
+python3 tools/lqr_gain_schedule.py
+
+# 输出:
+#   1. 31 个采样点的 LQR 增益
+#   2. 12 组多项式的拟合系数 + RMSE 误差
+#   3. 可直接复制到 lqr_controller.c 的 C 代码
+#   4. 拟合质量图 (保存为 tools/lqr_gain_fit.png)
+```
+
+Python 版的优势:
+- 纯数值计算,不需要符号运算工具箱
+- 安装简单 (`pip install` 三个包)
+- 输出格式与 MATLAB 版完全一致
+- 生成图表自动保存为 PNG
