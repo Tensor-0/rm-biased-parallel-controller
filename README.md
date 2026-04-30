@@ -84,7 +84,7 @@ BMI088 ──SPI──▶ INS_Task ──全局变量──▶ control_input_sna
 
 ### 硬件要求
 
-- **主控**: STM32H723VGTx (RoboMaster A/B/C 型板卡均可)
+- **主控**: STM32H723VGTx 
 - **电机**: 4× DM8009 关节电机 + 2× M3508 轮毂电机
 - **传感器**: BMI088 六轴 IMU
 - **遥控**: DJI 遥控器 (SBUS 协议)
