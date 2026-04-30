@@ -10,9 +10,14 @@
 # 用法: python3 tools/lqr_gain_schedule.py
 # ============================================================================
 
+import os
+import sys
 import numpy as np
 from scipy.linalg import solve_continuous_are
 import matplotlib.pyplot as plt
+
+# 确保能以任意工作目录运行此脚本
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ===========================================================================
 # 机械参数 (对应 robot_params.m + Robot_Config.h)
@@ -110,7 +115,6 @@ def build_system_matrices(leg_length):
 
     # 第4行: d²x = -N0*R / I_equiv 的水平线性化
     # 在平衡点, N ≈ (P0*L_val)*θ 的水平分量 = 0(θ=0)
-    A[3, 0] = 0.0
     # 主要耦合来自摆杆倾角产生的水平反力
     A[3, 0] = -(L_val * P0) / I_equiv
 
@@ -201,8 +205,8 @@ def main():
         ax.grid(True, linestyle=':', alpha=0.5)
 
     plt.tight_layout()
-    plt.savefig('tools/lqr_gain_fit.png', dpi=150)
-    print("\n📊 拟合图已保存到 tools/lqr_gain_fit.png")
+    plt.savefig(os.path.join(SCRIPT_DIR, 'lqr_gain_fit.png'), dpi=150)
+    print(f"\n📊 拟合图已保存到 {os.path.join(SCRIPT_DIR, 'lqr_gain_fit.png')}")
     plt.close()
 
     # 生成 C 代码

@@ -267,3 +267,30 @@ Python 版的优势:
 - 安装简单 (`pip install` 三个包)
 - 输出格式与 MATLAB 版完全一致
 - 生成图表自动保存为 PNG
+
+---
+
+## 九、已知问题与修复 (v3.1 Bug Fixes)
+
+### 1. Pylance 导入解析错误
+
+**根因**: 系统有两套 Python — 系统 `python3`(无科学计算包) 和 `anaconda3`(有)。Pylance 默认用系统 Python。
+
+**修复** — `.vscode/settings.json`:
+```json
+"python.defaultInterpreterPath": "/home/zhan/anaconda3/bin/python",
+"python.analysis.extraPaths": ["/home/zhan/anaconda3/lib/python3.13/site-packages"]
+```
+需重载 VS Code 窗口 (`Ctrl+Shift+P → Developer: Reload Window`)。
+
+### 2. 死赋值缺陷 — `A[3, 0]` 被反复写入
+
+原代码先 `A[3,0]=0.0` 再 `A[3,0]=-(L_val*P0)/I_equiv`。已删除无效的零赋值行及误导性注释。
+
+### 3. `savefig` 路径依赖运行目录
+
+原代码用相对路径 `'tools/lqr_gain_fit.png'`。已改为 `os.path.join(SCRIPT_DIR, 'lqr_gain_fit.png')`，确保从任意目录运行均正确。
+
+### 验证结果
+
+anaconda3 Python 运行脚本成功，31 个采样点 LQR 增益调度，最大 RMSE = 0.184，拟合质量良好。

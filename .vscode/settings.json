@@ -1,4 +1,8 @@
 {
+    "python.defaultInterpreterPath": "/home/zhan/anaconda3/bin/python",
+    "python.analysis.extraPaths": [
+        "/home/zhan/anaconda3/lib/python3.13/site-packages"
+    ],
     "files.associations": {
         "cmsis_os.h": "c"
     }

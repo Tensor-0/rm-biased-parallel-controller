@@ -82,3 +82,8 @@ JLinkSettings.ini
 COD_H7_Template/
 DebugConfig/
 RTE/
+
+# Python
+tools/lqr_gain_fit.png
+__pycache__/
+*.pyc
