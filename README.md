@@ -330,6 +330,7 @@ chore:   杂务         → "chore: add Keil artifacts to .gitignore"
 | 📖 [`README.md`](README.md) | 了解项目概况 | 本文档，项目简介与快速参考 |
 | 🔬 [`architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 准备贡献代码 | 完整代码审查报告 (核心架构、数据流、10条优化建议) |
 | 📋 [`architecture_refactor_plan.md`](architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 |
+| 🧮 **[`MATLAB_GUIDE.md`](MATLAB_GUIDE.md)** | 修改 LQR 参数 | MATLAB 离线计算详解：物理建模·符号推导·多项式拟合 |
 | ⚙️ [`COD_H7_Template.ioc`](COD_H7_Template.ioc) | 修改硬件配置 | STM32CubeMX 引脚配置 (双击打开) |
 | 🐛 [GitHub Issues](https://github.com/Tensor-0/rm-biased-parallel-controller/issues) | 找活干 | 待办任务与 Bug 追踪 |
 | 🔀 [GitHub Pull Requests](https://github.com/Tensor-0/rm-biased-parallel-controller/pulls) | 了解进展 | 合并历史与 Code Review |
