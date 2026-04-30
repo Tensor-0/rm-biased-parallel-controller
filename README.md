@@ -5,6 +5,13 @@
 
 ---
 
+> 🚧 **这是 [`v3.1-improvements`](https://github.com/Tensor-0/rm-biased-parallel-controller/tree/v3.1-improvements) 实验版分支**
+> - 新增 `Robot_Config.h` + `robot_params.m` 参数集中管理
+> - 可选 FreeRTOS 队列 + 初始化超时 + 可配置 VOFA+
+> - MATLAB 文件重构 (详细注释 + 误差统计 + 自动生成)
+> - ⚠ 未通过实车验证，请仅在仿真/备车上测试
+> - 🔒 [main 分支](https://github.com/Tensor-0/rm-biased-parallel-controller) = 稳定版
+
 > 🐣 **第一次接触本项目？** → 请先阅读 **[《轮腿机器人从零入门指南 (GUIDE.md)》](GUIDE.md)**
 > 用生动的比喻和图示讲解系统设计思想、运动控制原理、上手流程，零基础友好。
 
