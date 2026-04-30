@@ -5,19 +5,29 @@
 
 ---
 
-> 🚧 **这是 [`v3.1-improvements`](https://github.com/Tensor-0/rm-biased-parallel-controller/tree/v3.1-improvements) 实验版分支**
-> - 新增 `Robot_Config.h` + `robot_params.m` 参数集中管理
-> - 可选 FreeRTOS 队列 + 初始化超时 + 可配置 VOFA+
-> - MATLAB 文件重构 (详细注释 + 误差统计 + 自动生成)
-> - ⚠ 未通过实车验证，请仅在仿真/备车上测试
-> - 🔒 [main 分支](https://github.com/Tensor-0/rm-biased-parallel-controller) = 稳定版
+> 🚧 **这是 `v3.1-improvements` 实验版** | 🔒 [main 稳定版](https://github.com/Tensor-0/rm-biased-parallel-controller)
 
-> 🐣 **第一次接触本项目？** → 请先阅读 **[《轮腿机器人从零入门指南 (GUIDE.md)》](GUIDE.md)**
-> 用生动的比喻和图示讲解系统设计思想、运动控制原理、上手流程，零基础友好。
+> ### 🐧 Ubuntu 22.04 用户 — 看这里！
+> 
+> **你不需要 Keil、不需要 STM32、不需要 MATLAB。** 本项目已支持纯 Ubuntu 开发：
+> 
+> | 你想做什么 | 看哪个教程 | 需要什么 | 时间 |
+> |-----------|----------|---------|------|
+> | 🔬 理解算法原理 | [`PROJECT_UNDERSTANDING.md`](PROJECT_UNDERSTANDING.md) | 无 | 20 min |
+> | 🧪 **在电脑上跑控制算法** | [`SIMULATION_GUIDE.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/feature/sim-core-cpp/SIMULATION_GUIDE.md) | pip install pybind11 | 30 min |
+> | 🧮 改 LQR 参数 | [`MATLAB_GUIDE.md` §8](MATLAB_GUIDE.md) 或 `python3 tools/lqr_gain_schedule.py` | pip install numpy scipy | 10 min |
+> | 🐣 零基础了解项目 | [`GUIDE.md`](GUIDE.md) | 无 | 15 min |
+> | 📊 架构代码审查 | [`MDK-ARM/architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 无 | 10 min |
+> 
+> ⚠ v3.1 新内容:
+> - `Robot_Config.h` — 参数集中管理
+> - `robot_params.m` — MATLAB/Octave 参数 (有 Python 替代)
+> - `tools/lqr_gain_schedule.py` — Python 算 LQR
+> - 初始化超时 + 可配置调参 + FreeRTOS 队列
 
 ---
 
-## 📖 项目简介
+## 📖 项目简介 (给初学者)
 
 ### 这个项目是做什么的？
 
@@ -105,6 +115,16 @@ BMI088 ──SPI──▶ INS_Task ──全局变量──▶ control_input_sna
 2. 在 Keil 中点击 Download (F8) 或在终端运行 `openocd -f board/stm32h723discovery.cfg`
 3. 上电后，将遥控器开关拨到位置 3（初始化模式）
 4. 等待关节电机归位后自动进入平衡模式
+
+### 🧪 仿真入门 (零基础, 不需要硬件)
+
+> 如果你想先**学算法**再动硬件，从仿真开始是最好的选择。
+
+1. 切换到仿真分支: `git checkout feature/sim-core-cpp`
+2. 编译: `cd simulation_core && mkdir -p build && cd build && cmake .. && make -j4`
+3. 测试: `python3 -c "from wheel_legged_sim import WheelLeggedDynamics,RobotState; ..."`
+
+📖 详细教程: [`SIMULATION_GUIDE.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/feature/sim-core-cpp/SIMULATION_GUIDE.md)
 
 ---
 
@@ -336,8 +356,10 @@ chore:   杂务         → "chore: add Keil artifacts to .gitignore"
 | 🐣 **[`GUIDE.md`](GUIDE.md)** | **刚加入项目必读** | 零基础入门指南：设计思想·控制原理·上手流程 |
 | 📖 [`README.md`](README.md) | 了解项目概况 | 本文档，项目简介与快速参考 |
 | 🔬 [`architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 准备贡献代码 | 完整代码审查报告 (核心架构、数据流、10条优化建议) |
-| 📋 [`architecture_refactor_plan.md`](architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 |
+| 📋 [`architecture_refactor_plan.md`](MDK-ARM/architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 (第14章含Sim-Core提取) |
+| 🧪 **[`SIMULATION_GUIDE.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/feature/sim-core-cpp/SIMULATION_GUIDE.md)** | 没有硬件开始学 | 仿真零基础入门 (Ubuntu + pybind11 + Mujoco) |
 | 🧮 **[`MATLAB_GUIDE.md`](MATLAB_GUIDE.md)** | 修改 LQR 参数 | MATLAB 离线计算详解：物理建模·符号推导·多项式拟合 |
+| 📊 **[`PROJECT_UNDERSTANDING.md`](PROJECT_UNDERSTANDING.md)** | 全面理解项目 | 物理抽象·架构分层·数学本质·调参指南·质量评价 |
 | ⚙️ [`COD_H7_Template.ioc`](COD_H7_Template.ioc) | 修改硬件配置 | STM32CubeMX 引脚配置 (双击打开) |
 | 🐛 [GitHub Issues](https://github.com/Tensor-0/rm-biased-parallel-controller/issues) | 找活干 | 待办任务与 Bug 追踪 |
 | 🔀 [GitHub Pull Requests](https://github.com/Tensor-0/rm-biased-parallel-controller/pulls) | 了解进展 | 合并历史与 Code Review |
