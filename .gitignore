@@ -87,3 +87,6 @@ RTE/
 tools/lqr_gain_fit.png
 __pycache__/
 *.pyc
+
+# simulation_core build artifacts
+simulation_core/build/
