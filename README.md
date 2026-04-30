@@ -6,12 +6,18 @@
 ---
 
 > 🔒 **当前分支: `main` = 稳定版 (已实车验证)**
-> 🚧 **改进版: [`v3.1-improvements`](https://github.com/Tensor-0/rm-biased-parallel-controller/tree/v3.1-improvements) = 实验版 (待实车测试)**
->   - 新增 `Robot_Config.h` 集中管理所有参数
->   - 可选 FreeRTOS 队列传递电机命令（消除数据竞争）
->   - 初始化超时检测（防止关节卡死）
->   - 可配置 VOFA+ 调参通道
->   - ⚠ 改进版未通过实车验证，请仅在仿真/备车上测试
+> **项目当前有三条活跃分支**:
+>
+> | 分支 | 状态 | 说明 |
+> |------|------|------|
+> | **`main`** ← 你在这里 | 🔒 稳定版 | 实车验证通过，直接烧录可用 |
+> | [`v3.1-improvements`](https://github.com/Tensor-0/rm-biased-parallel-controller/tree/v3.1-improvements) | 🚧 实验版 | 参数集中 + 硬件安全 + MATLAB重构 + Python替代 |
+> | [`feature/sim-core-cpp`](https://github.com/Tensor-0/rm-biased-parallel-controller/tree/feature/sim-core-cpp) | 🧪 仿真版 | C++算法库+pybind11, Mujoco就绪, 不依赖STM32 |
+>
+> **v3.1 改进版**: Robot_Config.h集中参数, FreeRTOS队列, 初始化超时, VOFA可配
+> **sim-core-cpp**: C++17纯算法, 编译通过, compute_torques()物理正确
+>
+> ⚠ 实验版/仿真版均未通过实车验证
 
 ---
 
