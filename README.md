@@ -115,6 +115,17 @@ BMI088 ──SPI──▶ INS_Task ──全局变量──▶ control_input_sna
 3. 上电后，将遥控器开关拨到位置 3（初始化模式）
 4. 等待关节电机归位后自动进入平衡模式
 
+### 🧪 仿真入门 (零基础, 不需要硬件)
+
+> 如果你想先**学算法**再动硬件，从仿真开始是最好的选择。
+
+1. 切换到仿真分支: `git checkout feature/sim-core-cpp`
+2. 编译: `cd simulation_core && mkdir -p build && cd build && cmake .. && make -j4`
+3. 测试: `python3 -c "from wheel_legged_sim import WheelLeggedDynamics,RobotState; ..."`
+
+📖 详细教程: [`SIMULATION_GUIDE.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/feature/sim-core-cpp/SIMULATION_GUIDE.md)
+
+
 ---
 
 ## 📂 项目结构
@@ -345,7 +356,9 @@ chore:   杂务         → "chore: add Keil artifacts to .gitignore"
 | 🐣 **[`GUIDE.md`](GUIDE.md)** | **刚加入项目必读** | 零基础入门指南：设计思想·控制原理·上手流程 |
 | 📖 [`README.md`](README.md) | 了解项目概况 | 本文档，项目简介与快速参考 |
 | 🔬 [`architecture_analysis_report.md`](MDK-ARM/architecture_analysis_report.md) | 准备贡献代码 | 完整代码审查报告 (核心架构、数据流、10条优化建议) |
-| 📋 [`architecture_refactor_plan.md`](architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 |
+| 📋 [`architecture_refactor_plan.md`](MDK-ARM/architecture_refactor_plan.md) | 参与重构 | 重构方案与任务分解 |
+| | 🧪 **[`SIMULATION_GUIDE.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/feature/sim-core-cpp/SIMULATION_GUIDE.md)** | 没有硬件开始学 | 仿真零基础入门 (Ubuntu + pybind11 + Mujoco) |
+| | 📊 **[`PROJECT_UNDERSTANDING.md`](https://github.com/Tensor-0/rm-biased-parallel-controller/blob/v3.1-improvements/PROJECT_UNDERSTANDING.md)** | 全面理解项目 | 物理抽象·架构分层·数学本质·调参指南 |
 | 🧮 **[`MATLAB_GUIDE.md`](MATLAB_GUIDE.md)** | 修改 LQR 参数 | MATLAB 离线计算详解：物理建模·符号推导·多项式拟合 |
 | ⚙️ [`COD_H7_Template.ioc`](COD_H7_Template.ioc) | 修改硬件配置 | STM32CubeMX 引脚配置 (双击打开) |
 | 🐛 [GitHub Issues](https://github.com/Tensor-0/rm-biased-parallel-controller/issues) | 找活干 | 待办任务与 Bug 追踪 |
