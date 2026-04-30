@@ -25,6 +25,11 @@
 
 #include "mode_state_machine.h"
 #include "PID.h"
+#include "Robot_Config.h"
+#include "cmsis_os.h"
+
+/* 🐣 (v3.1) 初始化超时计数器 — 防止关节卡死导致永久阻塞 */
+static uint32_t init_timeout_tick = 0;
 
 /* ====== PID 参数定义 ======
    🐣 PID_PARAM(Kp, Ki, Kd, Alpha, Deadband, LimitI, LimitO) 的 7 个参数:
@@ -151,6 +156,16 @@ void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapsho
         /* 步骤2a: 检查 4 个关节是否都在安全位置 */
         if (Control_Info->Init.Joint_Init.IF_Joint_Init == 0) {
             /* [左小腿] 安全位置: position < 0 (机械限位的收缩方向) */
+
+            /* 🐣 (v3.1) 初始化超时检测: 如果初始化超过5秒还没完成,强制退出 */
+            if (init_timeout_tick == 0) {
+                init_timeout_tick = osKernelSysTick();
+            } else if ((osKernelSysTick() - init_timeout_tick) > CONF_INIT_TIMEOUT_MS) {
+                Control_Info->Init.IF_Begin_Init = 0;
+                Control_Info->Chassis_Situation = CHASSIS_WEAK;
+                init_timeout_tick = 0;
+                return;
+            }
             if (in->joint[0].position < 0.0f)
                 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 1;
             else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;

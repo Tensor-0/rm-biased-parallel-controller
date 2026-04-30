@@ -224,13 +224,22 @@ void Control_Task(void const * argument)
         Control_OutputPacket_Generate(&Control_Info, &g_motor_cmd);
 
         /* ====== 调试遥测 ======
-           🐣 向 VOFA+ 串口上位机发送 4 个 float 数据(JustFloat 协议)。
-           这 4 个通道可以在电脑上实时看波形:
-           [目标速度 | 右腿底盘速度 | 左腿底盘速度 | 底盘位置]
-           方便调试时观察控制效果 */
-        USART_Vofa_Justfloat_Transmit(Control_Info.Target_Velocity,
-                                       Control_Info.R_Leg_Info.Measure.Chassis_Velocity,
-                                       Control_Info.L_Leg_Info.Measure.Chassis_Velocity,
+        /* ====== 调试遥测 (v3.1: 可配置通道) ======
+           🐣 修改下面的宏来选择要发送哪些数据到 VOFA+。
+           4 个通道对应 VOFA+ 的 4 条波形。 */
+#define VOFA_CH0  Control_Info.Target_Velocity
+#define VOFA_CH1  Control_Info.R_Leg_Info.Measure.Chassis_Velocity
+#define VOFA_CH2  Control_Info.L_Leg_Info.Measure.Chassis_Velocity
+#define VOFA_CH3  Control_Info.L_Leg_Info.Measure.Chassis_Position
+
+        /* 🐣 常见替换方案(取消注释即可):
+           #define VOFA_CH0  Control_Info.L_Leg_Info.Measure.Phi*57.3f
+           #define VOFA_CH1  Control_Info.L_Leg_Info.Measure.Theta*57.3f
+           #define VOFA_CH2  Control_Info.L_Leg_Info.Moment.Balance_T
+           #define VOFA_CH3  Control_Info.L_Leg_Info.F
+        */
+
+        USART_Vofa_Justfloat_Transmit(VOFA_CH0, VOFA_CH1, VOFA_CH2, VOFA_CH3);
                                        Control_Info.L_Leg_Info.Measure.Chassis_Position);
 
         /* 🐣 osDelayUntil 不是"睡 1ms",而是"等到离上次执行刚好 1ms 为止"。
