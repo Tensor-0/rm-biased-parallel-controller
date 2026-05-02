@@ -3,7 +3,7 @@
   * @file           : INS_Task.c
   * @brief          : 惯性导航系统 — 把 BMI088 的陀螺仪+加速度计数据变成机身姿态
   *
-  * ====== 🐣 新手必读 ======
+  * ======  新手必读 ======
   *
   * 【这个文件在干什么？】
   *   机器人身上挂着一个 BMI088 六轴 IMU 芯片。这个芯片每时每刻在告诉你:
@@ -43,12 +43,12 @@
 #include "bsp_pwm.h"
 
 /* ====== 全局 IMU 状态 ======
-   🐣 INS_Info 是整个系统的"陀螺仪数据仓库"。
+    INS_Info 是整个系统的"陀螺仪数据仓库"。
    INS_Task 写入, Control_Task 通过快照读取。 */
 INS_Info_Typedef INS_Info;
 
 /* ====== 二阶低通滤波器系数 ======
-   🐣 这三个系数决定了滤波器"有多磨"。值从 MATLAB 的 butter/filter designer 算出来。
+    这三个系数决定了滤波器"有多磨"。值从 MATLAB 的 butter/filter designer 算出来。
    不需要理解每个数字——你只需要知道: "加速度的毛刺被磨平了,姿态就不会抖"。 */
 static float INS_LPF2p_Alpha[3] = {1.929454039488895f, -0.93178349823448126f, 0.002329458745586203f};
 
@@ -75,7 +75,7 @@ static void BMI088_Temp_Control(float temp);
 /**
  * INS_Task — IMU 姿态解算线程 (1kHz)
  *
- * 🐣 每 1ms 执行一次完整的姿态解算流程:
+ *  每 1ms 执行一次完整的姿态解算流程:
  *   1. 读 BMI088 原始数据 (SPI 通信)
  *   2. 加速度做二阶低通滤波 (去除高频噪声)
  *   3. 四元数 EKF 更新 (融合陀螺仪和加速度 → 最优姿态)
@@ -93,12 +93,12 @@ void INS_Task(void const * argument)
     for (;;) {
         INS_Task_SysTick = osKernelSysTick();
 
-        /* 🐣 步骤1: 读取 BMI088 原始数据
+        /*  步骤1: 读取 BMI088 原始数据
            SPI 通信读取陀螺仪( °/s )和加速度计( m/s² )
            数据保存在 BMI088_Info 全局结构体中 */
         BMI088_Info_Update(&BMI088_Info);
 
-        /* 🐣 步骤2: 加速度做二阶低通滤波
+        /*  步骤2: 加速度做二阶低通滤波
            为什么只滤波加速度？加速度对振动非常敏感(走路时上下抖动),
            而陀螺仪天生比较平滑——滤波后加速度的"假运动"被滤掉,
            EKF 不会误以为"车在加速"而去错误修正姿态。 */
@@ -106,30 +106,30 @@ void INS_Task(void const * argument)
         INS_Info.Accel[1] = LowPassFilter2p_Update(&INS_AccelPF2p[1], BMI088_Info.Accel[1]);
         INS_Info.Accel[2] = LowPassFilter2p_Update(&INS_AccelPF2p[2], BMI088_Info.Accel[2]);
 
-        /* 🐣 步骤3: 更新陀螺仪数据 (弧度/秒)
+        /*  步骤3: 更新陀螺仪数据 (弧度/秒)
            从 BMI088 原始数据(°/s)转换为弧度/秒 */
         INS_Info.Gyro[0] = BMI088_Info.Gyro[0];
         INS_Info.Gyro[1] = BMI088_Info.Gyro[1];
         INS_Info.Gyro[2] = BMI088_Info.Gyro[2];
 
-        /* 🐣 步骤4: 四元数 EKF 更新
+        /*  步骤4: 四元数 EKF 更新
            QuaternionEKF_Update 完成:
            - 利用角速度预测下一时刻的四元数 (陀螺仪积分)
            - 利用加速度修正四元数 (重力方向观测)
            - 输出欧拉角 EulerAngle[3] (弧度) */
         QuaternionEKF_Update(&Quaternion_Info, INS_Info.Gyro, INS_Info.Accel, 0.001f);
 
-        /* 🐣 步骤5: 拷贝欧拉角到 INS_Info
+        /*  步骤5: 拷贝欧拉角到 INS_Info
            Angle[0]=Roll, Angle[1]=Pitch, Angle[2]=Yaw */
         memcpy(INS_Info.Angle, Quaternion_Info.EulerAngle, sizeof(INS_Info.Angle));
 
-        /* 🐣 步骤6: 弧度 → 角度转换
+        /*  步骤6: 弧度 → 角度转换
            57.295779513f = 180/π */
         INS_Info.Pitch_Angle = Quaternion_Info.EulerAngle[IMU_ANGLE_INDEX_PITCH] * 57.295779513f;
         INS_Info.Yaw_Angle   = Quaternion_Info.EulerAngle[IMU_ANGLE_INDEX_YAW]   * 57.295779513f;
         INS_Info.Roll_Angle  = Quaternion_Info.EulerAngle[IMU_ANGLE_INDEX_ROLL]  * 57.295779513f;
 
-        /* 🐣 步骤7: 偏航总圈数维护
+        /*  步骤7: 偏航总圈数维护
            Yaw 输出的范围是 [-180°, 180°],当你转过 180° 时会跳到 -180°。
            通过比较相邻两次的 Yaw 角,判断是否跨过了 ±180° 边界,
            跨过了就 ±1 圈数。Yaw_TolAngle = 累计角度 = Yaw_Angle + 圈数×360°。
@@ -143,18 +143,18 @@ void INS_Task(void const * argument)
         INS_Info.Last_Yaw_Angle = INS_Info.Yaw_Angle;
         INS_Info.Yaw_TolAngle = INS_Info.Yaw_Angle + INS_Info.YawRoundCount * 360.f;
 
-        /* 🐣 步骤8: 角速度也转成"度/秒" (Control_Task 偏航PID 用) */
+        /*  步骤8: 角速度也转成"度/秒" (Control_Task 偏航PID 用) */
         INS_Info.Pitch_Gyro = INS_Info.Gyro[IMU_GYRO_INDEX_PITCH] * RadiansToDegrees;
         INS_Info.Yaw_Gyro   = INS_Info.Gyro[IMU_GYRO_INDEX_YAW]   * RadiansToDegrees;
         INS_Info.Roll_Gyro  = INS_Info.Gyro[IMU_GYRO_INDEX_ROLL]  * RadiansToDegrees;
 
-        /* 🐣 步骤9: 每5个周期(200Hz)执行一次温度控制
+        /*  步骤9: 每5个周期(200Hz)执行一次温度控制
            温度控制的频率比姿态解算低,因为温度变化本身很慢 */
         if (INS_Task_SysTick % 5 == 0) {
             BMI088_Temp_Control(BMI088_Info.Temperature);
         }
 
-        /* 🐣 等待 1ms (保证 1kHz 精确频率) */
+        /*  等待 1ms (保证 1kHz 精确频率) */
         osDelayUntil(&INS_Task_SysTick, 1);
     }
 }
@@ -162,7 +162,7 @@ void INS_Task(void const * argument)
 /**
  * INS_Task_Init — 初始化低通滤波器、温度PID、四元数EKF
  *
- * 🐣 在 INS_Task 启动时只跑一次。
+ *  在 INS_Task 启动时只跑一次。
  */
 static void INS_Task_Init(void)
 {
@@ -182,7 +182,7 @@ static void INS_Task_Init(void)
 /**
  * BMI088_Temp_Control — BMI088 温度控制
  *
- * 🐣 BMI088 的工作温度会影响其零偏(读数偏置)。稳定在 40°C 左右,数据最准。
+ *  BMI088 的工作温度会影响其零偏(读数偏置)。稳定在 40°C 左右,数据最准。
  *   PID 计算加热功率 → 通过 PWM 控制加热电阻。
  */
 static void BMI088_Temp_Control(float Temp)
