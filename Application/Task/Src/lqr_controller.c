@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
   * @file           : lqr_controller.c
-  * @brief          : LQR 增益调度控制器 — 自动计算最优平衡推力
+  * @brief          : Gain-scheduled LQR: cubic polynomial K(L₀) via Horner, u = −Kx, adaptive zeroing.
   *
-  * ====== 🐣 新手必读 ======
+  * ======  新手必读 ======
   *
   * 【这个文件在干什么？】
   *   假设你现在站歪了,你想回到直立。你需要知道两件事:
@@ -32,7 +32,7 @@
 
 /* ====== LQR 增益调度的多项式系数 ======
  *
- * 🐣 这些系数是提前在MATLAB中用 lqr() 函数算出来的。
+ *  这些系数是提前在MATLAB中用 lqr() 函数算出来的。
  *   MATLAB 脚本放在项目根目录的 get_K.m 中。
  *
  *   用法: 对于第i行第j列的增益 Kij,
@@ -66,7 +66,7 @@ extern PID_Info_TypeDef PID_Leg_Coordinate;
 /**
  * LQR_K_Update — 增益调度: 根据腿长更新 K 矩阵
  *
- * 🐣 为什么 K 矩阵要随着腿长变？
+ *  为什么 K 矩阵要随着腿长变？
  *   想象你用一根长棍子和一根短棍子撑地:
  *   - 长棍子: 轻轻用力就能改变倾角 (力矩臂长 → 增益小)
  *   - 短棍子: 要用很大力才能改变倾角 (力矩臂短 → 增益大)
@@ -125,7 +125,7 @@ void LQR_K_Update(Control_Info_Typedef *Control_Info)
 /**
  * LQR_X_Update — 计算 6 维状态误差向量
  *
- * 🐣 X[i] = 目标值 - 测量值
+ *  X[i] = 目标值 - 测量值
  *
  *   6个维度的物理含义:
  *   X[0] = 虚拟腿倾角误差     (rad)    — 腿偏离竖直方向多少
@@ -159,7 +159,7 @@ void LQR_X_Update(Control_Info_Typedef *Control_Info)
 /**
  * LQR_T_Tp_Calculate — LQR 最优控制 + 自适应 + 综合力矩
  *
- * 🐣 这个函数是整个系统的"最终决策":
+ *  这个函数是整个系统的"最终决策":
  *   1. 着地自适应: 空中的腿 → 禁用水平推力(蹬不到地)
  *   2. u = K·X: 增益矩阵×状态误差 = 最优控制力
  *   3. 防劈叉 PID: 两腿角度差不要太大
@@ -169,7 +169,7 @@ void LQR_X_Update(Control_Info_Typedef *Control_Info)
 void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info)
 {
     /* ====== 步骤1: 着地自适应 —— 松掉空中腿的增益 ======
-       🐣 如果这条腿在空中(Support.Flag==1),轮子空转是浪费能量,
+        如果这条腿在空中(Support.Flag==1),轮子空转是浪费能量,
        且空转产生的反作用力会干扰平衡。所以把 K[0][*]全部清零(禁用轮子前推力)
        K[1][2:5]清零(部分禁用关节扭矩中与位置/速度/倾角相关的项) */
     if (Control_Info->L_Leg_Info.Support.Flag == 1) {
@@ -217,7 +217,7 @@ void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info)
         Control_Info->R_Leg_Info.Moment.Balance_Tp += Control_Info->R_Leg_Info.LQR_Output[1][j];
 
     /* ====== 步骤4: 防劈叉 PID ======
-       🐣 如果两条腿的虚拟腿倾角差太多,机器人会"劈叉"。
+        如果两条腿的虚拟腿倾角差太多,机器人会"劈叉"。
        这个 PID 专门产生一个同步扭矩,把两腿的倾角往回拉。
        目标=0(希望角度差为0), 测量=左腿Theta - 右腿Theta */
     PID_Calculate(&PID_Leg_Coordinate, 0, Control_Info->L_Leg_Info.Measure.Theta - Control_Info->R_Leg_Info.Measure.Theta);
@@ -225,7 +225,7 @@ void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info)
     Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp = -PID_Leg_Coordinate.Output;
 
     /* ====== 步骤5: 力矩综合 ======
-       🐣 把各通道的力矩"加在一起"变成最终输出:
+        把各通道的力矩"加在一起"变成最终输出:
        T  = Balance_T(平衡) + Turn_T(转向)
        Tp = Balance_Tp(平衡扭矩) + Leg_Coordinate_Tp(防劈叉) */
     Control_Info->L_Leg_Info.T = Control_Info->L_Leg_Info.Moment.Balance_T + Control_Info->L_Leg_Info.Moment.Turn_T;
@@ -234,13 +234,13 @@ void LQR_T_Tp_Calculate(Control_Info_Typedef *Control_Info)
     Control_Info->R_Leg_Info.Tp = Control_Info->R_Leg_Info.Moment.Balance_Tp + Control_Info->R_Leg_Info.Moment.Leg_Coordinate_Tp;
 
     /* ====== ⚠ 安全清零 ======
-       🐣 如果不加这些 if,会出现以下危险:
+        如果不加这些 if,会出现以下危险:
        - 空中的支撑腿还在输出前推力 → 落地瞬间会暴冲
        - CHASSIS_WEAK 状态下 LQR 还在计算 → 可能产生超大控制量 */
     if (Control_Info->L_Leg_Info.Support.Flag == 1) Control_Info->L_Leg_Info.T = 0;
     if (Control_Info->R_Leg_Info.Support.Flag == 1) Control_Info->R_Leg_Info.T = 0;
     if (Control_Info->Chassis_Situation == CHASSIS_WEAK) {
-        /* 🐣 虚弱状态下所有力和力矩清零 —— "安全气囊" */
+        /*  虚弱状态下所有力和力矩清零 —— "安全气囊" */
         Control_Info->L_Leg_Info.Tp = 0;  Control_Info->R_Leg_Info.Tp = 0;
         Control_Info->L_Leg_Info.F  = 0;  Control_Info->R_Leg_Info.F  = 0;
         Control_Info->L_Leg_Info.T  = 0;  Control_Info->R_Leg_Info.T  = 0;

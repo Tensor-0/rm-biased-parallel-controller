@@ -3,7 +3,7 @@
   * @file           : control_io.h
   * @brief          : 控制任务 I/O 边界 — 算法与硬件之间的"海关"
   *
-  * 🐣 改进版 (v3.1):
+  *  改进版 (v3.1):
   *   - 新增 FreeRTOS 队列支持 (xQueueOverwrite/xQueuePeek)
   *   - g_motor_cmd 队列版替代原始共享变量，消除数据竞争
   *   - 切换方式: 取消注释 #define USE_QUEUE 即启用队列
@@ -20,7 +20,7 @@
 #include "Robot_Config.h"
 
 /* ====== 队列模式开关 ======
-   🐣 取消下面这行的注释即可启用 FreeRTOS 队列,彻底消除数据竞争。
+    取消下面这行的注释即可启用 FreeRTOS 队列,彻底消除数据竞争。
    启用后需要: FreeRTOS 初始化时调用 xQueueCreate() 创建队列。
    未启用时使用原始共享变量(兼容当前版本)。 */
 /* #define USE_QUEUE */
@@ -81,7 +81,7 @@ void Control_OutputPacket_Generate(const Control_Info_Typedef *ctrl,
 /* ======================== 全局对象 ======================== */
 
 #ifdef USE_QUEUE
-/* 🐣 改进版: 使用 FreeRTOS 队列传递命令,完全消除数据竞争
+/*  改进版: 使用 FreeRTOS 队列传递命令,完全消除数据竞争
    Control_Task 用 xQueueOverwrite(cmd_queue, &g_motor_cmd) 写入,
    CAN_Task 用 xQueuePeek(cmd_queue, &local_cmd, 0) 读取。
    创建队列: main() 中调用 cmd_queue = xQueueCreate(1, sizeof(motor_command_packet_t)); */

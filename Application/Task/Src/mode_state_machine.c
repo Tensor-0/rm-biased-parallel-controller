@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
   * @file           : mode_state_machine.c
-  * @brief          : 模式状态机 + PID 初始化 — 机器人的"开机自检"和"档位切换"
+  * @brief          : Mode state machine: PID init, low-voltage check, joint-reduction-to-balance transitions.
   *
-  * ====== 🐣 新手必读 ======
+  * ======  新手必读 ======
   *
   * 【这个文件在干什么？】
   *   机器人有三种状态: 关机(WEAK)、初始化归位、平衡(BALANCE)。
@@ -28,11 +28,11 @@
 #include "Robot_Config.h"
 #include "cmsis_os.h"
 
-/* 🐣 (v3.1) 初始化超时计数器 — 防止关节卡死导致永久阻塞 */
+/*  (v3.1) 初始化超时计数器 — 防止关节卡死导致永久阻塞 */
 static uint32_t init_timeout_tick = 0;
 
 /* ====== PID 参数定义 ======
-   🐣 PID_PARAM(Kp, Ki, Kd, Alpha, Deadband, LimitI, LimitO) 的 7 个参数:
+    PID_PARAM(Kp, Ki, Kd, Alpha, Deadband, LimitI, LimitO) 的 7 个参数:
    Kp    = 比例增益:    误差放大倍数,决定"反应有多剧烈"
    Ki    = 积分增益:    累计误差放大倍数,消除"你总觉得差一点点"的问题
    Kd    = 微分增益:    误差变化率放大倍数,"D项就像在蜂蜜里移动,柔和不震荡"
@@ -65,7 +65,7 @@ static float PID_Yaw_P_pama[7]          = PID_PARAM(4.4f,   0.f,  60.f,   0,   0
 static float PID_Yaw_V_pama[7]          = PID_PARAM(0.25f,  0,    0.4f,   0,   0,   200,  70);
 
 /* ====== 全局 PID 实例 ======
-   🐣 这些都是"活"的控制器,每个都有内部状态(误差积分、上次误差等)。
+    这些都是"活"的控制器,每个都有内部状态(误差积分、上次误差等)。
    它们被定义在这里(而非 Control_Task.c),因为这里是"PID 的集中营"。
    其他模块通过 extern 声明来使用它们。 */
 
@@ -84,7 +84,7 @@ PID_Info_TypeDef PID_Yaw[2];
 /**
  * Mode_Init — 一次性初始化所有 PID 控制器
  *
- * 🐣 这个函数在 Control_Task 启动时只运行一次。
+ *  这个函数在 Control_Task 启动时只运行一次。
  *    类似开机自检——把 Kp/Ki/Kd 参数"写入"到 PID 控制器的内部记忆里。
  *    PID_POSITION = 位置式 PID (每次算输出,不是增量式)
  */
@@ -101,20 +101,20 @@ void Mode_Init(Control_Info_Typedef *Control_Info)
 /**
  * Mode_Check_Low_Voltage — 读取电池电压
  *
- * 🐣 当前只做电压存储,不做报警。电压值从快照中获取,
+ *  当前只做电压存储,不做报警。电压值从快照中获取,
  *    以保持 I/O 隔离(不直接读 ADC)。
  */
 void Mode_Check_Low_Voltage(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in)
 {
     /* [电池电压] (伏特 V) | 正常: [22, 25.2] | <22V需充电
-       🐣 VDC 存在 Control_Info 里,供后续状态显示/报警使用 */
+        VDC 存在 Control_Info 里,供后续状态显示/报警使用 */
     Control_Info->VDC = in->vbat;
 }
 
 /**
  * Mode_Update — 核心状态机: 根据遥控器开关切换控制模式
  *
- * 🐣 这是机器人唯一的"档位切换"逻辑:
+ *  这是机器人唯一的"档位切换"逻辑:
  *
  *  遥控器 s[1] 档位:
  *   ├── 3 (下拨最底) = 初始化 + 平衡模式
@@ -133,31 +133,31 @@ void Mode_Check_Low_Voltage(Control_Info_Typedef *Control_Info, const control_in
  */
 void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapshot_t *in)
 {
-    /* 🐣 步骤1: 检测遥控器档位
+    /*  步骤1: 检测遥控器档位
        短路求值: if(s[1]==3) 或 if(s[1]==1/2), 两个条件满足任意一个就进入 */
     if (in->rc.s[1] == 3 || in->rc.s[1]) {
         /* s[1]==3(初始化) 或 s[1]==1(高腿长) → 允许初始化 */
         Control_Info->Init.IF_Begin_Init = 1;
-        /* 🐣 如果在初始化流程中拨到位置2(关机),立即清零初始化标志 */
+        /*  如果在初始化流程中拨到位置2(关机),立即清零初始化标志 */
         if (in->rc.s[1] == 2) {
             Control_Info->Init.IF_Begin_Init = 0;
             Control_Info->Chassis_Situation = CHASSIS_WEAK;
         }
     } else {
         /* s[1]==0 或 s[1]==2 → 关机
-           🐣 如果当前是平衡状态,要把它打回虚弱状态 */
+            如果当前是平衡状态,要把它打回虚弱状态 */
         Control_Info->Init.IF_Begin_Init = 0;
         if (Control_Info->Chassis_Situation == CHASSIS_BALANCE)
             Control_Info->Chassis_Situation = CHASSIS_WEAK;
     }
 
-    /* 🐣 步骤2: 如果允许初始化 且 当前是虚弱状态 → 开始初始化流程 */
+    /*  步骤2: 如果允许初始化 且 当前是虚弱状态 → 开始初始化流程 */
     if (Control_Info->Init.IF_Begin_Init == 1 && Control_Info->Chassis_Situation == CHASSIS_WEAK) {
         /* 步骤2a: 检查 4 个关节是否都在安全位置 */
         if (Control_Info->Init.Joint_Init.IF_Joint_Init == 0) {
             /* [左小腿] 安全位置: position < 0 (机械限位的收缩方向) */
 
-            /* 🐣 (v3.1) 初始化超时检测: 如果初始化超过5秒还没完成,强制退出 */
+            /*  (v3.1) 初始化超时检测: 如果初始化超过5秒还没完成,强制退出 */
             if (init_timeout_tick == 0) {
                 init_timeout_tick = osKernelSysTick();
             } else if ((osKernelSysTick() - init_timeout_tick) > CONF_INIT_TIMEOUT_MS) {
@@ -185,7 +185,7 @@ void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapsho
                 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 1;
             else Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[3] = 0;
 
-            /* 🐣 步骤2b: 当 4 个标志全部为 1 → 初始化完成！
+            /*  步骤2b: 当 4 个标志全部为 1 → 初始化完成！
                把 4 个 bool 值加起来,和为 4 就是全部到位 */
             if (Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] +
                 Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[1] +
@@ -199,7 +199,7 @@ void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapsho
             Control_Info->L_Leg_Info.Measure.Chassis_Position = 0;
             Control_Info->R_Leg_Info.Measure.Chassis_Position = 0;
         } else if (Control_Info->Init.Joint_Init.IF_Joint_Init == 1) {
-            /* 🐣 步骤2c: 初始化完成 → 进入平衡模式!
+            /*  步骤2c: 初始化完成 → 进入平衡模式!
                CHASSIS_BALANCE 标志一旦置 1, LQR 控制回路正式开始工作 */
             Control_Info->Chassis_Situation = CHASSIS_BALANCE;
             Control_Info->L_Leg_Info.Measure.Chassis_Position = 0;
@@ -207,7 +207,7 @@ void Mode_Update(Control_Info_Typedef *Control_Info, const control_input_snapsho
         }
     }
 
-    /* 🐣 步骤3: 如果不再允许初始化 → 清零所有初始化标志
+    /*  步骤3: 如果不再允许初始化 → 清零所有初始化标志
        这是"安全退出"逻辑,保证状态机不会卡在中间状态 */
     if (Control_Info->Init.IF_Begin_Init == 0 && Control_Info->Chassis_Situation == CHASSIS_WEAK) {
         Control_Info->Init.Joint_Init.IF_Joint_Reduction_Flag[0] = 0;
