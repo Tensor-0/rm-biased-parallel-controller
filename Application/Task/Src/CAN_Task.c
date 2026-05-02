@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
   * @file           : CAN_Task.c
-  * @brief          : CAN 通信线程 — 把算好的电机指令发到 CAN 总线上
+  * @brief          : CAN dispatch thread. Reads g_motor_cmd only; transmits DM8009 torque commands via FDCAN2 and M3508 current via FDCAN3.
   *
-  * ====== 🐣 新手必读 ======
+  * ======  新手必读 ======
   *
   * 【这个文件在干什么？】
   *   这是机器人的"传令兵"。它不参与任何计算——只负责从 g_motor_cmd
@@ -38,7 +38,7 @@
 /**
  * CAN_Task — 电机CAN通信线程 (1kHz)
  *
- * 🐣 注意: 本任务通过 osDelay(1) 也是 1kHz 频率,与 Control_Task 同频。
+ *  注意: 本任务通过 osDelay(1) 也是 1kHz 频率,与 Control_Task 同频。
  *   但它不依赖精确频率——只是"有命令就发,没命令就等着"。
  *   g_motor_cmd.motor_active 决定了当前是初始化/运行/关机状态。
  */
@@ -49,7 +49,7 @@ void CAN_Task(void const * argument)
     for (;;) {
         CAN_Task_SysTick = osKernelSysTick();
 
-        /* 🐣 步骤1: 检查电机是否已使能
+        /*  步骤1: 检查电机是否已使能
            DM8009 电机的 State 字段: 0=未使能, 1=已使能
            如果 4 个电机中有一个没使能 → 发送使能命令(一次性)
            使能后 osDelay(30ms) 等待电机响应,避免连续发送导致总线拥塞 */
@@ -66,13 +66,13 @@ void CAN_Task(void const * argument)
             osDelay(30);
 
         } else {
-            /* 🐣 电机已使能,根据 g_motor_cmd.motor_active 决定发送模式:
+            /*  电机已使能,根据 g_motor_cmd.motor_active 决定发送模式:
                motor_active=1 (s[1]=3/1): 初始化或运行
                motor_active=0 (s[1]=2/0): 关机 */
 
             if (g_motor_cmd.motor_active != 0) {
 
-                /* 🐣 关节初始化未完成 → 归零模式
+                /*  关节初始化未完成 → 归零模式
                    joint_init_done=0 时, Control_Task 的状态机还在等 4 个关节归位。
                    此期间发送"位置归零"命令(Position=0, KP=10, KD=1, Torque=0)
                    驱动电机缓慢回到安装零位,同时轮子断电(防止乱转)。 */
@@ -90,7 +90,7 @@ void CAN_Task(void const * argument)
                     USER_FDCAN_AddMessageToTxFifoQ(&FDCAN3_TxFrame);
 
                 } else {
-                    /* 🐣 正常运行模式: 从 g_motor_cmd 获取电机指令 */
+                    /*  正常运行模式: 从 g_motor_cmd 获取电机指令 */
 
                     /* 📦 关节电机: 以 MIT 模式发送(位置=0,速度=0,KP=0,KD=0)
                        这意味着电机工作在"纯力矩模式"——只接受力矩指令,
@@ -117,7 +117,7 @@ void CAN_Task(void const * argument)
                 }
 
             } else {
-                /* 🐣 关机状态: 全部电机断电 (力矩=0)
+                /*  关机状态: 全部电机断电 (力矩=0)
                    为什么要发力矩=0而不是不发？因为不发的话电机可能保持
                    上一帧的力矩——如果不发0,机器人会"定住不动"而不是"松垮垮地倒下"。 */
                 DM_Motor_CAN_TxMessage(&FDCAN2_TxFrame, &DM_8009_Motor[0], 0, 0, 0, 0, 0);
