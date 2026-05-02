@@ -1,199 +1,143 @@
-# 🧠 项目全局理解总结
+# Project Architecture — Global Comprehension Summary
 
-> **撰写时间**: 2025-04-30 | **撰写者**: AI 软件架构师 (经深入审阅全部代码后)
-
----
-
-## 一、这是一个什么样的项目？
-
-**一句话**: 一个基于 STM32H723 的实时控制系统，用于控制一台**偏置并联双轮腿机器人**在动态环境中**自主站立、移动和转向**——核心挑战是**平衡**。
-
-这台机器人没有"脚掌"——它只有两个轮子点地，就像一辆倒立的自行车。所以它必须在重力将它拉倒之前持续地"挪动轮子把自己接住"。同时，它的两条腿不像人类腿那样简单——每条腿有2个关节（大腿+小腿），形成复杂的连杆机构，数学上处理起来比"一根棍子上的独轮车"困难得多。
+> **Audience**: Engineers seeking to understand the full system before making modifications.
+> **Scope**: Physical abstraction, software layering, mathematical foundation, parameter tuning, quality assessment.
 
 ---
 
-## 二、核心物理问题
+## 1. Physical Problem
 
-### 2.1 "偏置并联"是什么意思？
+A biased-parallel dual-wheel-legged robot with two joints per leg (calf + thigh, driven by DM8009 motors) and one hub motor per foot (M3508). The system is inherently unstable — an inverted pendulum with a moving pivot. The control objective is to maintain dynamic balance while responding to chassis velocity and yaw-rate commands from an SBUS remote.
 
-两条腿的关节**不完全对称**——大腿连杆和小腿连杆的长度比不一样，电机驱动的"动力杆"和被动连接的"从动杆"之间存在偏置。这让每条腿的运动学（从角度算位置）和逆动力学（从力算角度）都变得复杂。
-
-### 2.2 三层物理抽象
+### 1.1 Three-Layer Physical Abstraction
 
 ```
-真实机械         →      VMC 简化模型       →      平衡控制
-═══════════             ════════════             ══════════
-大腿肌+小腿肌           一根"虚拟棍子"            倒立摆
-2个关节角度            1个长度L₀+1个倾角φ₀         6维状态空间
-4个关节扭矩            1个推力F+1个扭矩Tp          2个控制输入
-                                        u = -K·x
+Real Mechanism        →    VMC Reduction        →    LQR Control
+══════════════             ════════════             ══════════
+4 joint angles             1 virtual length L₀      6-DOF state vector
+4 joint torques            1 virtual inclination φ₀  2 control inputs
+closed-form kinematics     exact mapping             u = −K·x
 ```
 
-关键在于**正运动学映射**: 用连杆几何公式把两个关节角度 `(θ₁, θ₂)` 映射为 `(L₀, φ₀)`。这个映射是精确的（没有近似），由 `VMC_Calculate()` 中的三角恒等式和勾股定理保证。
+The VMC forward kinematics is an exact geometric transformation — no approximation. The LQR control law is computed offline, with gain scheduling at runtime.
 
 ---
 
-## 三、软件架构的"灵魂"
+## 2. Software Architecture
 
-### 3.1 四层分离
+### 2.1 Four-Layer Separation
 
-```text
-Task 调度层 (大脑皮层)     "现在该干什么？"
-  ├─ INS_Task      1kHz   姿态解算 (四元数EKF)
-  ├─ Control_Task  1kHz   平衡控制 (VMC+LQR+PID)
-  ├─ CAN_Task      1kHz   电机通信
-  └─ Detect_Task   1kHz   异常检测 (预留)
+| Layer | Responsibility | Key Files |
+|-------|---------------|-----------|
+| Task | Thread scheduling; control pipeline orchestration | `Control_Task.c`, `INS_Task.c`, `CAN_Task.c` |
+| Algorithm | Pure math: PID, LQR, QuaternionEKF, filters | `lqr_controller.c`, `PID.c`, `Quaternion.c` |
+| Device | Protocol drivers for specific peripherals | `Motor.c`, `Bmi088.c`, `Remote_Control.c` |
+| BSP | STM32 HAL wrappers for on-chip peripherals | `bsp_can.c`, `bsp_spi.c` |
 
-Algorithm 算法层 (小脑)     "倾斜3°应该用5N推回去"
-  ├─ PID             位置式PID (Kp/Ki/Kd + 微分低通滤波)
-  ├─ LQR             增益调度最优控制
-  ├─ QuaternionEKF   四元数扩展卡尔曼滤波
-  ├─ Kalman_Filter   线性卡尔曼滤波
-  └─ LPF/Ramp        低通滤波/斜坡函数
+### 2.2 I/O Boundary Pattern
 
-Device 设备层 (神经末梢)    "电机当前位置是 -0.23rad"
-  ├─ DM8009    大喵关节电机 (FDCAN2)
-  ├─ M3508     大疆轮毂电机 (FDCAN3)
-  ├─ BMI088    六轴IMU (SPI)
-  ├─ Remote    遥控器 (SBUS UART)
-  └─ MiniPC    上位机图传
+`control_io.h/c` is the sole interface between Task layer and hardware globals:
 
-BSP 硬件抽象层 (骨骼)       "向CAN总线发送这8个字节"
-  └─ STM32 HAL 封装
-```
+- **Input snapshot** (`control_input_snapshot_t`): Copied once per cycle from `INS_Info`, `remote_ctrl`, `DM_8009_Motor[]`, `Chassis_Motor[]`. The 16-step pipeline reads only this snapshot.
+- **Output packet** (`motor_command_packet_t`): Populated at cycle end from `Control_Info.SendValue`. `CAN_Task` reads only this packet — it has no dependency on `Control_Info`, `INS_Info`, or `remote_ctrl` (v3.0 decoupling).
 
-### 3.2 I/O 边界模式 — "海关"
+This eliminates the data race between interrupt-driven sensor updates and RTOS-thread control logic.
 
-整个设计中最精妙的部分是 `control_io.h/c`:
-
-- **输入快照** (`control_input_snapshot_t`): 每 1ms 把全部传感器数据拍一张"照片"。之后 16 步控制流水线只看这张照片，不再碰硬件。
-- **输出命令包** (`motor_command_packet_t`): 算法算完的结果打包到这里，CAN_Task 只从这里读，不碰 Control_Info 的内部状态。
-
-这解决了嵌入式系统中最常见的 bug——**数据竞争** (data race)。传感器在中断中更新，控制算法在 RTOS 线程中读取——如果没有快照机制，就会出现"一边读一边被改写"的未定义行为。
-
-### 3.3 控制流水线 — 16 步魔法
-
-每 1ms，Control_Task 执行如下序列：
+### 2.3 Control Pipeline (16 steps, 1ms)
 
 ```
-1  📸 快照采集   ← control_io.c (唯一能碰硬件的地方)
-2  🔋 低电压检测 ← 电池 < 22V 报警
-3  🔄 模式更新   ← 初始化→平衡→关机 状态机
-4  🔗 关节映射   ← 电机角度 → 大腿/小腿摆角 (坐标变换)
-5  📐 VMC正运动学 ← 两个角度 → 一根虚拟棍子 (L₀, φ₀)
-6  📈 LQR增益     ← K = f(L₀) 多项式 (霍纳法则)
-7  🧲 传感器融合  ← IMU+轮速 → 6维状态 (0.8×预测+0.2×测量)
-8  🚗 底盘移动   ← 前进/后退/转向
-9  📏 高度控制   ← 低腿长/高腿长切换
-10 🎢 横滚补偿   ← 左右腿长差 + 推力差
-11 🦿 腿长控制   ← 目标腿长 PID + 重力补偿
-12 👣 离地检测   ← 地面支持力 FN < 22N → 判定离地
-13 🔢 LQR输出    ← u = -K·X 最优控制力
-14 ⚡ 力矩映射   ← 雅可比逆矩阵 → 4个关节力矩
-15 📦 命令打包   ← 写入 g_motor_cmd
-16 📡 串口遥测   ← VOFA+ 调试数据
+Snapshot → Low-V → ModeFSM → JointMap → VMC-FK → LQR-K → Fusion
+→ Move → Height → Roll → LegLen → LiftOff → LQR-X → LQR-u
+→ Jacobian → Pack → Telemetry
 ```
 
-### 3.4 三个独立线程的协作
+### 2.4 Thread Collaboration
 
-| 线程 | 频率 | 做什么 | 输入 | 输出 |
-|------|------|--------|------|------|
-| INS_Task | 1kHz | 读 BMI088 → 低通滤波 → EKF → 欧拉角 | SPI 传感器 | `INS_Info` (全局) |
-| Control_Task | 1kHz | 16 步控制流水线 | 快照 (`INS_Info` 的拷贝) | `g_motor_cmd` (全局) |
-| CAN_Task | 1kHz | 使能/归零/运行/关机 | `g_motor_cmd` + 电机反馈 | FDCAN 总线 |
+| Thread | Frequency | Input | Output |
+|--------|----------|-------|--------|
+| INS_Task | 1kHz | BMI088 SPI | `INS_Info` (global) |
+| Control_Task | 1kHz | Snapshot (copy of `INS_Info`) | `g_motor_cmd` (global) |
+| CAN_Task | 1kHz | `g_motor_cmd` + motor feedback | FDCAN2/3 |
 
-这种"生产-消费"模式保证了每个线程职责清晰、容易单独调试。
+Producer-consumer pattern: each thread has a single responsibility and a single output channel.
 
 ---
 
-## 四、控制算法的数学本质
+## 3. Mathematical Foundation
 
-### 4.1 LQR 为什么能"自动算最优力"？
+### 3.1 LQR: Algebraic Riccati Equation
 
-LQR（线性二次调节器）解决的是这样的问题：
+```
+Given: ẋ = Ax + Bu
+Find:  u = −Kx minimizing ∫(xᵀQx + uᵀRu)dt
 
-> 给定系统 `ẋ = Ax + Bu`，找到控制律 `u = -Kx` 使得 `∫(xᵀQx + uᵀRu)dt` 最小
+K = R⁻¹BᵀP  where  AᵀP + PA − PBR⁻¹BᵀP + Q = 0
+```
 
-翻译成人话：
-- `xᵀQx` = "状态差多少"的代价。Q 越大，表示"我越在乎这个状态"
-- `uᵀRu` = "用多大力"的代价。R 越大，表示"我越不想费电"
-- `K = R⁻¹BᵀP`，其中 P 是代数 Riccati 方程的解
+Q diagonal weights encode state regulation priority:
+- Q(5,5) = 5000: body tilt φ is the dominant instability
+- Q(3,3) = 500: position drift is a secondary concern
+- R(2,2) / R(1,1) = 0.25: hip torque is 4× cheaper than wheel torque
 
-**Q[4]=5000** 是 Q 矩阵中最大的值，说明"机身的水平 (φ)"是最被在乎的状态——这符合直觉：机身一歪就感觉要摔。
+### 3.2 Gain Scheduling
 
-**R[1]/R[0]=0.25** 说明"关节扭矩比轮子力矩便宜 4 倍"——所以 LQR 会优先用髋关节来平衡，少动轮子（避免车漂移）。
-
-### 4.2 增益调度 — K 不是常数
-
-腿越长，同样的力矩产生的倾斜纠正效果越大（杠杆原理）。所以 K 矩阵必须随着腿长变化：
+K is not constant — longer legs produce larger moment arms, requiring smaller gains:
 
 ```
 K(L₀) = c₁·L₀³ + c₂·L₀² + c₃·L₀ + c₄
 ```
 
-这 12 组多项式系数 (K11~K26) 是**离线在 MATLAB/Python 中计算好**的——C 代码只需要代入当前的 L₀ 进行多项式和矩阵乘法。
+12 coefficient sets (K11–K26) are pre-computed offline via MATLAB `lqr()` over 31 leg-length samples (0.10–0.40 m, step 0.01 m), then fitted to cubic polynomials via `polyfit()`. At runtime, Horner's method evaluates the polynomial in 3 multiplications and 3 additions per coefficient.
 
-### 4.3 VMC — "复杂连杆 → 简单棍子"的几何魔法
+### 3.3 VMC Forward Kinematics
 
-```text
-输入: θ₁(小腿角度), θ₂(大腿角度), a(小腿连杆长), b(大腿连杆长), K(杆长比)
-中间: M=(θ₁-θ₂)/2, N=(θ₁+θ₂)/2, S=√(b²-a²·sin²(M))
-      t=a·cos(M)+S, A=a·t·sin(M)/S
-输出: φ₀=N (虚拟倾角), L₀=t/K (虚拟腿长)
-      + J点速度 + 雅可比系数 A
+Exact closed-form mapping from 2 joint angles (θ₁ calf, θ₂ thigh) to virtual leg parameters (L₀, φ₀) using linkage geometry:
+
+```
+M = (θ₁ − θ₂) / 2
+N = (θ₁ + θ₂) / 2
+S = √(b² − a²·sin²(M))
+L₀ = (a·cos(M) + S) / K
+φ₀ = N
 ```
 
-整个过程没有近似——这是**精确**的几何变换。
+No approximation — the mapping is exact for the given linkage model.
 
 ---
 
-## 五、参数调优指南
+## 4. Parameter Configuration
 
-### 5.1 "我的机器人比你的重"→ 改哪些值？
-
-| 参数 | 位置 (主分支) | 位置 (v3.1) | 敏感度 |
-|------|-------------|-----------|--------|
-| 机体质量 M | `Balance_Luntuimatlab.m` M1 | `Robot_Config.h` CONF_BODY_MASS + `robot_params.m` M1 | 🔴 高 |
-| 重力补偿 | `Control_Task.c` Gravity_Compensation | 同上 | 🟡 中 |
-| 腿长范围 | `Control_Task.c` Base_Leg_Length | 同上 | 🟡 中 |
-| Q矩阵 | `Balance_Luntuimatlab.m` Q | `robot_params.m` Q_val | 🔴 高 |
-| R矩阵 | 同上 R | `robot_params.m` R_val | 🟡 中 |
-| PID参数 | `mode_state_machine.c` | 同上 | 🟡 中 |
-
-### 5.2 "调参的科学方法"
-
-1. **先验证物理参数** — 称重、测量连杆长度
-2. **运行 MATLAB/Python 脚本** — 得到新的 K 系数
-3. **复制 C 代码** — 替换 `lqr_controller.c` 中的 12 行
-4. **逐步增加 PID 的 Kp** — 如果机器人"抖"就降 Kp，"软"就加 Kp
-5. **最后调 Q/R 矩阵** — 这是"哲学层面"的参数，改了要重跑 MATLAB
+| Parameter | Location (v3.1) | Sensitivity |
+|-----------|----------------|-------------|
+| Body mass M | `Robot_Config.h` CONF_BODY_MASS + `robot_params.m` M1 | 🔴 High — requires LQR recomputation |
+| Gravity compensation | `Robot_Config.h` CONF_GRAVITY_COMPENSATION | 🟡 Medium |
+| Leg length range | `Robot_Config.h` CONF_LEG_LENGTH_MIN/MAX | 🟡 Medium |
+| Q/R diagonal weights | `robot_params.m` Q_val/R_val | 🔴 High — requires LQR recomputation |
+| PID parameters | `mode_state_machine.c` PID_PARAM macros | 🟡 Medium |
+| Fusion α (0.8) | `sensor_fusion.c` CONF_FUSION_ALPHA | 🟢 Low |
 
 ---
 
-## 六、项目代码质量评价
+## 5. Quality Assessment (v3.0)
 
-| 维度 | 评分 | 评价 |
-|------|------|------|
-| **算法深度** | ⭐⭐⭐⭐⭐ | VMC+LQR 双层架构达到学术论文级别 |
-| **模块化设计** (v3.0后) | ⭐⭐⭐⭐ | 5 模块拆分后代码清晰，`control_io.h` I/O 边界是亮点 |
-| **实时安全性** (v3.0后) | ⭐⭐⭐⭐ | 已修复 P0 数据竞争，v3.1 加了超时和队列 |
-| **代码可读性** (v3.0后) | ⭐⭐⭐⭐⭐ | 10 个核心文件有保姆级中文注释 |
-| **文档完整性** (v3.0后) | ⭐⭐⭐⭐⭐ | README+GUIDE+架构报告+MATLAB指南 |
-| **离线工具链** (v3.1) | ⭐⭐⭐⭐⭐ | MATLAB + GNU Octave + Python 三选一 |
-| **参数管理** (v3.1) | ⭐⭐⭐⭐⭐ | Robot_Config.h + robot_params.m 集中配置 |
-
----
-
-## 七、下一步要做什么？
-
-| 优先级 | 事项 | 位置 |
-|--------|------|------|
-| 🔴 P0 | 实车测试 v3.0 全部修改 | `main` 分支 |
-| 🟡 P1 | 实车测试 v3.1 改进 | `v3.1-improvements` 分支 |
-| 🟡 P1 | 完整端到端调试一次 (上电→自检→平衡→移动) | - |
-| 🟢 P2 | 测试 FreeRTOS Queue 替代共享变量 | `v3.1-improvements` → `USE_QUEUE` |
-| 🟢 P3 | 添加跳跃/跨越等新功能 | 新分支 |
+| Dimension | Rating | Notes |
+|-----------|--------|-------|
+| Algorithm depth | ★★★★★ | VMC+LQR dual-layer; academic-grade derivation |
+| Modularity (post-#17) | ★★★★☆ | 5-domain module split; `control_io.h` I/O boundary |
+| Real-time safety (post-#18) | ★★★★☆ | P0 data race eliminated; sqrt zero-guard; snapshot size assertion |
+| Code readability (post-#21) | ★★★★★ | 10 core files with engineering-line comments |
+| Documentation | ★★★★★ | README + GUIDE + architecture report + MATLAB guide + this document |
+| Offline toolchain (v3.1) | ★★★★★ | MATLAB + GNU Octave + Python — three equivalent paths |
+| Parameter management (v3.1) | ★★★★★ | `Robot_Config.h` + `robot_params.m` — single-source configuration |
 
 ---
 
-> **结语**: 这是一个在 1 毫秒内完成 16 步计算、6 个电机指令下发、4 通道遥测发送的实时控制系统。它的核心思想——把复杂问题映射到简单模型再控制——值得所有嵌入式开发者学习。
+## 6. Next Steps
+
+| Priority | Task | Branch |
+|----------|------|--------|
+| 🔴 P0 | Vehicle validation of v3.0 changes | `main` |
+| 🟡 P1 | Vehicle validation of v3.1 improvements | `v3.1-improvements` |
+| 🟡 P1 | Full bring-up sequence test | `main` |
+| 🟢 P2 | FreeRTOS Queue replacement for shared variables | `v3.1-improvements` (`#define USE_QUEUE`) |
+| 🟢 P3 | Jump/step-over capability | new feature branch |

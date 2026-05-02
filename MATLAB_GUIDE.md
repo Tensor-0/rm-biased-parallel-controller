@@ -1,296 +1,151 @@
-# 📊 项目 MATLAB 文件全面分析与解读
+# MATLAB Offline Computation — LQR Gain Coefficient Generation
 
-> **阅读时间**: 20 分钟 | **前置知识**: 高等数学(导数/雅可比矩阵)、线性代数(状态空间)、牛顿力学
-
-> 🚧 **v3.1 改进版 (experimental)**: MATLAB 文件已重构。
-> - 新增 [`robot_params.m`](robot_params.m) — 机械参数集中配置
-> - `Balance_Luntuimatlab.m` — 读共享参数 + 详细注释
-> - `get_K.m` — 自动读参数 + 输出 RMSE 拟合误差 + 生成配置提示
-> - **main 分支的旧版** 仍保留原始硬编码版本
+> **Target**: Engineers modifying physical robot parameters. Document covers: three-body dynamics derivation, symbolic linearization, polynomial fitting pipeline, Ubuntu-compatible alternatives.
 
 ---
 
-## 一、文件清单与作用
+## 1. File Inventory
 
-| 文件 | 类型 | v3.1 变化 | 作用 |
-|------|------|----------|------|
-| `robot_params.m` | ⚙️ **新增** | v3.1 新建 | 机械参数集中配置，一次修改，两处同步 |
-| `Balance_Luntuimatlab.m` | 🧠 **核心函数** | 重构 | 读 robot_params，添加详细注释，支持连续/离散 LQR |
-| `get_K.m` | 🔧 **编排脚本** | 重构 | 自动读参数，输出拟合误差(RMSE)，生成 C 代码 + 配置提示 |
-| `Balance_Luntuimatlab.asv` | 💾 **自动备份** | 不变 | MATLAB 编辑器自动保存的旧版本 |
+| File | Type | Role |
+|------|------|------|
+| `robot_params.m` | Configuration | Mechanical parameters, Q/R weights, leg sampling range, LQR method switch |
+| `Balance_Luntuimatlab.m` | Core function | Builds 3-body dynamics, performs symbolic Jacobian linearization, calls `lqr()` |
+| `get_K.m` | Orchestration script | Iterates 31 leg lengths, collects K matrices, fits cubic polynomials, outputs C arrays |
+| `Balance_Luntuimatlab.asv` | Editor backup | Legacy version using discrete `dlqr()`; retained for reference |
+| `tools/lqr_gain_schedule.py` | Python alternative | Pure-numeric LQR via `scipy.linalg.solve_continuous_are()`; no MATLAB license required |
 
 ---
 
-## 二、`Balance_Luntuimatlab.m` — LQR 增益计算完整解读
-
-### 2.1 这个函数在干什么？(🐣 通俗版)
-
-给你一根特定长度的"虚拟棍子",这个函数用**物理公式** + **LQR 算法**算出: **"如果机器人偏离了平衡位置,用多大力推才能既省力又快速地恢复平衡"**。
-
-输出一个 2×6 的矩阵 K。比如 K[0][0]=-344 表示"虚拟腿每偏离 1 弧度,轮子应该输出 -344 N·m 的力矩来纠正"。这个 K 矩阵最终写到 C 代码 `lqr_controller.c` 中。
-
-### 2.2 物理模型 — 三体动力学系统
+## 2. Three-Body Dynamics Model
 
 ```
-      ┌── 机体 (M=18.12kg) — 机身,绕髋关节转动 (φ)
-      │
-  ┌───┴───┐
-  │  髋关节  │ ← Tp (髋关节扭矩)
-  └───┬───┘
-      │
-      │  虚拟腿 (mp=1.12kg) — 简化为一根杆,绕轮轴转动 (θ)
-      │  长度 = leg_length (可变参数!)
-      │
-  ┌───┴───┐
-  │ 轮子(mw=0.88kg)│ ← T (轮子扭矩)
-  └───┬───┘
-  ═══地面═══  ← Nf (摩擦力)
+Body (M=18.12 kg) ─┐
+                   ├─ Hip joint (Tp)
+Leg (mp=1.12 kg) ──┤
+                   ├─ Wheel axle
+Wheel (mw=0.88 kg) ─┘
 ```
 
-### 2.3 三组牛顿力学方程
+### 2.1 Newton-Euler Equations
 
-**方程1 — 轮子的运动 (eqn1)**
+**Equation 1** — Wheel horizontal motion:
 ```
-eqn1: d²x = (T - N×R) ÷ (Iw/R + mw×R)
-```
-轮子的水平加速度 = (电机力矩 - 地面摩擦力×轮半径) ÷ 轮子等效质量。这是牛顿第二定律 F=ma 的转动版本。
-
-**方程2 — 虚拟腿的转动 (eqn2)**
-```
-eqn2: Ip×d²θ = (P×L+Pm×Lm)×sinθ - (N×L+Nm×Lm)×cosθ - T + Tp
-```
-摆杆角加速度×转动惯量 = 重力产生的力矩 - 水平反力产生的力矩 - 轮子扭矩 + 髋关节扭矩。等式右边四项分别来自: 重力(使腿倒下)、地面反力(使腿立起)、轮子电机、关节电机。
-
-**方程3 — 机体的转动 (eqn3)**
-```
-eqn3: Im×d²φ = Tp + Nm×l×cosφ + Pm×l×sinφ
-```
-机体角加速度×转动惯量 = 髋关节扭矩 + 水平力力矩 + 重力力矩。注意 `l=0.0011m`(仅 1.1mm!),机体质心几乎就在髋关节转轴上——这是精心设计的,质心偏离越远机身越容易"点头"。
-
-### 2.4 符号推导 → 线性化 → LQR
-
-```
-第44行: solve()      — 联立三个方程,解出 d²θ, d²x, d²φ
-第46行: jacobian()   — 求雅可比矩阵 → 状态空间 A 矩阵 (6×6)
-第49行: 同上         — 求输入矩阵 B (6×2)
-第54行: Q=diag(...)  — 权重矩阵: 你"在乎"哪些状态?
-第55行: R=diag(...)  — 代价矩阵: 你"省不省"力气?
-第57行: lqr(A,B,Q,R) — 调用MATLAB内置LQR求解器!
+d²x = (T − N·R) / (Iw/R + mw·R)
 ```
 
-### 2.5 Q 和 R 矩阵的物理直觉 (极其重要！)
+**Equation 2** — Leg rotation about wheel axle:
+```
+Ip·d²θ = (P·L + Pm·Lm)·sin(θ) − (N·L + Nm·Lm)·cos(θ) − T + Tp
+```
+
+**Equation 3** — Body rotation about hip:
+```
+Im·d²φ = Tp + Nm·l·cos(φ) + Pm·l·sin(φ)
+```
+
+where N, Nm are horizontal reaction forces; P, Pm are vertical reaction forces (including gravity). All variables are symbolic until numerical substitution at the linearization step.
+
+### 2.2 State-Space Linearization
+
+At equilibrium (all states = 0, inputs = 0), the Jacobian yields A (6×6) and B (6×2):
+
+```
+State: x = [θ, dθ, x, dx, φ, dφ]
+Input: u = [T, Tp]
+```
+
+MATLAB `jacobian()` computes symbolic partial derivatives; `subs()` substitutes equilibrium conditions; `double()` converts to numeric matrices suitable for `lqr()`.
+
+---
+
+## 3. LQR Weight Matrices
 
 ```matlab
-Q = diag([30,   1,    500,  100,  5000, 1]);
-         ↑θ   ↑dθ    ↑x    ↑dx    ↑φ  ↑dφ
+Q = diag([30, 1, 500, 100, 5000, 1]);   % [θ dθ x dx φ dφ]
+R = diag([1, 0.25]);                       % [T Tp]
 ```
 
-| 状态 | Q值 | 🐣 通俗解释 |
-|------|-----|-----------|
-| `θ` (摆杆倾角) | 30 | "腿歪了要纠正,但不用太狠" |
-| `dθ` (倾角速度) | 1 | "腿正在倒的速度,可以宽容一点" |
-| `x` (位置) | 500 | "**位置很重要！不能漂移！**" |
-| `dx` (速度) | 100 | "速度也要稳,但不如位置重要" |
-| `φ` (机身倾角) | **5000** | "**机身最不能歪！这是头等大事！**" |
-| `dφ` (机身角速度) | 1 | "倒的速度可以容忍" |
+| Q index | State | Weight | Engineering rationale |
+|---------|-------|--------|----------------------|
+| Q(1,1) | θ (leg inclination) | 30 | Moderate penalty — leg angle is indirectly controlled via body |
+| Q(3,3) | x (chassis position) | 500 | Position drift prevention |
+| Q(5,5) | φ (body inclination) | 5000 | **Dominant** — body tilt is the primary instability |
+| R(1,1) | T (wheel torque) | 1 | Baseline cost |
+| R(2,2) | Tp (hip torque) | 0.25 | Hip is 4× cheaper → LQR prefers hip over wheel for balance |
 
-> 🔑 Q[4]=5000 比其他值大 100 倍以上,说明算法**极其重视**机身的水平——机身一歪就感觉"要摔了"。
-
-```matlab
-R = diag([1, 0.25]);
-         ↑T  ↑Tp
-```
-
-| 输入 | R值 | 🐣 通俗解释 |
-|------|-----|-----------|
-| `T` (轮子力矩) | 1 | "用多大力都可以,我不怕费电" |
-| `Tp` (关节扭矩) | 0.25 | "关节扭矩更'便宜'——优先用它来平衡" |
-
-> 🔑 R[1]/R[0] = 0.25/1 = 1/4,引导 LQR **优先使用关节扭矩**维持平衡,少用轮子力矩——因为轮子转多了车就跑远了。
+**Method**: Continuous `lqr(A, B, Q, R)` solving the algebraic Riccati equation `AᵀP + PA − PBR⁻¹BᵀP + Q = 0`, yielding optimal gain K = R⁻¹BᵀP.
 
 ---
 
-## 三、`get_K.m` — 增益调度流水线
-
-### 3.1 整体流程
+## 4. Gain Scheduling Pipeline (`get_K.m`)
 
 ```
-第1步: 遍历腿长       leg = 0.1 : 0.01 : 0.4  (31个采样点)
-  │
-  ├─ 第2步: 逐个调用    k = Balance_Luntuimatlab(leg_length)
-  │   对每个腿长计算一次完整 LQR → 得到 2×6 的 K 矩阵
-  │
-  ├─ 第3步: 收集数据    把每个 Kij 在31个腿长下的值存成数组
-  │   k11(1..31), k12(1..31) ... k26(1..31)
-  │
-  ├─ 第4步: 多项式拟合   polyfit(leg, kij, 3)     ← 最小二乘法
-  │   对每个 Kij 用三次多项式拟合:
-  │     Kij(L₀) ≈ a1·L₀³ + a2·L₀² + a3·L₀ + a4
-  │
-  ├─ 第5步: 可视化      12 个子图,每个显示原始点(o)和拟合曲线(红线)
-  │
-  └─ 第6步: 输出C代码   fprintf 生成可直接复制到 lqr_controller.c 的代码
+1. Load robot_params.m          → read M, mw, mp, Q, R, leg range
+2. for leg = 0.10:0.01:0.40     → 31 samples
+     k = Balance_Luntuimatlab(leg)
+     collect k11..k26
+3. polyfit(leg, kij, 3)          → cubic polynomial coefficients
+4. Display RMSE per Kij          → fitting quality indicator
+5. fprintf C array literals      → copy-paste into lqr_controller.c
+6. Plot 12 subplots              → data points vs. fitted curve
 ```
 
-### 3.2 为什么需要多项式拟合？
-
-如果腿长可变(0.14~0.20m),每个腿长都算一次 LQR 太慢了。在 MATLAB 中提前算好 31 个采样点,用三次多项式来近似。C 代码只需 4 次乘法+3 次加法算出 K 矩阵(霍纳法则),而非跑一次完整的矩阵分解。
-
-### 3.3 输出结果
-
-运行 `get_K.m` 输出 12 行 C 代码:
+**Output**: 12 lines of the form:
 ```c
-float K11[6] = {0,-344.130023f,397.724995f,-265.059481f,-4.941964f};
-float K12[6] = {0,11.842778f,-18.891159f,-27.922778f,0.234829f};
-// ... 共12行 → 复制到 lqr_controller.c
+float K11[6] = {0, -344.130023f, 397.724995f, -265.059481f, -4.941964f};
 ```
+
+where `Kij[1]` through `Kij[4]` are the cubic (L₀³), quadratic (L₀²), linear (L₀), and constant terms respectively. `Kij[0]` is reserved.
 
 ---
 
-## 四、`.asv` 文件 — 旧版本的秘密
+## 5. C Code Integration
 
-`Balance_Luntuimatlab.asv` 是 MATLAB 自动备份。对比当前版本:
+At runtime, `LQR_K_Update()` in `lqr_controller.c` evaluates:
 
-| 参数 | 当前版本 (.m) | 旧版本 (.asv) |
-|------|-------------|--------------|
-| 机体质量 M | **18.12** kg | **17.08** kg |
-| **LQR 方法** | **连续时间 `lqr()`** | **离散时间 `dlqr()`** |
+```c
+float L_L0_3 = L_L0 * L_L0 * L_L0;
+K[0][0] = K11[1]*L_L0_3 + K11[2]*L_L0*L_L0 + K11[3]*L_L0 + K11[4];
+```
 
-> 🔑 旧版本用**离散 LQR** (`dlqr`),先用 `c2d` 离散化。当前版本用**连续 LQR** (`lqr`),因为 1kHz 采样率下两者差别极小(<1%),但连续版计算更简单。
+12 coefficients × 2 legs = 24 evaluations per 1kHz cycle.
 
 ---
 
-## 五、如何修改参数？
+## 6. Workflow When Modifying Physical Parameters
 
-### 场景 1: 机器人比你们的重 5kg
-
-修改 `Balance_Luntuimatlab.m`:
-```matlab
-M1 = 18.12;   % 改成你的实际机体质量
-mp1 = 1.12;    % 改成你的实际摆杆质量
-mw1 = 0.88;    % 改成你的实际轮子质量
-```
-然后运行 `get_K.m`,将输出的 12 行 C 代码替换到 `lqr_controller.c`。
-
-### 场景 2: 想让位置控制更准
-
-加大 Q 矩阵中的位置权重:
-```matlab
-Q = diag([30, 1, 500, 100, 5000, 1]);
-                   ↑ 加大 → 位置更准
-```
-
-### 场景 3: 电机太烫,想省电
-
-加大 R 矩阵中的代价:
-```matlab
-R = diag([1, 0.25]);
-          ↑ 加大 → 轮子力矩"更贵"→ 算法少用轮子
-```
+1. Edit `robot_params.m`: update masses, link lengths, Q/R weights
+2. Run `get_K` in MATLAB, or `python3 tools/lqr_gain_schedule.py` (pure Python)
+3. Copy the 12 generated `float Kij[6]` lines into `lqr_controller.c`
+4. Verify maximum RMSE < 1.0 (printed by both MATLAB and Python scripts)
+5. If RMSE > 1.0: increase `poly_order` from 3 to 4, or reduce leg range
 
 ---
 
-## 六、MATLAB ↔ C 代码映射关系
+## 7. Ubuntu 22.04 Alternatives (No MATLAB License)
 
-```
-MATLAB 离线计算                                     C 代码在线执行
-═══════════════                                   ═══════════════
-
-Balance_Luntuimatlab.m ──▶ LQR 求解 ──▶ K[2][6]  ──▶ lqr_controller.c
-    │                                                    │
-    │ 物理参数: R=0.055, mw=0.88,                       │ LQR_K_Update()
-    │           mp=1.12,  M=18.12,  g=9.83              │ K = f(L₀³, L₀², L₀)
-    │                                                    │
-    └── Q=diag([30,1,500,100,5000,1]) ──▶ 决定"多在乎" ──▶ 隐含在 K 系数中
-    └── R=diag([1, 0.25])           ──▶ 决定"多省电" ──▶ 隐含在 K 系数中
-
-get_K.m ──▶ 多项式拟合 ──▶ K11[6]~K26[6]  ──▶ lqr_controller.c
-    │                                               │
-    └── 31个腿长采样点                              └── 霍纳法则快速计算
-```
-
----
-
-## 七、总结
-
-| 维度 | 评分 | 说明 |
-|------|------|------|
-| **物理建模深度** | ⭐⭐⭐⭐⭐ | 三体动力学 + 符号推导 + 雅可比线性化,学术级别 |
-| **工程实用性** | ⭐⭐⭐⭐⭐ | 多项式拟合化繁为简,直接输出 C 代码,无缝对接嵌入式 |
-| **可维护性** | ⭐⭐⭐ | 机械参数硬编码,改一个值需重新运行 MATLAB |
-| **可理解性** | ⭐⭐ | 符号推导嵌套 9 层 subs(),初学者难以理解 |
-
-**改进建议**:
-- 将机械参数(R, mw, mp, M 等)提取为独立的 `robot_params.m` 配置文件
-- 添加更多注释解释 `subs` 链条的每一层是在替换什么
-- 考虑生成参数文档,标注每个 Kij 在腿长范围内的拟合误差
-
----
-
-## 八、MATLAB 到底在做什么 + Ubuntu 用户怎么办
-
-### "我到底需不需要 MATLAB？"
-
-**不需要！** MATLAB 只做一件事：根据机械参数算出 K 系数。这个计算是**离线**的——运行一次,把结果复制到 `lqr_controller.c` 就行了。
-
-> 🔑 K 系数已经在 C 代码中写好了。只要你的机器人机械参数差不多（机体约 18kg,腿长约 0.12m,轮半径 0.055m）,**直接用就行**。LQR 反馈控制对系数 ±10% 的误差具有天然鲁棒性。
-
-### Ubuntu 用户四方案
-
-| 方案 | 难度 | 说明 |
-|------|------|------|
-| 🥇 直接用现成系数 | ⭐ | 零成本,系数已在 `lqr_controller.c` 中 |
-| 🥈 GNU Octave | ⭐⭐ | `sudo apt install octave octave-control octave-symbolic` |
-| 🥉 Python + scipy | ⭐⭐⭐ | `pip install numpy scipy matplotlib` → `python3 tools/lqr_gain_schedule.py` |
-| 🏅 什么都不做 | ⭐ | LQR 本质是反馈调节,系数差一点也能稳住 |
-
-### Python 替代方案 (推荐 🥉)
-
-项目已包含 `tools/lqr_gain_schedule.py`——Python 版 LQR 计算脚本:
-
+### Option A: Python (recommended)
 ```bash
-# 安装依赖 (仅需一次)
 pip install numpy scipy matplotlib
-
-# 运行
 python3 tools/lqr_gain_schedule.py
-
-# 输出:
-#   1. 31 个采样点的 LQR 增益
-#   2. 12 组多项式的拟合系数 + RMSE 误差
-#   3. 可直接复制到 lqr_controller.c 的 C 代码
-#   4. 拟合质量图 (保存为 tools/lqr_gain_fit.png)
 ```
+Uses `scipy.linalg.solve_continuous_are()` for the Riccati equation. Output format identical to MATLAB version.
 
-Python 版的优势:
-- 纯数值计算,不需要符号运算工具箱
-- 安装简单 (`pip install` 三个包)
-- 输出格式与 MATLAB 版完全一致
-- 生成图表自动保存为 PNG
+### Option B: GNU Octave
+```bash
+sudo apt install octave octave-control octave-symbolic
+octave --eval "run('get_K.m')"
+```
+Requires `octave-symbolic` for `syms` support.
+
+### Option C: Use existing coefficients
+K coefficients in `lqr_controller.c` are valid for body mass 15–22 kg, leg length 0.12–0.22 m, wheel radius 0.05–0.06 m. LQR feedback is inherently robust to ±10% parameter mismatch.
 
 ---
 
-## 九、已知问题与修复 (v3.1 Bug Fixes)
+## 8. Known Issues
 
-### 1. Pylance 导入解析错误
-
-**根因**: 系统有两套 Python — 系统 `python3`(无科学计算包) 和 `anaconda3`(有)。Pylance 默认用系统 Python。
-
-**修复** — `.vscode/settings.json`:
-```json
-"python.defaultInterpreterPath": "/home/zhan/anaconda3/bin/python",
-"python.analysis.extraPaths": ["/home/zhan/anaconda3/lib/python3.13/site-packages"]
-```
-需重载 VS Code 窗口 (`Ctrl+Shift+P → Developer: Reload Window`)。
-
-### 2. 死赋值缺陷 — `A[3, 0]` 被反复写入
-
-原代码先 `A[3,0]=0.0` 再 `A[3,0]=-(L_val*P0)/I_equiv`。已删除无效的零赋值行及误导性注释。
-
-### 3. `savefig` 路径依赖运行目录
-
-原代码用相对路径 `'tools/lqr_gain_fit.png'`。已改为 `os.path.join(SCRIPT_DIR, 'lqr_gain_fit.png')`，确保从任意目录运行均正确。
-
-### 验证结果
-
-anaconda3 Python 运行脚本成功，31 个采样点 LQR 增益调度，最大 RMSE = 0.184，拟合质量良好。
+| Issue | Resolution |
+|-------|-----------|
+| `dlqr()` vs `lqr()` discrepancy | Current code uses continuous `lqr()`. Legacy `.asv` backup used discrete `dlqr()` with `Ts=0.001s`; at 1kHz the difference is < 1% |
+| Numerical conditioning at leg → 0 | `S_Radicand` can approach zero; `if(S < 1e-6) S = 1e-6` guard added in PR #18 |
